@@ -1,0 +1,3705 @@
+swagger: '2.0'
+info:
+  title: 公积金项目 API
+  description: 提供五舟汉云公积金-归集-单位信息管理-接口数据 ; 参考原型图版本:1.20
+  termsOfService: Handge
+  contact:
+    name: API Documentation Support.
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.1
+host: 127.0.0.1:8082
+schemes:
+  - http
+basePath: /housingfund
+security:
+  - addToken: []
+tags:
+  - name: unit
+    description: 单位信息
+  - name: unitReview
+    description: 单位信息审核
+  - name: unitSet
+    description: 单位开户
+  - name: unitAlter
+    description: 单位账户变更
+  - name: unitDrop
+    description: 单位账号销户
+  - name: unitUnsealed
+    description: 单位账号启封
+  - name: unitSealed
+    description: 单位账号封存
+  - name: unitReceipt
+    description: 回执单
+produces:
+  - application/json
+
+paths:
+  /collection/unitAcctsInfo:
+    get:
+      description: 查询单位账户信息列表
+      operationId: getUnitAcctsList
+      parameters:
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWLB
+          in: query
+          type: string
+          description: 单位类别
+        - name: DWZHZT
+          in: query
+          type: string
+          required: true
+          description: 单位账号状态(必填)
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - unit
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ListUnitAcctsRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/unitAcctsInfo/{DWZH}:
+    get:
+      description: 根据单位账号, 获取单位开户信息
+      operationId: getUnitAcctDetailInfo
+      parameters:
+        - name: DWZH
+          required: true
+          type: string
+          in: path
+          description: 单位账号
+      tags:
+        - unit
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/GetUnitAcctInfoDetail'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/unitAcctReviewed:
+    get:
+      description: 单位信息审核（已处理）列表
+      operationId: getUnitAcctReviewedList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: CZY
+          in: query
+          type: string
+          description: 操作员
+        - name: YWMXLX
+          in: query
+          type: string
+          description: 业务明细类型
+        - name: KSSJ
+          in: query
+          type: string
+          description: 到达时间开始时间
+        - name: JSSJ
+          in: query
+          type: string
+          description: 到达时间结束时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - unitReview
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ListUnitAcctReviewedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/unitAcctReview:
+    get:
+      description: 单位信息审核（未处理）列表
+      operationId: getUnitAcctReviewList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: CZY
+          in: query
+          type: string
+          description: 操作员
+        - name: YWMXLX
+          in: query
+          type: string
+          description: 业务明细类型
+        - name: KSSJ
+          in: query
+          type: string
+          description: 到达时间开始时间
+        - name: JSSJ
+          in: query
+          type: string
+          description: 到达时间结束时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - unitReview
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ListUnitAcctReviewRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: 单位信息审核通过/不通过(新版，含批量)
+      operationId: postUnitAcctReviewBulk
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctReviewBulkPost'
+      tags:
+        - unitReview
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ReviewBulkUnitAcctRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/unitAcctsSetInfo:
+    get:
+      description: 单位开户列表
+      operationId: getUnitAcctsSetList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWLB
+          in: query
+          type: string
+          description: 单位类别
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - unitSet
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ListUnitAcctSetRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/unitAcctsAlterInfo:
+    get:
+      tags:
+        - unitAlter
+      description: 单位变更列表
+      operationId: getUnitAcctsAlterList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWLB
+          in: query
+          type: string
+          description: 单位类别
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态(00:所有；01：新建;02:待审核；03:审核不通过；04:办结)
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/ListUnitAcctAlterRes'
+
+  /collection/unitAcctsSealedInfo:
+    get:
+      tags:
+        - unitSealed
+      description: 单位封存列表
+      operationId: getUnitAcctsSealedList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWLB
+          in: query
+          type: string
+          description: 单位类别
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/ListUnitAcctSealedRes'
+
+  /collection/unitAcctsUnsealedInfo:
+    get:
+      tags:
+        - unitUnsealed
+      description: 单位启封列表
+      operationId: getUnitAcctsUnsealedList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWLB
+          in: query
+          type: string
+          description: 单位类别
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态(00:所有；01：新建；02:待审核；03:审核不通过；04:办结)
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/ListUnitAcctUnsealedRes'
+
+  /collection/unitAcctsDropInfo:
+    get:
+      tags:
+        - unitDrop
+      description: 单位销户列表
+      operationId: getUnitAcctsDropList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWLB
+          in: query
+          type: string
+          description: 单位类别
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态(00:所有；01：新建；02:待审核；03:审核不通过；04:办结)
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/ListUnitAcctDropRes'
+  /collection/unitAcctSetSubmit:
+    post:
+      description: |
+       新建单位开户提交
+      operationId: postUnitAcctSetSubmit
+      tags:
+        - unitSet
+      parameters:
+        - name: body
+          required: true
+          in: body
+          description: object
+          schema:
+            $ref: '#/definitions/PostUnitAcctSetSubmit'
+      responses:
+            '200':
+              description: OK
+              schema:
+                $ref: '#/definitions/PostUnitAcctSetSubmitRes'
+            default:
+              description: Unexpected error
+              schema:
+                $ref: '#/definitions/Error'
+  /collection/unitAcctSet:
+    post:
+      description: 新建单位开户登记
+      operationId: postUnitAcctSet
+      parameters:
+        - name: body
+          required: true
+          description: Auth object
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctSetPost'
+      tags:
+        - unitSet
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/AddUnitAcctSetRes'
+        default:
+          description: Unexpected error
+  /collection/unitAcctAlterSubmit:
+    post:
+      description: 单位变更提交
+      operationId: postUnitAcctAlterSubmit
+      tags:
+        - unitAlter
+      parameters:
+        - name: body
+          required: true
+          in: body
+          description: object
+          schema:
+            $ref: '#/definitions/PostUnitAcctAlterSubmit'
+      responses:
+            '200':
+              description: OK
+              schema:
+                $ref: '#/definitions/PostUnitAcctAlterSubmitRes'
+            default:
+              description: Unexpected error
+              schema:
+                $ref: '#/definitions/Error'
+  '/collection/unitAcctAlter':
+    post:
+       description: 新建单位账户变更
+       operationId: postUnitAcctAlter
+       parameters:
+         - name: body
+           required: true
+           in: body
+           schema:
+             $ref: '#/definitions/UnitAcctAlterPost'
+       tags:
+         - unitAlter
+       responses:
+         '200':
+           description: ok
+           schema:
+             $ref: '#/definitions/AddUnitAcctAlterRes'
+         default:
+           description: Unexpected error
+           schema:
+             $ref: '#/definitions/Error'
+
+  '/collection/unitAcctAlter/{YWLSH}':
+    put:
+      description: 单位账户变更修改
+      operationId: putUnitAcctAlter
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctAlterPut'
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/ReUnitAcctAlterRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+      tags:
+        - unitAlter
+    get:
+      description: 单位账户变更详情
+      operationId: getUnitAcctAlter
+      parameters:
+        - name: YWLSH
+          required: true
+          type: string
+          in: path
+          description: 业务流水号
+      tags:
+        - unitAlter
+      responses:
+        200:
+          description: ok
+          schema:
+            $ref: '#/definitions/GetUnitAcctAlterRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+#    head:
+#      description: 单位账户变更回执单
+#      operationId: headUnitAcctAlter
+#      parameters:
+#        - name: YWLSH
+#          required: true
+#          in: path
+#          description: 业务流水号
+#      tags:
+#      - unitAlter
+#      - unitReceipt
+#      responses:
+#        200:
+#          description: ok
+#          schema:
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+
+  '/collection/unitAcctSet/{YWLSH}':
+    put:
+      description: 单位开户修改
+      operationId: putUnitAcctSet
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctSetPut'
+      tags:
+        - unitSet
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ReUnitAcctSetRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+    get:
+      description: 单位开户详情
+      operationId: getUnitAcctSet
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - unitSet
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/GetUnitAcctSetRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/unitBasic/receipt:
+    get:
+      description: 单位开户信息登记和变更回执单
+      operationId: headUnitBasicReceipt
+      parameters:
+        - name: YWLSH
+          in: query
+          type: string
+          description: 业务流水号
+        - name: YWLX
+          in: query
+          type: string
+          description: 业务类型(03：开设；70：变更)
+      tags:
+        - unitReceipt
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/HeadUnitAcctBasicRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/unitAcctDropSubmit:
+    post:
+      description: 新建单位账号销户提交
+      operationId: postUnitAcctDropSubmit
+      tags:
+        - unitDrop
+      parameters:
+        - name: body
+          required: true
+          in: body
+          description: object
+          schema:
+            $ref: '#/definitions/PostUnitAcctDropSubmit'
+      responses:
+            '200':
+              description: OK
+              schema:
+                $ref: '#/definitions/PostUnitAcctDropSubmitRes'
+            default:
+              description: Unexpected error
+              schema:
+                $ref: '#/definitions/Error'
+  /collection/unitAcctDrop:
+    post:
+      description: 新建单位账号销户
+      operationId: postUnitAcctDrop
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctDropPost'
+      tags:
+        - unitDrop
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/AddUnitAcctDropRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/unitAcctUnsealedSubmit:
+    post:
+      description: 单位账号启封提交
+      operationId: postUnitAcctUnsealedSubmit
+      tags:
+        - unitUnsealed
+      parameters:
+        - name: body
+          required: true
+          in: body
+          description: object
+          schema:
+            $ref: '#/definitions/PostUnitAcctUnsealedSubmit'
+      responses:
+            '200':
+              description: OK
+              schema:
+                $ref: '#/definitions/PostUnitAcctUnsealedSubmitRes'
+            default:
+              description: Unexpected error
+              schema:
+                $ref: '#/definitions/Error'
+
+  /collection/unitAcctUnsealed:
+    post:
+      description: 新建单位账号启封
+      operationId: postUnitAcctUnsealed
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctUnsealedPost'
+      tags:
+        - unitUnsealed
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/UnitAcctUnsealedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/unitAcctSealed:
+    post:
+      description: 新建单位账号封存
+      operationId: postUnitAcctSealed
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctSealedPost'
+      tags:
+        - unitSealed
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/AddUnitAcctSealedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/unitAcctSealedSubmit:
+    post:
+      description: 单位账号封存提交
+      operationId: postUnitAcctSealedSubmit
+      tags:
+        - unitSealed
+      parameters:
+        - name: body
+          required: true
+          in: body
+          description: object
+          schema:
+            $ref: '#/definitions/PostUnitAcctSealedSubmit'
+      responses:
+            '200':
+              description: OK
+              schema:
+                $ref: '#/definitions/PostUnitAcctSealedSubmitRes'
+            default:
+              description: Unexpected error
+              schema:
+                $ref: '#/definitions/Error'
+
+  '/collection/unitAcctUnsealed/{YWLSH}':
+    put:
+      description: 单位账号启封修改
+      operationId: putUnitAcctUnsealed
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctUnsealedPut'
+      tags:
+        - unitUnsealed
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ReUnitAcctUnsealedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      description: 单位账号启封详情
+      operationId: getUnitAcctUnsealed
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - unitUnsealed
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/GetUnitAcctUnsealedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  '/collection/unitAcctSealed/{YWLSH}':
+    put:
+      description: 单位账号封存修改
+      operationId: putUnitAcctSealed
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctSealedPut'
+      tags:
+        - unitSealed
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ReUnitAcctSealedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      description: 单位账号封存详情
+      operationId: getUnitAcctSealed
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - unitSealed
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/GetUnitAcctSealedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  '/collection/unitAcctDrop/{YWLSH}':
+    put:
+      description: 单位账号销户修改
+      operationId: putUnitAcctDrop
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitAcctDropPut'
+      tags:
+        - unitDrop
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ReUnitAcctDropRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      description: 单位账号销户详情
+      operationId: getUnitAcctDrop
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - unitDrop
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/GetUnitAcctDropRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  '/collection/unitAcctActionAuto/{DWZH}':
+    get:
+      description: 获取单位账户（销户、启封、封存）申请关键信息
+      operationId: getUnitAcctActionAuto
+      parameters:
+        - name: DWZH
+          required: true
+          in: path
+          type: string
+          description: 单位账号
+      tags:
+        - unitSet
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/AutoUnitAcctActionRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  '/collection/unitAcctAction/receipt/{YWLSH}/{YWLX}':
+    get:
+      description: 打印单位信息销户、启封、封存回执单
+      operationId: headUnitAcctAction
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+        - name: YWLX
+          in: path
+          type: string
+          required: true
+          description: 业务类型(01:销户；02：封存；03：启封)
+      tags:
+        - unitReceipt
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/HeadUnitAcctActionRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+securityDefinitions:
+  addToken:
+    type: apiKey
+    in: header
+    name: token
+
+definitions:
+  UnitAcctSetPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交）'
+          DWGJXX:
+            type: object
+            required:
+              - DWMC
+              - DWDZ
+              - DWFRDBXM
+              - DWFRDBZJLX
+              - DWFRDBZJHM
+              - DWLB
+              - DWJJLX
+              - KGQK
+              - DWSSHY
+              - DWXZQY
+              - PZJGMC
+              - PZJGJB
+              - DJZCH
+              - ZZJGDM
+            properties:
+              DWMC:
+                type: string
+                description: 单位名称
+              DWDZ:
+                type: string
+                description: 单位地址
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJLX:
+                type: string
+                description: 单位法人代表证件类型
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLSGX:
+                type: string
+                description: 单位隶属关系
+              DWLB:
+                type: string
+                description: 单位类别
+              DWJJLX:
+                type: string
+                description: 单位经济类型
+              KGQK:
+                type: string
+                description: 控股情况
+              DWSSHY:
+                type: string
+                description: 单位所属行业
+              DWXZQY:
+                type: string
+                description: 单位行政区域
+              PZJGMC:
+                type: string
+                description: 批准机关名称
+              PZJGJB:
+                type: string
+                description: 批准机关级别
+              DJZCH:
+                type: string
+                description: 登记注册号
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+          DWLXFS:
+            type: object
+            required:
+              - DWYB
+              - DWLXDH
+            properties:
+              DWYB:
+                type: string
+                description: 单位邮编
+              DWLXDH:
+                type: string
+                description: 单位联系电话
+              CZHM:
+                type: string
+                description: 传真号码
+              DWDZXX:
+                type: string
+                description: 单位电子信箱
+          DWDJXX:
+            type: object
+            required:
+              - DWSLRQ
+              - FXZHHM
+              - DWFXR
+              - FXZHKHYH
+              - FXZH
+              - DWSCHJNY
+              - DWJCBL
+              - GRJCBL
+            properties:
+              DWSLRQ:
+                type: string
+                description: 单位设立日期
+              FXZHHM:
+                type: string
+                description: 发薪账号户名
+              DWFXR:
+                type: string
+                description: 单位发薪日
+              FXZHKHYH:
+                type: string
+                description: 发薪账号开户银行
+              FXZH:
+                type: string
+                description: 发薪账号
+              DWSCHJNY:
+                type: string
+                description: 单位首次汇缴年月
+              DWJCBL:
+                type: string
+                description: 单位缴存比例
+              GRJCBL:
+                type: string
+                description: 个人缴存比例
+              BeiZhu:
+                type: string
+                description: 备注
+          JBRXX:
+            type: object
+            required:
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+            properties:
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+          WTYHXX:
+            type: object
+            required:
+              - STYHMC
+              - STYHDM
+            properties:
+              STYHMC:
+                type: string
+                description: 受托银行名称
+              STYHDM:
+                type: string
+                description: 受托银行代码
+          DWKHBLZL:
+            type: object
+            required:
+              - BLZL
+            properties:
+              BLZL:
+                type: string
+                description: 办理资料
+
+  UnitAcctSetPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交）'
+          DWGJXX:
+            type: object
+            required:
+              - DWMC
+              - DWDZ
+              - DWFRDBXM
+              - DWFRDBZJLX
+              - DWFRDBZJHM
+              - DWLB
+              - DWJJLX
+              - KGQK
+              - DWSSHY
+              - DWXZQY
+              - PZJGMC
+              - PZJGJB
+              - DJZCH
+              - ZZJGDM
+            properties:
+              DWMC:
+                type: string
+                description: 单位名称
+              DWDZ:
+                type: string
+                description: 单位地址
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJLX:
+                type: string
+                description: 单位法人代表证件类型
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLSGX:
+                type: string
+                description: 单位隶属关系
+              DWLB:
+                type: string
+                description: 单位类别
+              DWJJLX:
+                type: string
+                description: 单位经济类型
+              KGQK:
+                type: string
+                description: 控股情况
+              DWSSHY:
+                type: string
+                description: 单位所属行业
+              DWXZQY:
+                type: string
+                description: 单位行政区域
+              PZJGMC:
+                type: string
+                description: 批准机关名称
+              PZJGJB:
+                type: string
+                description: 批准机关级别
+              DJZCH:
+                type: string
+                description: 登记注册号
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+          DWLXFS:
+            type: object
+            required:
+              - DWYB
+              - DWLXDH
+            properties:
+              DWYB:
+                type: string
+                description: 单位邮编
+              DWLXDH:
+                type: string
+                description: 单位联系电话
+              CZHM:
+                type: string
+                description: 传真号码
+              DWDZXX:
+                type: string
+                description: 单位电子信箱
+          DWDJXX:
+            type: object
+            required:
+              - DWSLRQ
+              - FXZHHM
+              - DWFXR
+              - FXZHKHYH
+              - FXZH
+              - DWSCHJNY
+              - DWJCBL
+              - GRJCBL
+            properties:
+              DWSLRQ:
+                type: string
+                description: 单位设立日期
+              FXZHHM:
+                type: string
+                description: 发薪账号户名
+              DWFXR:
+                type: string
+                description: 单位发薪日
+              FXZHKHYH:
+                type: string
+                description: 发薪账号开户银行
+              FXZH:
+                type: string
+                description: 发薪账号
+              DWSCHJNY:
+                type: string
+                description: 单位首次汇缴年月
+              DWJCBL:
+                type: string
+                description: 单位缴存比例
+              GRJCBL:
+                type: string
+                description: 个人缴存比例
+              BeiZhu:
+                type: string
+                description: 备注
+          JBRXX:
+            type: object
+            required:
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+            properties:
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+          WTYHXX:
+            type: object
+            required:
+              - STYHMC
+              - STYHDM
+            properties:
+              STYHMC:
+                type: string
+                description: 受托银行名称
+              STYHDM:
+                type: string
+                description: 受托银行代码
+          DWKHBLZL:
+            type: object
+            required:
+              - BLZL
+            properties:
+              BLZL:
+                type: string
+                description: 办理资料
+
+  UnitAcctAlterPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交）'
+          DWGJXX:
+            type: object
+            required:
+              - DWZH
+              - DWMC
+              - DWDZ
+              - DWFRDBXM
+              - DWFRDBZJLX
+              - DWFRDBZJHM
+              - DWLB
+              - DWJJLX
+              - KGQK
+              - DWSSHY
+              - DWXZQY
+              - PZJGMC
+              - PZJGJB
+              - DJZCH
+              - ZZJGDM
+            properties:
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWDZ:
+                type: string
+                description: 单位地址
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJLX:
+                type: string
+                description: 单位法人代表证件类型
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLSGX:
+                type: string
+                description: 单位隶属关系
+              DWLB:
+                type: string
+                description: 单位类别
+              DWJJLX:
+                type: string
+                description: 单位经济类型
+              KGQK:
+                type: string
+                description: 控股情况
+              DWSSHY:
+                type: string
+                description: 单位所属行业
+              DWXZQY:
+                type: string
+                description: 单位行政区域
+              PZJGMC:
+                type: string
+                description: 批准机关名称
+              PZJGJB:
+                type: string
+                description: 批准机关级别
+              DJZCH:
+                type: string
+                description: 登记注册号
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+          DWLXFS:
+            type: object
+            required:
+              - DWYB
+              - DWLXDH
+            properties:
+              DWYB:
+                type: string
+                description: 单位邮编
+              DWLXDH:
+                type: string
+                description: 单位联系电话
+              CZHM:
+                type: string
+                description: 传真号码
+              DWDZXX:
+                type: string
+                description: 单位电子信箱
+          DWDJXX:
+            type: object
+            required:
+              - DWSLRQ
+              - FXZHHM
+              - DWFXR
+              - FXZHKHYH
+              - FXZH
+              - DWSCHJNY
+            properties:
+              DWSLRQ:
+                type: string
+                description: 单位设立日期
+              FXZHHM:
+                type: string
+                description: 发薪账号户名
+              DWFXR:
+                type: string
+                description: 单位发薪日
+              FXZHKHYH:
+                type: string
+                description: 发薪账号开户银行
+              FXZH:
+                type: string
+                description: 发薪账号
+              DWSCHJNY:
+                type: string
+                description: 单位首次汇缴年月
+              BeiZhu:
+                type: string
+                description: 备注
+          JBRXX:
+            type: object
+            required:
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+            properties:
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+          WTYHXX:
+            type: object
+            required:
+              - STYHMC
+              - STYHDM
+            properties:
+              STYHMC:
+                type: string
+                description: 受托银行名称
+              STYHDM:
+                type: string
+                description: 受托银行代码
+          DWKHBLZL:
+            type: object
+            required:
+              - BLZL
+            properties:
+              BLZL:
+                type: string
+                description: 办理资料
+
+  UnitAcctAlterPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交）'
+          DWGJXX:
+            type: object
+            required:
+              - YWLSH
+              - DWMC
+              - DWDZ
+              - DWFRDBXM
+              - DWFRDBZJLX
+              - DWFRDBZJHM
+              - DWLB
+              - DWJJLX
+              - KGQK
+              - DWSSHY
+              - DWXZQY
+              - PZJGMC
+              - PZJGJB
+              - DJZCH
+              - ZZJGDM
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWDZ:
+                type: string
+                description: 单位地址
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJLX:
+                type: string
+                description: 单位法人代表证件类型
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLSGX:
+                type: string
+                description: 单位隶属关系
+              DWLB:
+                type: string
+                description: 单位类别
+              DWJJLX:
+                type: string
+                description: 单位经济类型
+              KGQK:
+                type: string
+                description: 控股情况
+              DWSSHY:
+                type: string
+                description: 单位所属行业
+              DWXZQY:
+                type: string
+                description: 单位行政区域
+              PZJGMC:
+                type: string
+                description: 批准机关名称
+              PZJGJB:
+                type: string
+                description: 批准机关级别
+              DJZCH:
+                type: string
+                description: 登记注册号
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+          DWLXFS:
+            type: object
+            required:
+              - DWYB
+              - DWLXDH
+            properties:
+              DWYB:
+                type: string
+                description: 单位邮编
+              DWLXDH:
+                type: string
+                description: 单位联系电话
+              CZHM:
+                type: string
+                description: 传真号码
+              DWDZXX:
+                type: string
+                description: 单位电子信箱
+          DWDJXX:
+            type: object
+            required:
+              - DWSLRQ
+              - FXZHHM
+              - DWFXR
+              - FXZHKHYH
+              - FXZH
+              - DWSCHJNY
+            properties:
+              DWSLRQ:
+                type: string
+                description: 单位设立日期
+              FXZHHM:
+                type: string
+                description: 发薪账号户名
+              DWFXR:
+                type: string
+                description: 单位发薪日
+              FXZHKHYH:
+                type: string
+                description: 发薪账号开户银行
+              FXZH:
+                type: string
+                description: 发薪账号
+              DWSCHJNY:
+                type: string
+                description: 单位首次汇缴年月
+              BeiZhu:
+                type: string
+                description: 备注
+          JBRXX:
+            type: object
+            required:
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+            properties:
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+          WTYHXX:
+            type: object
+            properties:
+              STYHMC:
+                type: string
+                description: 受托银行名称
+              STYHDM:
+                type: string
+                description: 受托银行代码
+          DWKHBLZL:
+            type: object
+            required:
+              - BLZL
+            properties:
+              BLZL:
+                type: string
+                description: 办理资料
+
+  ReUnitAcctAlterRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+
+  AddUnitAcctAlterRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+
+  GetUnitAcctSetRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            required:
+              - YWLSH
+              - DWZH
+              - DWMC
+              - DWDZ
+              - DWFRDBXM
+              - DWFRDBZJLX
+              - DWFRDBZJHM
+              - DWLB
+              - DWJJLX
+              - KGQK
+              - DWSSHY
+              - DWXZQY
+              - PZJGMC
+              - PZJGJB
+              - DJZCH
+              - ZZJGDM
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWDZ:
+                type: string
+                description: 单位地址
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJLX:
+                type: string
+                description: 单位法人代表证件类型
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLSGX:
+                type: string
+                description: 单位隶属关系
+              DWLB:
+                type: string
+                description: 单位类别
+              DWJJLX:
+                type: string
+                description: 单位经济类型
+              KGQK:
+                type: string
+                description: 控股情况
+              DWSSHY:
+                type: string
+                description: 单位所属行业
+              DWXZQY:
+                type: string
+                description: 单位行政区域
+              PZJGMC:
+                type: string
+                description: 批准机关名称
+              PZJGJB:
+                type: string
+                description: 批准机关级别
+              DJZCH:
+                type: string
+                description: 登记注册号
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+          DWLXFS:
+            type: object
+            required:
+              - DWYB
+              - DWLXDH
+            properties:
+              DWYB:
+                type: string
+                description: 单位邮编
+              DWLXDH:
+                type: string
+                description: 单位联系电话
+              CZHM:
+                type: string
+                description: 传真号码
+              DWDZXX:
+                type: string
+                description: 单位电子信箱
+          DWDJXX:
+            type: object
+            required:
+              - DWSLRQ
+              - FXZHHM
+              - DWFXR
+              - FXZHKHYH
+              - FXZH
+              - DWSCHJNY
+              - DWJCBL
+              - GRJCBL
+            properties:
+              DWSLRQ:
+                type: string
+                description: 单位设立日期
+              FXZHHM:
+                type: string
+                description: 发薪账号户名
+              DWFXR:
+                type: string
+                description: 单位发薪日
+              FXZHKHYH:
+                type: string
+                description: 发薪账号开户银行
+              FXZH:
+                type: string
+                description: 发薪账号
+              DWSCHJNY:
+                type: string
+                description: 单位首次汇缴年月
+              DWJCBL:
+                type: string
+                description: 单位缴存比例
+              GRJCBL:
+                type: string
+                description: 个人缴存比例
+              BeiZhu:
+                type: string
+                description: 备注
+          JBRXX:
+            type: object
+            required:
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+            properties:
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+          WTYHXX:
+            type: object
+            required:
+              - STYHMC
+              - STYHDM
+            properties:
+              STYHMC:
+                type: string
+                description: 受托银行名称
+              STYHDM:
+                type: string
+                description: 受托银行代码
+          DWKHBLZL:
+            type: object
+            required:
+              - BLZL
+            properties:
+              BLZL:
+                type: string
+                description: 办理资料
+
+  GetUnitAcctAlterRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            required:
+              - YWLSH
+              - DWZH
+              - DWMC
+              - DWDZ
+              - DWFRDBXM
+              - DWFRDBZJLX
+              - DWFRDBZJHM
+              - DWLB
+              - DWJJLX
+              - KGQK
+              - DWSSHY
+              - DWXZQY
+              - PZJGMC
+              - PZJGJB
+              - DJZCH
+              - ZZJGDM
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWDZ:
+                type: string
+                description: 单位地址
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJLX:
+                type: string
+                description: 单位法人代表证件类型
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLSGX:
+                type: string
+                description: 单位隶属关系
+              DWLB:
+                type: string
+                description: 单位类别
+              DWJJLX:
+                type: string
+                description: 单位经济类型
+              KGQK:
+                type: string
+                description: 控股情况
+              DWSSHY:
+                type: string
+                description: 单位所属行业
+              DWXZQY:
+                type: string
+                description: 单位行政区域
+              PZJGMC:
+                type: string
+                description: 批准机关名称
+              PZJGJB:
+                type: string
+                description: 批准机关级别
+              DJZCH:
+                type: string
+                description: 登记注册号
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+              DWZHZT:
+                type: string
+                description: 单位账户状态
+          DWLXFS:
+            type: object
+            required:
+              - DWYB
+              - DWLXDH
+            properties:
+              DWYB:
+                type: string
+                description: 单位邮编
+              DWLXDH:
+                type: string
+                description: 单位联系电话
+              CZHM:
+                type: string
+                description: 传真号码
+              DWDZXX:
+                type: string
+                description: 单位电子信箱
+          DWDJXX:
+            type: object
+            required:
+              - DWSLRQ
+              - FXZHHM
+              - DWFXR
+              - FXZHKHYH
+              - FXZH
+              - DWSCHJNY
+              - DWJCBL
+              - GRJCBL
+            properties:
+              DWSLRQ:
+                type: string
+                description: 单位设立日期
+              FXZHHM:
+                type: string
+                description: 发薪账号户名
+              DWFXR:
+                type: string
+                description: 单位发薪日
+              FXZHKHYH:
+                type: string
+                description: 发薪账号开户银行
+              FXZH:
+                type: string
+                description: 发薪账号
+              DWSCHJNY:
+                type: string
+                description: 单位首次汇缴年月
+              DWJCBL:
+                type: string
+                description: 单位缴存比例
+              GRJCBL:
+                type: string
+                description: 个人缴存比例
+              BeiZhu:
+                type: string
+                description: 备注
+          JBRXX:
+            type: object
+            required:
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+            properties:
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+          WTYHXX:
+            type: object
+            required:
+              - STYHMC
+              - STYHDM
+            properties:
+              STYHMC:
+                type: string
+                description: 受托银行名称
+              STYHDM:
+                type: string
+                description: 受托银行代码
+          DWKHBLZL:
+            type: object
+            required:
+              - BLZL
+            properties:
+              BLZL:
+                type: string
+                description: 办理资料
+
+  ListUnitAcctsRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 单位信息列表
+          required:
+            - DWZH
+            - DWMC
+            - ZZJGDM
+            - DWZHZT
+            - XZQY
+            - DWLB
+            - CZY
+            - SLSJ
+
+          properties:
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            ZZJGDM:
+              type: string
+              description: 组织机构代码
+            DWZHZT:
+              type: string
+              description: 单位账号状态
+            XZQY:
+              type: string
+              description: 行政区域
+            DWLB:
+              type: string
+              description: 单位类别
+            CZY:
+              type: string
+              description: 操作员
+            SLSJ:
+              type: string
+              description: 受理时间
+
+  ListUnitAcctSetRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 单位开户列表
+          required:
+            - YWLSH
+            - DWZH
+            - DWMC
+            - ZZJGDM
+            - ZhuangTai
+            - XZQY
+            - DWLB
+            - CZY
+            - SLSJ
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            ZZJGDM:
+              type: string
+              description: 组织机构代码
+            ZhuangTai:
+              type: string
+              description: 状态
+            XZQY:
+              type: string
+              description: 行政区域
+            DWLB:
+              type: string
+              description: 单位类别
+            CZY:
+              type: string
+              description: 操作员
+            SLSJ:
+              type: string
+              description: 受理时间
+  ListUnitAcctAlterRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 单位变更列表
+          required:
+            - YWLSH
+            - DWZH
+            - DWMC
+            - ZZJGDM
+            - ZhuangTai
+            - XZQY
+            - DWLB
+            - CZY
+            - SLSJ
+
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            ZZJGDM:
+              type: string
+              description: 组织机构代码
+            ZhuangTai:
+              type: string
+              description: 状态
+            XZQY:
+              type: string
+              description: 行政区域
+            DWLB:
+              type: string
+              description: 单位类别
+            CZY:
+              type: string
+              description: 操作员
+            SLSJ:
+              type: string
+              description: 受理时间
+
+  ListUnitAcctSealedRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 单位封存列表
+          required:
+            - YWLSH
+            - DWZH
+            - DWMC
+            - ZZJGDM
+            - ZhuangTai
+            - XZQY
+            - DWLB
+            - CZY
+            - SLSJ
+
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            ZZJGDM:
+              type: string
+              description: 组织机构代码
+            ZhuangTai:
+              type: string
+              description: 状态
+            XZQY:
+              type: string
+              description: 行政区域
+            DWLB:
+              type: string
+              description: 单位类别
+            CZY:
+              type: string
+              description: 操作员
+            SLSJ:
+              type: string
+              description: 受理时间
+
+
+  ListUnitAcctUnsealedRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 单位启封列表
+          required:
+            - YWLSH
+            - DWZH
+            - DWMC
+            - ZZJGDM
+            - ZhuangTai
+            - XZQY
+            - DWLB
+            - CZY
+
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            ZZJGDM:
+              type: string
+              description: 组织机构代码
+            ZhuangTai:
+              type: string
+              description: 状态
+            XZQY:
+              type: string
+              description: 行政区域
+            DWLB:
+              type: string
+              description: 单位类别
+            CZY:
+              type: string
+              description: 操作员
+            SLSJ:
+              type: string
+              description: 受理时间
+
+
+  ListUnitAcctDropRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 单位销户列表
+          required:
+            - YWLSH
+            - DWZH
+            - DWMC
+            - ZZJGDM
+            - ZhuangTai
+            - XZQY
+            - DWLB
+            - CZY
+            - SLSJ
+
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            ZZJGDM:
+              type: string
+              description: 组织机构代码
+            ZhuangTai:
+              type: string
+              description: 状态
+            XZQY:
+              type: string
+              description: 行政区域
+            DWLB:
+              type: string
+              description: 单位类别
+            CZY:
+              type: string
+              description: 操作员
+            SLSJ:
+              type: string
+              description: 受理时间
+
+
+  ListUnitAcctReviewRes:
+      type: object
+      properties:
+        Res:
+          type: array
+          items:
+            type: object
+            description: 单位未审核列表
+            required:
+              - YWLSH
+              - YWMXLX
+              - DWZH
+              - DWLB
+              - YWWD
+              - DDSJ
+              - SHZT
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              YWMXLX:
+                type: string
+                description: 业务明细类型
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWLB:
+                type: string
+                description: 单位类别
+              CZY:
+                type: string
+                description: 操作员
+              YWWD:
+                type: string
+                description: 业务网点
+              DDSJ:
+                type: string
+                description: 到达时间
+              SHZT:
+                type: string
+                description: 审核状态
+
+  ListUnitAcctReviewedRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 单位已审核列表
+          required:
+            - YWLSH
+            - YWMXLX
+            - DWZH
+            - DWMC
+            - YWZT
+            - DWLB
+            - CZY
+            - YWWD
+            - SLSJ
+            - SHZT
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            YWMXLX:
+              type: string
+              description: 业务明细类型
+            YWZT:
+              type: string
+              description: 业务状态
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            DWLB:
+              type: string
+              description: 单位经济类型
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+            SHZT:
+              type: string
+              description: 审核状态
+
+  GetUnitAcctInfoDetail:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            required:
+              - DWZH
+              - DWMC
+              - DWDZ
+              - DWFRDBXM
+              - DWFRDBZJLX
+              - DWFRDBZJHM
+              - DWLB
+              - DWJJLX
+              - KGQK
+              - DWSSHY
+              - DWXZQY
+              - PZJGMC
+              - PZJGJB
+              - DJZCH
+              - ZZJGDM
+            properties:
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWDZ:
+                type: string
+                description: 单位地址
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJLX:
+                type: string
+                description: 单位法人代表证件类型
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLSGX:
+                type: string
+                description: 单位隶属关系
+              DWLB:
+                type: string
+                description: 单位类别
+              DWJJLX:
+                type: string
+                description: 单位经济类型
+              KGQK:
+                type: string
+                description: 控股情况
+              DWSSHY:
+                type: string
+                description: 单位所属行业
+              DWXZQY:
+                type: string
+                description: 单位行政区域
+              PZJGMC:
+                type: string
+                description: 批准机关名称
+              PZJGJB:
+                type: string
+                description: 批准机关级别
+              DJZCH:
+                type: string
+                description: 登记注册号
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+          DWLXFS:
+            type: object
+            required:
+              - DWYB
+              - DWLXDH
+            properties:
+              DWYB:
+                type: string
+                description: 单位邮编
+              DWLXDH:
+                type: string
+                description: 单位联系电话
+              CZHM:
+                type: string
+                description: 传真号码
+              DWDZXX:
+                type: string
+                description: 单位电子信箱
+          DWDJXX:
+            type: object
+            required:
+              - DWSLRQ
+              - DWFXR
+              - FXZHKHYH
+              - FXZH
+              - DWSCHJNY
+              - DWJCBL
+              - GRJCBL
+            properties:
+              DWSLRQ:
+                type: string
+                description: 单位设立日期
+              DWFXR:
+                type: string
+                description: 单位发薪日
+              FXZHKHYH:
+                type: string
+                description: 发薪账号开户银行
+              FXZH:
+                type: string
+                description: 发薪账号
+              DWSCHJNY:
+                type: string
+                description: 单位首次汇缴年月
+              DWJCBL:
+                type: string
+                description: 单位缴存比例
+              GRJCBL:
+                type: string
+                description: 个人缴存比例
+              BeiZhu:
+                type: string
+                description: 备注
+          JBRXX:
+            type: object
+            required:
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+            properties:
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+          WTYHXX:
+            type: object
+            required:
+              - STYHMC
+              - STYHDM
+            properties:
+              STYHMC:
+                type: string
+                description: 受托银行名称
+              STYHDM:
+                type: string
+                description: 受托银行代码
+
+  HeadUnitAcctBasicRes:
+    description: 单位开户和变更回执单
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            required:
+              - YWLSH
+              - DWZH
+              - DWMC
+              - DWDZ
+              - DWFRDBXM
+              - DWFRDBZJLX
+              - DWFRDBZJHM
+              - DWLB
+              - DWJJLX
+              - KGQK
+              - DWSSHY
+              - DWXZQY
+              - PZJGMC
+              - PZJGJB
+              - DJZCH
+              - ZZJGDM
+              - FXZH
+              - YWWD
+              - KHRQ
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWDZ:
+                type: string
+                description: 单位地址
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJLX:
+                type: string
+                description: 单位法人代表证件类型
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLSGX:
+                type: string
+                description: 单位隶属关系
+              DWLB:
+                type: string
+                description: 单位类别
+              DWJJLX:
+                type: string
+                description: 单位经济类型
+              KGQK:
+                type: string
+                description: 控股情况
+              DWSSHY:
+                type: string
+                description: 单位所属行业
+              DWXZQY:
+                type: string
+                description: 单位行政区域
+              PZJGMC:
+                type: string
+                description: 批准机关名称
+              PZJGJB:
+                type: string
+                description: 批准机关级别
+              DJZCH:
+                type: string
+                description: 登记注册号
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+              FXZH:
+                type: string
+                description: 发薪账号
+              YWWD:
+                type: string
+                description: 业务网点
+              KHRQ:
+                type: string
+                description: 开户日期
+          DWLXFS:
+            type: object
+            required:
+              - DWYB
+              - DWLXDH
+            properties:
+              DWYB:
+                type: string
+                description: 单位邮编
+              DWLXDH:
+                type: string
+                description: 单位联系电话
+              CZHM:
+                type: string
+                description: 传真号码
+              DWDZXX:
+                type: string
+                description: 单位电子信箱
+          DWDJXX:
+            type: object
+            required:
+              - DWSLRQ
+              - DWFXR
+              - FXZHKHYH
+              - FXZH
+              - DWSCHJNY
+              - DWJCBL
+              - GRJCBL
+            properties:
+              DWSLRQ:
+                type: string
+                description: 单位设立日期
+              DWFXR:
+                type: string
+                description: 单位发薪日
+              FXZHKHYH:
+                type: string
+                description: 发薪账号开户银行
+              FXZH:
+                type: string
+                description: 发薪账号
+              DWSCHJNY:
+                type: string
+                description: 单位首次汇缴年月
+              DWJCBL:
+                type: string
+                description: 单位缴存比例
+              GRJCBL:
+                type: string
+                description: 个人缴存比例
+              BeiZhu:
+                type: string
+                description: 备注
+          JBRXX:
+            type: object
+            required:
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+            properties:
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+          WTYHXX:
+            type: object
+            required:
+              - STYHMC
+              - STYHDM
+            properties:
+              STYHMC:
+                type: string
+                description: 受托银行名称
+              STYHDM:
+                type: string
+                description: 受托银行代码
+          DWKHBLZL:
+            type: object
+            required:
+              - BLZL
+            properties:
+              BLZL:
+                type: string
+                description: 办理资料
+
+
+  UnitAcctDropPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - CZLX
+          - DWZH
+          - FCHXHYY
+          - BLZL
+          - YWWD
+          - CZY
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交）'
+          DWZH:
+            type: string
+            description: 单位账号
+          FCHXHYY:
+            type: string
+            description: 封存或销户原因
+          BeiZhu:
+            type: string
+            description: 备注
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  AddUnitAcctDropRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success成功，fail失败）
+
+  UnitAcctUnsealedRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success成功，fail失败）
+
+  UnitAcctUnsealedPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - CZLX
+          - DWZH
+          - DWQFYY
+          - BLZL
+          - YWWD
+          - CZY
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交）'
+          DWZH:
+            type: string
+            description: 单位账号
+          DWQFYY:
+            type: string
+            description: 其他操作原因
+          BeiZhu:
+            type: string
+            description: 备注
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  UnitAcctSealedPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - CZLX
+          - DWZH
+          - FCHXHYY
+          - BLZL
+          - YWWD
+          - CZY
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交）'
+          DWZH:
+            type: string
+            description: 单位账号
+          FCHXHYY:
+            type: string
+            description: 封存或销户原因
+          BeiZhu:
+            type: string
+            description: 备注
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  AddUnitAcctSetRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success成功，fail失败）　　
+
+  ReUnitAcctSetRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success成功，fail失败）　
+
+  # UnitAcctDelRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（success成功，fail失败）
+
+  AutoUnitAcctActionRes:
+    description: 单位账户销户、启封、封存时自动获取单位关键信息
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            required:
+              - YWLSH
+              - DWZH
+              - DWMC
+              - DWFRDBXM
+              - DWFRDBZJHM
+              - DWLB
+              - DJSYYZ
+              - ZZJGDM
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+              - JBRGDDHHM
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLB:
+                type: string
+                description: 单位类别
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+              JZNY:
+                type: string
+                description: 缴至年月
+
+  HeadUnitAcctActionRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            required:
+              - YWLSH
+              - RiQi
+              - DWZH
+              - DWMC
+              - JZNY
+              - DWLB
+              - ZZJGDM
+              - DJSYYZ
+              - JBRXM
+              - JBRSJHM
+              - DWFRDBXM
+              - DWFRDBZJHM
+              - BeiZhu
+              - JBRQM
+              - JBRZJHM
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              RiQi:
+                type: string
+                description: 日期
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              JZNY:
+                type: string
+                description: 缴至年月
+              DWLB:
+                type: string
+                description: 单位类别
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              FCHXHYY:
+                type: string
+                description: 销户或封存原因
+              DWQFYY:
+                type: string
+                description: 其他原因，适用于启封
+              BeiZhu:
+                type: string
+                description: 备注
+              JBRQM:
+                type: string
+                description: 经办人签名
+
+  UnitAcctDropPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            required:
+              - FCHXHYY
+              - BeiZhu
+              - BLZL
+              - CZY
+              - YWWD
+              - CZLX
+            properties:
+              FCHXHYY:
+                type: string
+                description: 封存或销户原因
+              BeiZhu:
+                type: string
+                description: 备注
+              BLZL:
+                type: string
+                description: 办理资料
+              CZY:
+                type: string
+                description: 操作员
+              YWWD:
+                type: string
+                description: 业务网点
+              CZLX:
+                type: string
+                description:  操作类型
+
+  ReUnitAcctDropRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+
+  UnitAcctSealedPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            required:
+              - FCHXHYY
+              - BeiZhu
+              - BLZL
+              - CZY
+              - YWWD
+              - CZLX
+            properties:
+              FCHXHYY:
+                type: string
+                description: 封存或销户原因
+              BeiZhu:
+                type: string
+                description: 备注
+              BLZL:
+                type: string
+                description: 办理资料
+              CZY:
+                type: string
+                description: 操作员
+              YWWD:
+                type: string
+                description: 业务网点
+              CZLX:
+                type: string
+                description:  操作类型
+
+  ReUnitAcctSealedRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+
+  UnitAcctUnsealedPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            required:
+              - DWQFYY
+              - BeiZhu
+              - BLZL
+              - CZY
+              - YWWD
+              - CZLX
+            properties:
+
+              DWQFYY:
+                type: string
+                description: 其他操作原因
+              BeiZhu:
+                type: string
+                description: 备注
+              BLZL:
+                type: string
+                description: 办理资料
+              CZY:
+                type: string
+                description: 操作员
+              YWWD:
+                type: string
+                description: 业务网点
+              CZLX:
+                type: string
+                description: 操作类型
+
+
+  ReUnitAcctUnsealedRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+
+  GetUnitAcctDropRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWXHXX:
+            type: object
+            required:
+              - YWLSH
+              - DWZH
+              - DWMC
+              - DWFRDBXM
+              - DWFRDBZJHM
+              - DWLB
+              - DJSYYZ
+              - ZZJGDM
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+              - FCHXHYY
+              - JBRGDDHHM
+              - BeiZhu
+              - BLZL
+              - CZY
+              - YWWD
+              - JZNY
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLB:
+                type: string
+                description: 单位类别
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+              FCHXHYY:
+                type: string
+                description: 启封或销户原因
+              BeiZhu:
+                type: string
+                description: 备注
+              BLZL:
+                type: string
+                description: 办理资料
+              CZY:
+                type: string
+                description: 操作员
+              YWWD:
+                type: string
+                description: 业务网点
+              JZNY:
+                type: string
+                description: 缴至年月
+  GetUnitAcctUnsealedRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWQFXX:
+            type: object
+            required:
+              - YWLSH
+              - DWZH
+              - DWMC
+              - DWFRDBXM
+              - DWFRDBZJHM
+              - DWLB
+              - DJSYYZ
+              - ZZJGDM
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+              - DWQFYY
+              - JBRGDDHHM
+              - BeiZhu
+              - BLZL
+              - CZY
+              - YWWD
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLB:
+                type: string
+                description: 单位类别
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+              DWQFYY:
+                type: string
+                description: 其他操作原因
+              BeiZhu:
+                type: string
+                description: 备注
+              BLZL:
+                type: string
+                description: 办理资料
+              CZY:
+                type: string
+                description: 操作员
+              YWWD:
+                type: string
+                description: 业务网点
+
+  GetUnitAcctSealedRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWFCXX:
+            type: object
+            required:
+              - YWLSH
+              - DWZH
+              - DWMC
+              - DWFRDBXM
+              - DWFRDBZJHM
+              - DWLB
+              - DJSYYZ
+              - ZZJGDM
+              - JBRXM
+              - JBRZJLX
+              - JBRZJHM
+              - JBRSJHM
+              - JBRGDDHHM
+              - FCHXHYY
+              - BeiZhu
+              - BLZL
+              - CZY
+              - YWWD
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWZH:
+                type: string
+                description: 单位账号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWFRDBXM:
+                type: string
+                description: 单位法人代表姓名
+              DWFRDBZJHM:
+                type: string
+                description: 单位法人代表证件号码
+              DWLB:
+                type: string
+                description: 单位类别
+              DJSYYZ:
+                type: string
+                description: 登记使用印章
+              ZZJGDM:
+                type: string
+                description: 组织机构代码
+              JBRXM:
+                type: string
+                description: 经办人姓名
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              JBRSJHM:
+                type: string
+                description: 经办人手机号码
+              JBRGDDHHM:
+                type: string
+                description: 经办人固定电话号码
+              FCHXHYY:
+                type: string
+                description: 封存或销户原因
+              BeiZhu:
+                type: string
+                description: 备注
+              BLZL:
+                type: string
+                description: 办理资料
+              CZY:
+                type: string
+                description: 操作员
+              YWWD:
+                type: string
+                description: 业务网点
+  PostUnitAcctSealedSubmit:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            items:
+              type: string
+              description: 业务流水号集合
+
+  PostUnitAcctSealedSubmitRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  PostUnitAcctUnsealedSubmit:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            items:
+              type: string
+              description: 业务流水号集合
+
+  PostUnitAcctUnsealedSubmitRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  PostUnitAcctDropSubmit:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            items:
+              type: string
+              description: 业务流水号集合
+
+  PostUnitAcctDropSubmitRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  PostUnitAcctSetSubmit:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            items:
+              type: string
+              description: 业务流水号集合
+
+  PostUnitAcctSetSubmitRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  PostUnitAcctAlterSubmit:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            items:
+              type: string
+              description: 业务流水号集合
+  PostUnitAcctAlterSubmitRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  AddUnitAcctSealedRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+
+  UnitAcctReviewBulkPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          reviewInfo:
+              type: object
+              properties:
+                SHJG:
+                  type: string
+                  description: 审核结果（01通过/02不通过）
+                YYYJ:
+                  type: string
+                  description: 原因/意见
+                CZY:
+                  type: string
+                  description: 操作员
+                YWWD:
+                  type: string
+                  description: 业务网点
+                ZhiWu:
+                  type: string
+                  description: 职务(操作员角色)
+                CZQD:
+                  type: string
+                  description: 操作渠道
+                BeiZhu:
+                  type: string
+                  description: 备注
+          ids:
+            type: array
+            items:
+              type: string
+              description: 业务流水号
+
+  ReviewBulkUnitAcctRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: array
+            description: 业务流水号集
+            items:
+              type: string
+              description: 业务流水号
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+
+  Error:
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          code:
+            type: string
+            description: 状态码
+          msg:
+            type: string
+            description: 信息

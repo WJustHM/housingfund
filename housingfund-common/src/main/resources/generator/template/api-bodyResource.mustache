@@ -1,0 +1,53 @@
+package com.handge.housingfund.server.controllers.{{termsOfService}};
+
+import com.handge.housingfund.common.service.{{termsOfService}}.model.*;
+
+
+import com.handge.housingfund.common.Constant;
+import com.handge.housingfund.common.service.TokenContext;
+import com.handge.housingfund.common.service.util.RequestWrapper;
+import com.handge.housingfund.server.controllers.{{termsOfService}}.api.{{classname}}Api;
+import com.handge.housingfund.server.controllers.ResUtils;
+
+import org.jboss.resteasy.spi.HttpRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+
+import java.util.*;
+
+
+{{#operations}}
+
+@Controller
+@Path("/{{baseName}}")
+@SuppressWarnings({"SpringAutowiredFieldsWarningInspection", "JavaDoc", "SpellCheckingInspection"})
+public class {{classname}}Resource{
+
+  @Autowired
+  private {{classname}}Api<Response> {{classname}}Api;
+
+  {{#operation}}
+  /**
+   * {{summary}}
+   * {{notes}}
+     {{#allParams}}
+   * @param {{paramName}} {{description}}
+     {{/allParams}}
+   */
+  @Path("{{path}}")
+  @{{httpMethod}}
+  @Produces("application/json; charset=utf-8"){{#hasBodyParam}}
+  @Consumes(MediaType.APPLICATION_JSON){{/hasBodyParam}}
+  public Response {{nickname}}(@Context HttpRequest httpRequest,{{#allParams}}final {{#isPathParam}}@PathParam("{{paramName}}"){{/isPathParam}} {{#isQueryParam}}@QueryParam("{{paramName}}"){{/isQueryParam}}{{#isBodyParam}}RequestWrapper<{{{dataType}}}>{{/isBodyParam}}{{^isBodyParam}}{{{dataType}}}{{/isBodyParam}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){
+
+    System.out.println("{{notes}}");
+
+    return ResUtils.wrapEntityIfNeeded(this.{{classname}}Api.{{nickname}}((TokenContext) httpRequest.getAttribute(Constant.Server.TOKEN_KEY){{#hasParams}},{{/hasParams}}{{#allParams}}{{#isBodyParam}}{{paramName}} == null ? null : {{paramName}}.getReq(){{/isBodyParam}}{{^isBodyParam}}{{paramName}}{{/isBodyParam}}{{#hasMore}}, {{/hasMore}}{{/allParams}}));
+  }
+
+  {{/operation}}
+}
+{{/operations}}

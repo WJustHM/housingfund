@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <servers>
+        <server>
+            <id>Internal Snapshots</id>
+            <username>admin</username>
+            <password>WuZhouCloud2016</password>
+        </server>
+    </servers>
+    <mirrors>
+        <mirror>
+            <id>handge-maven-internal</id>
+            <mirrorOf>*</mirrorOf>
+            <url>http://172.18.20.100:9999/repository/internal</url>
+        </mirror>
+        <mirror>
+            <id> handge-maven-snapshots</id>
+            <mirrorOf>*</mirrorOf>
+            <url>http://172.18.20.100:9999/repository/snapshots</url>
+        </mirror>
+    </mirrors>
+
+    <profiles>
+        <profile>
+            <id>Internal-Profile</id>
+            <repositories>
+                <repository>
+                    <id>central</id>
+                    <name>Internal-Repository</name>
+                    <url>http://172.18.20.100:9999/repository/internal</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+                <repository>
+                    <id>central2</id>
+                    <name>Snapshots-Repository</name>
+                    <url>http://172.18.20.100:9999/repository/snapshots</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+</settings>

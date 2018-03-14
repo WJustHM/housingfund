@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <dubbo:provider delay="-1" timeout="12000" retries="0"/>
+    <dubbo:application name="CenterServer"/>
+
+    <!-- don`t change registry when you submit to master.  see  housingfund.conf  which in housingfund project root dir  -->
+    <dubbo:registry protocol="zookeeper"
+                    address="${dubbo.registry.address}" group="${dubbo.registry.group}"/>
+
+    <dubbo:protocol name="dubbo" port="-1" server="netty4" threads="100"
+                    client="netty4" register="true" threadpool="fixed" accepts="1000" payload="52428800"/>
+    <dubbo:consumer retries="0" timeout="70000"/>
+
+    <dubbo:reference id="iBank" interface="com.handge.housingfund.common.service.bank.ibank.IBank" timeout="70000"
+                     retries="0"/>
+    <dubbo:reference id="iTransfer" interface="com.handge.housingfund.common.service.bank.ibank.ITransfer"
+                     timeout="70000" retries="0"/>
+    <dubbo:reference id="iCollectionTrader"
+                     interface="com.handge.housingfund.common.service.collection.service.trader.ICollectionTrader"
+                     timeout="90000" retries="0"/>
+    <dubbo:reference id="iCollectionWithdrawlTrader"
+                     interface="com.handge.housingfund.common.service.collection.service.trader.ICollectionWithdrawlTrader"
+                     timeout="90000" retries="0"/>
+    <dubbo:reference id="bankCallService" interface="com.handge.housingfund.common.service.loan.IBankCallService"
+                     timeout="90000" retries="0"/>
+    <dubbo:reference id="iFinanceTrader" interface="com.handge.housingfund.common.service.finance.IFinanceTrader"
+                     timeout="90000" retries="0" async="false"/>
+    <dubbo:reference id="iVoucherAutoService"
+                     interface="com.handge.housingfund.common.service.finance.IVoucherAutoService" timeout="90000"
+                     retries="0" async="false"/>
+    <dubbo:reference id="iSettlementSpecialBankAccountManageService"
+                     interface="com.handge.housingfund.common.service.account.ISettlementSpecialBankAccountManageService"
+                     timeout="90000" retries="0" check="false"/>
+    <dubbo:reference id="IAllochthounousBackCall"
+                     interface="com.handge.housingfund.common.service.collection.service.trader.IAllochthounousBackCall"
+                     timeout="90000" retries="0" check="false"/>
+</beans>

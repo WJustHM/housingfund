@@ -1,0 +1,3967 @@
+swagger: '2.0'
+info:
+  title: 公积金项目 API
+  description: 提供五舟汉云公积金-归集-个人账户管理-接口数据
+  termsOfService: Handge
+  contact:
+    name: API Documentation Support.
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.1
+host: 127.0.0.1:8001
+schemes:
+  - http
+basePath: /housingfund
+security:
+  - addToken: []
+tags:
+  - name: indiAcct
+    description: 归集业务个人账户管理
+  - name: indiAcctSet
+    description: 个人账户开户
+  - name: indiAcctAlter
+    description: 个人账户变更
+  - name: indiAcctAction
+    description: 个人账户启封、封存、冻结、解冻
+  - name: indiAcctMerge
+    description: 个人账户合并
+  - name: indiAcctTransfer
+    description: 个人账户转移
+  - name: indiAcctReview
+    description: 个人账户业务审核
+  - name: receipt
+    description: 归集业务回执单
+  - name: indiAcctInfo
+    description: 个人账户信息列表
+  - name: indiAcctOperation
+    description: 个人账户业务列表
+produces:
+  - application/json
+paths:
+  /collection/RevokeOperation/{YWLSH}:
+    put:
+      description: |
+        撤回，归集业务（71:合并;03:设立;06:内部转移;05:封存;04:启封;14:冻结;15:解冻;70:变更）
+      operationId: revokeOperation
+      tags:
+        - indiAcct
+      parameters:
+        - name: YWLSH
+          type: string
+          required: true
+          in: path
+          description: 业务流水号
+        - name: YWMK
+          type: string
+          required: true
+          in: query
+          description: 业务模块（01个人，02单位）
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RevokeOperationRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/DeleteOperation:
+    delete:
+      description: |
+        删除，归集业务
+      operationId: deleteOperation
+      tags:
+        - indiAcct
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/CollectionOperationDelete'
+        - name: YWMK
+          type: string
+          required: true
+          in: query
+          description: 业务模块（01个人，02单位）
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/DeleteOperationRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/indiAcctsList:
+    get:
+      description: |
+        查询个人账户信息列表
+      operationId: getIndiAcctsList
+      tags:
+        - indiAcct
+        - indiAcctInfo
+      parameters:
+        - name: DWMC
+          in: query
+          description: 单位名称
+          type: string
+        - name: GRZH
+          in: query
+          description: 个人账号
+          type: string
+        - name: XingMing
+          in: query
+          description: 姓名
+          type: string
+        - name: ZJHM
+          in: query
+          description: 证件号码
+          type: string
+        - name: GRZHZT
+          in: query
+          description: '个人账户状态(00:所有；01：正常；02:封存；03:合并销户；04:外部转出销户；05：提取销户；06：冻结；99：其他)'
+          type: string
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ListIndiAcctsRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+#  /collection/personAcct/{GRZH}:
+#    get:
+#      description: |
+#        根据个人账号，查看个人账户相关信息（从个人账户列表进入）
+#      tags:
+#        - indiAcct
+#        - indiAcctInfo
+#      operationId: getPersonAcct
+#      parameters:
+#        - name: GRZH
+#          in: path
+#          type: string
+#          required: true
+#      responses:
+#        '200':
+#          description: OK
+#          schema:
+#            $ref: '#/definitions/GetPersonAcctRes'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+
+  /collection/operationAcctsList:
+    get:
+      description: |
+        根据业务类型，获取该业务下的账户列表（以默认参数查询）
+      tags:
+        - indiAcct
+        - indiAcctOperation
+      operationId: getOperationAcctsList
+      parameters:
+        - name: XingMing
+          in: query
+          description: 姓名
+          type: string
+        - name: ZJHM
+          in: query
+          description: 证件号码
+          type: string
+        - name: GRZH
+          in: query
+          description: 个人账号（开户业务时无此项）
+          type: string
+        - name: DWMC
+          in: query
+          description: 单位名称
+          type: string
+        - name: CZYY
+          in: query
+          type: string
+          description: 操作原因
+        - name: ZhuangTai
+          in: query
+          description: '业务状态(00:所有；01：新建；02:待审核；03:审核不通过；04:办结)'
+          type: string
+        - name: CZMC
+          in: query
+          required: true
+          description: 根据业务名称查询（71:合并;03:开户;06:内部转移;05:封存;04:启封;14:冻结;15:解冻;70:变更;72:销户）必填项
+          type: string
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ListOperationAcctsRes'
+  /collection/IndiAcctHistory/{GRZH}:
+    get:
+      description: |
+        查看账号业务历史记录(暂时不能用)
+      operationId: getIndiAcctHistory
+      tags:
+        - indiAcctInfo
+        - indiAcct
+      parameters:
+        - name: GRZH
+          in: path
+          description: 个人账号
+          type: string
+          required: true
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        '200':
+          description: OK
+          schema:
+          #todo 检查模式
+            $ref: '#/definitions/ListIndiAcctHistoryRes'
+
+  /collection/indiAcctsReviewed:
+    get:
+      description: |
+        查看账户信息已审核列表
+      operationId: getIndiAcctsReviewedList
+      tags:
+        - indiAcctReview
+        - indiAcct
+      parameters:
+        - name: XingMing
+          in: query
+          description: 姓名
+          type: string
+        - name: CZY
+          in: query
+          description: 操作员
+          type: string
+        - name: YWLX
+          in: query
+          required: true
+          description: 业务明细类型（71:合并;03:设立;06:内部转移;05:封存;04:启封;14:冻结;15:解冻;70:变更）
+          type: string
+        - name: KSSJ
+          in: query
+          description: 开始时间
+          type: string
+        - name: JSSJ
+          in: query
+          description: 结束时间
+          type: string
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ListIndiAcctReviewedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/indiAcctsReview:
+    get:
+      description: |
+        查看账户信息未审核列表
+      operationId: getIndiAcctsReviewList
+      tags:
+        - indiAcctReview
+        - indiAcct
+      parameters:
+        - name: XingMing
+          in: query
+          description: 姓名
+          type: string
+        - name: CZY
+          in: query
+          description: 操作员
+          type: string
+        - name: YWLX
+          in: query
+          required: true
+          description: 业务明细类型（71:合并;03:设立;06:内部转移;05:封存;04:启封;14:冻结;15:解冻;70:变更）
+          type: string
+        - name: KSSJ
+          in: query
+          description: 开始时间
+          type: string
+        - name: JSSJ
+          in: query
+          description: 结束时间
+          type: string
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ListReviewIndiAcctRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/indiAcctReview:
+    post:
+      description: 个人信息审核通过/不通过(新版，含批量)
+      operationId: postIndiAcctReviewBulk
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctBulkReviewPost'
+      tags:
+        - indiAcctReview
+      responses:
+        '200':
+          description: ok
+          schema:
+            $ref: '#/definitions/ReviewBulkIndiAcctRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /collection/IndiAcctSet:
+    post:
+      description: |
+        新建设立个人账户
+      operationId: postIndiAcctSet
+      tags:
+        - indiAcctSet
+        - indiAcct
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctSetPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/AddIndiAcctSetRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctSetSubmit:
+    post:
+      description: |
+       个人账户设立提交
+      operationId: postIndiAcctSetSubmit
+      tags:
+        - indiAcctSet
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctSetSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitIndiAcctSetRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctSet/{YWLSH}:
+    put:
+      description: |
+        个人账户设立修改
+      operationId: putIndiAcctSet
+      tags:
+        - indiAcctSet
+        - indiAcct
+      parameters:
+        - name: YWLSH
+          required: true
+          type: string
+          in: path
+          description: 业务流水号
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctSetPut'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ReIndiAcctSetRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      description: |
+        设立个人账户详情
+      operationId: getIndiAcctSet
+      tags:
+        - indiAcctSet
+        - indiAcct
+      parameters:
+        - name: YWLSH
+          type: string
+          required: true
+          in: path
+          description: 业务流水号
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/GetIndiAcctSetRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctSetCheck:
+    get:
+      description: |
+        个人开户时，输入姓名、证件类型、证件号码后进行验证
+      operationId: IndiAcctSetCheck
+      tags:
+        - indiAcctSet
+      parameters:
+        - name: XingMing
+          in: query
+          type: string
+          description: 姓名
+        - name: ZJLX
+          in: query
+          type: string
+          description: 证件类型
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+      responses:
+        '200':
+          description: 1、返回有数据(转移) 2、返回空（正常开户） 3、返回错误信息（证件号码错误或其他不允许办理的限制）
+          schema:
+            $ref: '#/definitions/PersonBaseMessage'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctSet/receipt/{YWLSH}:
+    get:
+      description: |
+        个人登记（开户）回执单
+      operationId: headIndiAcctSet
+      tags:
+        - indiAcctSet
+        - receipt
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          description: 业务流水号
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/HeadIndiAcctSetRes'
+  /collection/AlterIndiAcctSubmit:
+    post:
+      description: |
+       个人账户变更提交
+      operationId: postAlterIndiAcctSubmit
+      tags:
+        - indiAcctSet
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/AlterIndiAcctSubmitPost'
+      responses:
+            '200':
+              description: OK
+              schema:
+                $ref: '#/definitions/SubmitAlterIndiAcctRes'
+            default:
+              description: Unexpected error
+              schema:
+                $ref: '#/definitions/Error'
+  /collection/IndiAcctsInfoDetails/{GRZH}:
+    get:
+      description: |
+        根据个人账号查询个人开户信息
+      operationId: getAcctsInfoDetails
+      tags:
+        - indiAcct
+      parameters:
+        - name: GRZH
+          in: path
+          required: true
+          description: 个人账号
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/GetAcctsInfoDetailsRes'
+
+  /collection/AlterIndiAcct:
+    post:
+      description: |
+        新建个人账户变更
+      operationId: postIndiAcctAlter
+      tags:
+        - indiAcct
+        - indiAcctAlter
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctAlterPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/AddIndiAcctAlterRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/AlterIndiAcct/{YWLSH}:
+    put:
+      description: |
+        修改个人账户变更
+      operationId: putIndiAcctAlter
+      tags:
+        - indiAcct
+        - indiAcctAlter
+      parameters:
+        - name: YWLSH
+          required: true
+          type: string
+          in: path
+          description: 业务流水号
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctAlterPut'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ReIndiAcctAlterRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      description: |
+        变更个人账户详情
+      operationId: getIndiAcctAlter
+      tags:
+        - indiAcct
+        - indiAcctAlter
+      parameters:
+        - name: YWLSH
+          type: string
+          required: true
+          in: path
+          description: 业务流水号
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/GetIndiAcctAlterRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/AlterIndiAcct/receipt/{YWLSH}:
+    get:
+      description: |
+        个人信息变更回执单
+      operationId: headIndiAcctAlter
+      tags:
+        - receipt
+        - indiAcctAlter
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          description: 业务流水号
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/HeadAcctAlterRes'
+  /collection/IndiAcctMergeSubmit:
+    post:
+      description: |
+       个人账户合并提交
+      operationId: postIndiAccttMergeSubmit
+      tags:
+        - indiAcct
+        - indiAcctMerge
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAccttMergeSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitIndiAccttMergeRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctMerge:
+    post:
+      description: |
+        新建合并个人账户
+      operationId: postIndiAcctMerge
+      tags:
+        - indiAcct
+        - indiAcctMerge
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctMergePost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/AddIndiAcctMergeRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/IndiAcctMerge/{YWLSH}:
+    put:
+      description: |
+        修改合并个人账户
+      operationId: putIndiAcctMerge
+      tags:
+        - indiAcct
+        - indiAcctMerge
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          required: true
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctMergePut'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ReIndiAcctMergeRes'
+    get:
+      description: |
+        查看合并个人账户详情
+      operationId: getIndiAcctMerge
+      tags:
+        - indiAcct
+        - indiAcctMerge
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/GetIndiAcctMergeRes'
+  /collection/IndiAcctMerge/receipt/{YWLSH}:
+    get:
+      description: |
+        合并个人账户回执单
+      operationId: headIndiAcctMerge
+      tags:
+        - indiAcct
+        - indiAcctMerge
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/HeadIndiAcctMergeRes'
+
+  /collection/IndiAcctUnsealedSubmit:
+    post:
+      description: |
+       个人账户启封提交
+      operationId: postIndiAcctUnsealedSubmit
+      tags:
+        - indiAcctAction
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctUnsealedSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitIndiAcctUnsealedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctSealedSubmit:
+    post:
+      description: |
+       个人账户封存提交
+      operationId: postIndiAcctSealedSubmit
+      tags:
+        - indiAcctAction
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctSealedSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitIndiAcctSealedSubmitRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/IndiAcctFreezeSubmit:
+    post:
+      description: |
+       个人账户冻结提交
+      operationId: putIndiAcctFreezeSubmit
+      tags:
+        - indiAcctAction
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctFreezeSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitIndiAcctFreezeRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctUnfreezeSubmit:
+    post:
+      description: |
+       个人账户解冻提交
+      operationId: postIndiAcctUnfreezeSubmit
+      tags:
+        - indiAcctAction
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctUnfreezeSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitIndiAcctUnfreezeRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctAction/{CZMC}:
+    post:
+      description: |
+        Action（封存、启封、冻结、解冻）个人账户业务新建
+      operationId: postIndiAcctAction
+      tags:
+        - indiAcct
+        - indiAcctAction
+      parameters:
+        - name: GRZH
+          type: string
+          required: true
+          in: query
+          description: 个人账号
+        - name: CZMC
+          in: path
+          required: true
+          description: 操作名称（05:封存;04:启封;14:冻结;15:解冻）
+          type: string
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctActionPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/AddIndiAcctActionRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/IndiAcctAction/{CZMC}/{YWLSH}:
+    put:
+      description: |
+        Action（封存、启封、冻结、解冻）个人账户修改
+      operationId: putIndiAcctAction
+      tags:
+        - indiAcct
+        - indiAcctAction
+      parameters:
+        - name: YWLSH
+          type: string
+          required: true
+          in: path
+          description: 业务流水号
+        - name: CZMC
+          in: path
+          required: true
+          description: 操作名称（05:封存;04:启封;14:冻结;15:解冻）
+          type: string
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctActionPut'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ReIndiAcctActionRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      description: |
+        查看Action（封存、启封、冻结、解冻）个人账户详情
+      operationId: getIndiAcctAction
+      tags:
+        - indiAcct
+        - indiAcctAction
+      parameters:
+        - name: YWLSH
+          type: string
+          required: true
+          in: path
+          description: 业务流水号
+        - name: CZMC
+          in: path
+          required: true
+          description: 操作名称（05:封存;04:启封;14:冻结;15:解冻）
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/GetIndiAcctActionRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctAction/receipt/{CZMC}/{YWLSH}:
+    get:
+      description: |
+        个人账户Action（封存、启封、冻结、解冻）回执单
+      operationId: headIndiAcctAction
+      tags:
+        - receipt
+        - indiAcctAction
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          description: 业务流水号
+          type: string
+        - name: CZMC
+          in: path
+          required: true
+          description: 操作名称（05:封存;04:启封;14:冻结;15:解冻）
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/HeadIndiAcctActionRes'
+
+  /collection/IndiAcctActionAuto/{CZMC}/{GRZH}:
+    get:
+      description: |
+        个人账户Action（封存、启封、冻结、解冻）创建情时，根据个人账号自动获取相关信息
+      operationId: getIndiAcctActionAuto
+      tags:
+        - indiAcct
+        - indiAcctAction
+      parameters:
+        - name: GRZH
+          in: path
+          required: true
+          type: string
+        - name: CZMC
+          in: path
+          required: true
+          description: 操作名称（05:封存;04:启封;14:冻结;15:解冻）
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/AutoIndiAcctActionRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/IndiAcctMergeAuto:
+    get:
+      description: |
+        个人账户合并业务时，预添加账户信息查询
+      operationId: getIndiAcctMergeAuto
+      tags:
+        - indiAcct
+        - indiAcctMerge
+      parameters:
+        - name: XingMing
+          in: query
+          type: string
+          description: 姓名
+        - name: ZJLX
+          in: query
+          type: string
+          description: 证件类型
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/AutoIndiAcctMergeRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+
+  /collection/IndiAcctsTransferList:
+    get:
+      description: |
+        条件查询个人内部转移信息列表
+      operationId: getIndiAcctsTransferList
+      tags:
+        - indiAcct
+        - indiAcctTransfer
+      parameters:
+        - name: ZCDW
+          in: query
+          type: string
+          description: 转出单位
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ListIndiAcctsTransferRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/IndiAcctTransfer:
+    post:
+      description: |
+        新建个人账户内部转移
+      operationId: postAcctTransfer
+      tags:
+        - indiAcct
+        - indiAcctTransfer
+      parameters:
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctTransferPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/AddIndiAcctTransferRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctTransferSubmit:
+    post:
+      description: |
+       个人账户内部转移提交
+      operationId: postIndiAcctTransferSubmit
+      tags:
+        - indiAcct
+        - indiAcctTransfer
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctTransferSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitIndiAcctTransferRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/IndiAcctTransfer/{YWLSH}:
+    put:
+      description: |
+        修改个人账户内部转移
+      operationId: putIndiAcctTransfer
+      tags:
+        - indiAcct
+        - indiAcctTransfer
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          required: true
+          description: 业务流水号
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/IndiAcctTransferPut'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ReIndiAcctTransferRes'
+    get:
+      description: |
+        查看个人账户内部转移详情
+      operationId: getIndiAcctTransfer
+      tags:
+        - indiAcct
+        - indiAcctTransfer
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/GetIndiAcctTransferRes'
+  /collection/IndiAcctTransfer/receipt/{YWLSH}:
+    get:
+      description: |
+        个人账户内部转移回执单
+      operationId: headIndiAcctTransfer
+      tags:
+        - indiAcct
+        - indiAcctTransfer
+        - receipt
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/HeadIndiAcctTransfer'
+
+securityDefinitions:
+  addToken:
+    type: apiKey
+    in: header
+    name: token
+definitions:
+  ListIndiAcctsRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            GRZH:
+              type: string
+              description: 个人账号
+            Xingming:
+              type: string
+              description: 姓名
+            ZJHM:
+              type: string
+              description: 证件号码
+            GRZHZT:
+              type: string
+              description: 个人账户状态
+            GRJCJS:
+              type: number
+              format: float
+              description: 个人缴存基数
+            YJCE:
+              type: number
+              format: float
+              description: 月缴存额
+            GRZHYE:
+              type: number
+              format: float
+              description: 个人账户余额
+            JZNY:
+              type: string
+              description: 缴至年月
+            DWMC:
+              type: string
+              description: 单位名称
+            SLSJ:
+              type: string
+              description: 受理时间
+
+
+  ListIndiAcctHistoryRes:
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            SLSJ:
+              type: string
+              description: 受理时间
+            CZNR:
+              type: string
+              description: 操作内容
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            CZQD:
+              type: string
+              description: 操作渠道
+
+
+  ListOperationAcctsRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            GRZH:
+              type: string
+              description: 个人账号(开户时无此项)
+            Xingming:
+              type: string
+              description: 姓名
+            ZJHM:
+              type: string
+              description: 证件号码
+            GRZHZT:
+              type: string
+              description: 个人账户状态
+            ZhuangTai:
+              type: string
+              description: 状态
+            GRJCJS:
+              type: number
+              format: float
+              description: 个人缴存基数
+            YJCE:
+              type: number
+              format: float
+              description: 月缴存额（开户）
+            DWMC:
+              type: string
+              description: 单位名称
+            SLSJ:
+              type: string
+              description: 受理时间
+            GRZHYE:
+              type: number
+              format: float
+              description: 个人账户余额（合并、封存、启封、冻结、解冻）
+            JZNY:
+              type: string
+              description: 缴至年月（合并、封存、启封、冻结、解冻）
+            CZYY:
+              type: string
+              description: 操作原因（封存、启封、冻结、解冻）
+
+  ListReviewIndiAcctRes:
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            YWMXLX:
+              type: string
+              description: 业务明细类型
+            GRZH:
+              type: string
+              description: 个人账号
+            XingMing:
+              type: string
+              description: 姓名
+            ZJHM:
+              type: string
+              description: 证件号码
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            DDSJ:
+              type: string
+              description: 到达时间
+
+
+  ListIndiAcctReviewedRes:
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            YWMXLX:
+              type: string
+              description: 业务明细类型
+            GRZH:
+              type: string
+              description: 个人账号
+            XingMing:
+              type: string
+              description: 姓名
+            ZhuangTai:
+              type: string
+              description: 状态
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+  IndiAcctSetPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交；）'
+          DWXX:
+            type: object
+            description: 单位信息
+            properties:
+              DWZH:
+                type: string
+                description: 单位账号
+          GRXX:
+            type: object
+            description: 个人信息
+            properties:
+              XingMing:
+                type: string
+                description: 姓名
+              XMQP:
+                type: string
+                description: 姓名全拼
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              XingBie:
+                type: string
+                description: 性别
+              CSNY:
+                type: string
+                description: 出生年月
+              HYZK:
+                type: string
+                description: 婚姻状况
+              XueLi:
+                type: string
+                description: 学历
+              ZhiYe:
+                type: string
+                description: 职业
+              ZhiCheng:
+                type: string
+                description: 职称
+              ZhiWu:
+                type: string
+                description: 职务
+              JTYSR:
+                type: number
+                format: float
+                description: 家庭月收入
+              SJHM:
+                type: string
+                description: 手机号码
+              GDDHHM:
+                type: string
+                description: 固定电话号码
+              YouXiang:
+                type: string
+                description: 邮箱
+              YZBM:
+                type: string
+                description: 邮政编码
+              JTZZ:
+                type: string
+                description: 家庭住址
+          GRZHXX:
+            type: object
+            description: 个人账户信息
+            properties:
+              GRJCJS:
+                type: number
+                format: float
+                description: 个人缴存基数
+              GJJSCHJNY:
+                type: string
+                description: 公积金首次汇缴年月
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              GRCKZHKHYHDM:
+                type: string
+                description: 个人存款账户开户银行代码
+              GRCKZHKHYHMC:
+                type: string
+                description: 个人存款账户开户银行名称
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  AddIndiAcctSetRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          GRZH:
+            type: string
+            description: 个人账号
+          status:
+            type: string
+            description: '状态（成功:success/失败：fail）'
+
+  IndiAcctSetPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交;）'
+          DWXX:
+            type: object
+            description: 单位信息
+            properties:
+              DWZH:
+                type: string
+                description: 单位账号
+          GRXX:
+            type: object
+            description: 个人信息
+            properties:
+              XingMing:
+                type: string
+                description: 姓名
+              XMQP:
+                type: string
+                description: 姓名全拼
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              XingBie:
+                type: string
+                description: 性别
+              CSNY:
+                type: string
+                description: 出生年月
+              HYZK:
+                type: string
+                description: 婚姻状况
+              XueLi:
+                type: string
+                description: 学历
+              ZhiYe:
+                type: string
+                description: 职业
+              ZhiCheng:
+                type: string
+                description: 职称
+              ZhiWu:
+                type: string
+                description: 职务
+              JTYSR:
+                type: number
+                format: float
+                description: 家庭月收入
+              SJHM:
+                type: string
+                description: 手机号码
+              GDDHHM:
+                type: string
+                description: 固定电话号码
+              YouXiang:
+                type: string
+                description: 邮箱
+              YZBM:
+                type: string
+                description: 邮政编码
+              JTZZ:
+                type: string
+                description: 家庭住址
+          GRZHXX:
+            type: object
+            description: 个人账号信息
+            properties:
+              GRJCJS:
+                type: number
+                format: float
+                description: 个人缴存基数
+              GJJSCHJNY:
+                type: string
+                description: 公积金首次汇缴年月
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              GRCKZHKHYHDM:
+                type: string
+                description: 个人存款账户开户银行代码
+              GRCKZHKHYHMC:
+                type: string
+                description: 个人存款账户开户银行名称
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+           type: string
+           description: 经办人姓名
+          JBRZJHM:
+           type: string
+           description: 经办人证件号码
+          JBRZJLX:
+           type: string
+           description: 经办人证件类型
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  IndiAcctAlterPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          GRZH:
+            type: string
+            description: 个人账号
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交;）'
+          DWXX:
+            type: object
+            description: 单位信息
+            properties:
+              DWZH:
+                type: string
+                description: 单位账号
+          GRXX:
+            type: object
+            description: 个人信息
+            properties:
+              XingMing:
+                type: string
+                description: 姓名
+              XMQP:
+                type: string
+                description: 姓名全拼
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              XingBie:
+                type: string
+                description: 性别
+              CSNY:
+                type: string
+                description: 出生年月
+              HYZK:
+                type: string
+                description: 婚姻状况
+              XueLi:
+                type: string
+                description: 学历
+              ZhiYe:
+                type: string
+                description: 职业
+              ZhiCheng:
+                type: string
+                description: 职称
+              ZhiWu:
+                type: string
+                description: 职务
+              JTYSR:
+                type: number
+                format: float
+                description: 家庭月收入
+              SJHM:
+                type: string
+                description: 手机号码
+              GDDHHM:
+                type: string
+                description: 固定电话号码
+              YouXiang:
+                type: string
+                description: 邮箱
+              YZBM:
+                type: string
+                description: 邮政编码
+              JTZZ:
+                type: string
+                description: 家庭住址
+          GRZHXX:
+            type: object
+            description: 个人账户信息
+            properties:
+              GRJCJS:
+                type: number
+                format: float
+                description: 个人缴存基数
+              GJJSCHJNY:
+                type: string
+                description: 公积金首次汇缴年月
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              GRCKZHKHYHDM:
+                type: string
+                description: 个人存款账户开户银行代码
+              GRCKZHKHYHMC:
+                type: string
+                description: 个人存款账户开户银行名称
+          JBRXM:
+           type: string
+           description: 经办人姓名
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  IndiAcctAlterPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交;）'
+          DWXX:
+            type: object
+            description: 单位信息
+            properties:
+              DWZH:
+                type: string
+                description: 单位账号
+          GRXX:
+            type: object
+            description: 个人信息
+            properties:
+              XingMing:
+                type: string
+                description: 姓名
+              XMQP:
+                type: string
+                description: 姓名全拼
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              XingBie:
+                type: string
+                description: 性别
+              CSNY:
+                type: string
+                description: 出生年月
+              HYZK:
+                type: string
+                description: 婚姻状况
+              XueLi:
+                type: string
+                description: 学历
+              ZhiYe:
+                type: string
+                description: 职业
+              ZhiCheng:
+                type: string
+                description: 职称
+              ZhiWu:
+                type: string
+                description: 职务
+              JTYSR:
+                type: number
+                format: float
+                description: 家庭月收入
+              SJHM:
+                type: string
+                description: 手机号码
+              GDDHHM:
+                type: string
+                description: 固定电话号码
+              YouXiang:
+                type: string
+                description: 邮箱
+              YZBM:
+                type: string
+                description: 邮政编码
+              JTZZ:
+                type: string
+                description: 家庭住址
+          GRZHXX:
+            type: object
+            description: 个人账户信息
+            properties:
+              GRJCJS:
+                type: number
+                format: float
+                description: 个人缴存基数
+              GJJSCHJNY:
+                type: string
+                description: 公积金首次汇缴年月
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              GRCKZHKHYHDM:
+                type: string
+                description: 个人存款账户开户银行代码
+              GRCKZHKHYHMC:
+                type: string
+                description: 个人存款账户开户银行名称
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  GetIndiAcctSetRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWXX:
+            type: object
+            description: 单位信息
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWZH:
+                type: string
+                description: 单位账号
+              JZNY:
+                type: string
+                description: 缴至年月
+          GRXX:
+            type: object
+            description: 个人信息
+            properties:
+              XingMing:
+                type: string
+                description: 姓名
+              XMQP:
+                type: string
+                description: 姓名全拼
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              XingBie:
+                type: string
+                description: 性别
+              CSNY:
+                type: string
+                description: 出生年月
+              HYZK:
+                type: string
+                description: 婚姻状况
+              XueLi:
+                type: string
+                description: 学历
+              ZhiYe:
+                type: string
+                description: 职业
+              ZhiCheng:
+                type: string
+                description: 职称
+              ZhiWu:
+                type: string
+                description: 职务
+              JTYSR:
+                type: string
+                description: 家庭月收入
+              SJHM:
+                type: string
+                description: 手机号码
+              GDDHHM:
+                type: string
+                description: 固定电话号码
+              YouXiang:
+                type: string
+                description: 邮箱
+              YZBM:
+                type: string
+                description: 邮政编码
+              JTZZ:
+                type: string
+                description: 家庭住址
+          GRZHXX:
+            type: object
+            description: 个人账户信息
+            properties:
+              GRZH:
+                type: string
+                description: 个人账号
+              GRZHZT:
+                type: string
+                description: 个人账户状态
+              GRJCJS:
+                type: number
+                format: float
+                description: 个人缴存基数
+              GJJSCHJNY:
+                type: string
+                description: 公积金首次汇缴年月
+              DWJCBL:
+                type: number
+                format: float
+                description: 单位缴存比例
+              GRJCBL:
+                type: number
+                format: float
+                description: 个人缴存比例
+              DWYJCE:
+                type: number
+                format: float
+                description: 单位月缴存额
+              GRYJCE:
+                type: number
+                format: float
+                description: 个人月缴存额
+              YJCE:
+                type: number
+                format: float
+                description: 月缴存额
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              GRCKZHKHYHM:
+                type: string
+                description: 个人存款账户开户银行名
+              GRCKZHKHYHDM:
+                type: string
+                description: 个人存款账户开户银行代码
+              KHRQ:
+                type: string
+                description: 开户日期
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+
+  GetIndiAcctAlterRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWXX:
+            type: object
+            description: 单位信息
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWZH:
+                type: string
+                description: 单位账号
+              JZNY:
+                type: string
+                description: 缴至年月
+          GRXX:
+            type: object
+            description: 个人信息
+            properties:
+              XingMing:
+                type: string
+                description: 姓名
+              XMQP:
+                type: string
+                description: 姓名全拼
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              XingBie:
+                type: string
+                description: 性别
+              CSNY:
+                type: string
+                description: 出生年月
+              HYZK:
+                type: string
+                description: 婚姻状况
+              XueLi:
+                type: string
+                description: 学历
+              ZhiYe:
+                type: string
+                description: 职业
+              ZhiCheng:
+                type: string
+                description: 职称
+              ZhiWu:
+                type: string
+                description: 职务
+              JTYSR:
+                type: string
+                description: 家庭月收入
+              SJHM:
+                type: string
+                description: 手机号码
+              GDDHHM:
+                type: string
+                description: 固定电话号码
+              YouXiang:
+                type: string
+                description: 邮箱
+              YZBM:
+                type: string
+                description: 邮政编码
+              JTZZ:
+                type: string
+                description: 家庭住址
+          GRZHXX:
+            type: object
+            description: 个人账户信息
+            properties:
+              GRZH:
+                type: string
+                description: 个人账号
+              GRZHZT:
+                type: string
+                description: 个人账户状态
+              GRJCJS:
+                type: number
+                format: float
+                description: 个人缴存基数
+              GJJSCHJNY:
+                type: string
+                description: 公积金首次汇缴年月
+              DWJCBL:
+                type: number
+                format: float
+                description: 单位缴存比例
+              GRJCBL:
+                type: number
+                format: float
+                description: 个人缴存比例
+              DWYJCE:
+                type: number
+                format: float
+                description: 单位月缴存额
+              GRYJCE:
+                type: number
+                format: float
+                description: 个人月缴存额
+              YJCE:
+                type: number
+                format: float
+                description: 月缴存额
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              GRCKZHKHYHM:
+                type: string
+                description: 个人存款账户开户银行名
+              GRCKZHKHYHDM:
+                type: string
+                description: 个人存款账户开户银行代码
+              KHRQ:
+                type: string
+                description: 开户日期
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+
+  ReIndiAcctAlterRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态(success\fail)
+
+  IndiAcctMergePost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交;）'
+          XingMing:
+            type: string
+            description: 姓名
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          BLZH:
+            type: string
+            description: 保留账号
+          HBZHList:
+            type: array
+            description: 合并账号列表
+            items:
+              type: string
+              description: 合并账号
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+  IndiAcctMergePut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交;）'
+          BLZH:
+            type: string
+            description: 保留账号
+          HBZHList:
+            type: array
+            items:
+              type: string
+              description: 合并账号
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  ReIndiAcctMergeRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: success(成功)/fail（失败）
+
+  GetIndiAcctMergeRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          XingMing:
+            type: string
+            description: 姓名
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          BLZHXX:
+            type: object
+            description: 保留账号信息
+            properties:
+              DWMC:
+                type: string
+                description: 单位名称
+              DWZH:
+                type: string
+                description: 单位账号
+              GRZH:
+                type: string
+                description: 个人账号
+              YHZH:
+                type: string
+                description: 银行账号
+              HuMing:
+                type: string
+                description: 户名
+              ZHBJ:
+                type: number
+                format: float
+                description: 账号本金
+              ZHJX:
+                type: string
+                description: 账号结息
+              ZHYEHJ:
+                type: number
+                format: float
+                description: 账号余额合计
+              JZNY:
+                type: string
+                description: 缴至年月
+              ZHZT:
+                type: string
+                description: 账户状态
+          FCZHXX:
+            type: array
+            description: 封存账号信息
+            items:
+              type: object
+              properties:
+                DWMC:
+                  type: string
+                  description: 单位名称
+                DWZH:
+                  type: string
+                  description: 单位账号
+                GRZH:
+                  type: string
+                  description: 个人账号
+                YHZH:
+                  type: string
+                  description: 银行账号
+                HuMing:
+                  type: string
+                  description: 户名
+                ZHBJ:
+                  type: string
+                  description: 账号本金
+                ZHJX:
+                  type: string
+                  description: 账号结息
+                ZHYEHJ:
+                  type: number
+                  format: float
+                  description: 账号余额合计
+                JZNY:
+                  type: string
+                  description: 缴至年月
+                ZHZT:
+                  type: string
+                  description: 账户状态
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  HeadIndiAcctMergeRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          RiQi:
+            type: string
+            description: 日期
+          XingMing:
+            type: string
+            description: 姓名
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          BLZHXX:
+            type: object
+            description: 保留账号信息
+            properties:
+              DWMC:
+                type: string
+                description: 单位名称
+              DWZH:
+                type: string
+                description: 单位账号
+              GRZH:
+                type: string
+                description: 个人账号
+              YHZH:
+                type: string
+                description: 银行账号
+              HuMing:
+                type: string
+                description: 户名
+              ZHBJ:
+                type: number
+                format: float
+                description: 账号本金
+              ZHJX:
+                type: string
+                description: 账号结息
+              ZHYEHJ:
+                type: string
+                description: 账号余额合计
+              JZNY:
+                type: string
+                description: 缴至年月
+              ZHZT:
+                type: string
+                description: 账户状态
+          FCZHXX:
+            type: array
+            description: 封存账号信息
+            items:
+              type: object
+              properties:
+                DWMC:
+                  type: string
+                  description: 单位名称
+                DWZH:
+                  type: string
+                  description: 单位账号
+                GRZH:
+                  type: string
+                  description: 个人账号
+                YHZH:
+                  type: string
+                  description: 银行账号
+                HuMing:
+                  type: string
+                  description: 户名
+                ZHBJ:
+                  type: number
+                  format: float
+                  description: 账号本金
+                ZHJX:
+                  type: string
+                  description: 账号结息
+                ZHYEHJ:
+                  type: string
+                  description: 账号余额合计
+                JZNY:
+                  type: string
+                  description: 缴至年月
+                ZHZT:
+                  type: string
+                  description: 账户状态
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          CZY:
+            type: string
+            description: 操作员
+
+  IndiAcctActionPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交;）'
+          BLZL:
+            type: string
+            description: 办理资料
+          BeiZhu:
+            type: string
+            description: 备注
+          CZMC:
+            type: string
+            description: '操作名称(05:封存;04:启封；14:冻结;15:解冻)'
+          CZYY:
+            type: string
+            description: 操作原因
+          SXNY:
+            type: string
+            description: 生效年月（格式yyyy-MM-dd）
+          CZY:
+            type: string
+            description: 操作员
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          YWWD:
+            type: string
+            description: 业务网点
+
+  AddIndiAcctActionRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: success(成功)/fail(失败)
+
+  IndiAcctActionPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交）'
+          CZMC:
+            type: string
+            description: '操作名称(05:封存;04:启封；14:冻结;15:解冻)'
+          CZYY:
+            type: string
+            description: 操作原因
+          SXNY:
+            type: string
+            description: 生效年月
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          BeiZhu:
+            type: string
+            description: 备注
+          YWWD:
+            type: string
+            description: 业务网点
+  ReIndiAcctActionRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: success(成功)/fail(失败)
+  GetIndiAcctActionRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWXX:
+            type: object
+            description: 单位信息
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWZH:
+                type: string
+                description: 单位账号
+              JZNY:
+                type: string
+                description: 缴至年月
+          GRZHXX:
+            type: object
+            description: 个人账户信息
+            properties:
+              GRZH:
+                type: string
+                description: 个人账号
+              XingMing:
+                type: string
+                description: 姓名
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              GRJZNY:
+                type: string
+                description: 个人缴至年月
+              GRZHZT:
+                type: string
+                description: 个人账户状态
+              GRJCJS:
+                type: number
+                format: float
+                description: 个人缴存基数
+              DWJCBL:
+                type: number
+                format: float
+                description: 单位缴存比例
+              GRJCBL:
+                type: number
+                format: float
+                description: 个人缴存比例
+              DWYJCE:
+                type: number
+                format: float
+                description: 单位月缴存额
+              GRYJCE:
+                type: number
+                format: float
+                description: 个人月缴存额
+              YJCE:
+                type: number
+                format: float
+                description: 月缴存额
+              GRZHYE:
+                type: number
+                format: float
+                description: 个人账户余额
+              GRZHSNJZYE:
+                type: number
+                format: float
+                description: 个人账户上年结转余额
+              GRZHDNGJYE:
+                type: number
+                format: float
+                description: 个人账户当年归集余额
+              CZMC:
+                type: string
+                description: '操作名称(05:封存;04:启封；14:冻结;15:解冻)'
+              CZYY:
+                type: string
+                description: 操作原因
+              SXNY:
+                type: string
+                description: 生效年月
+              DJJE:
+                type: number
+                format: float
+                description: 冻结金额（冻结/解冻）
+              BeiZhu:
+                type: string
+                description: 备注
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  AutoIndiAcctActionRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          GRXX:
+            type: object
+            description:  个人信息
+            properties:
+              HYZK:
+                type: string
+                description: 婚姻状况
+              JTZZ:
+                type: string
+                description: 家庭住址
+              CSNY:
+                type: string
+                description: 出生年月
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZhiYe:
+                type: string
+                description: 职业
+              YZBM:
+                type: string
+                description: 邮政编码
+              ZhiCheng:
+                type: string
+                description: 职称
+              SJHM:
+                type: string
+                description: 手机号码
+              ZJHM:
+                type: string
+                description: 证件号码
+              GDDHHM:
+                type: string
+                description: 固定电话号码
+              XMQP:
+                type: string
+                description: 姓名全拼
+              XingBie:
+                type: string
+                description: 性别
+              JTYSR:
+                type: string
+                description: 家庭月收入
+              XueLi:
+                type: string
+                description: 学历
+              XingMing:
+                type: string
+                description: 姓名
+              ZhiWu:
+                type: string
+                description: 职务
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              YouXiang:
+                type: string
+                description: 邮箱
+              GRCKZHKHHDM:
+                type: string
+                description: 个人存款账户开户行代码
+              GRCKZHKHHMC:
+                type: string
+                description: 个人存款账户开户行名称
+          DWXX:
+            type: object
+            description: 单位信息
+            properties:
+              DWMC:
+                type: string
+                description: 单位名称
+              DWZH:
+                type: string
+                description: 单位账号
+              JZNY:
+                type: string
+                description: 缴至年月
+          GRZHXX:
+            type: object
+            description: 个人账户信息
+            properties:
+              DWJCBL:
+                type: number
+                format: float
+                description: 单位缴存比例
+              GRJCBL:
+                type: number
+                format: float
+                description: 个人缴存比例
+              GRZH:
+                type: string
+                description: 个人账号
+              Xingming:
+                type: string
+                description: 姓名
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              GRZHZT:
+                type: string
+                description: 个人账户状态
+              GRJCJS:
+                type: string
+                description: 个人缴存基数
+              GRJZNY:
+                type: string
+                description: 个人缴至年月
+              GRZHYE:
+                type: number
+                format: float
+                description: 个人账户余额
+              GRZHSNJZYE:
+                type: number
+                format: float
+                description: 个人账户上年结转余额
+              GRZHDNGJYE:
+                type: number
+                format: float
+                description: 个人账户当年归集余额
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作人员
+
+  ListIndiAcctsTransferRes:
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            ZCDW:
+              type: string
+              description: 转出单位
+            ZRSXRQ:
+              type: string
+              description: 转入生效日期
+            ZhuangTai:
+              type: string
+              description: 状态
+            SLSJ:
+              type: string
+              description: 受理时间
+
+  IndiAcctTransferPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交;）'
+          ZCDWZH:
+            type: string
+            description: 转出单位账号
+          ZCDWMC:
+            type: string
+            description: 转出单位名称
+          ZYSXNY:
+            type: string
+            description: 转移生效年月
+          list:
+            type: array
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZRDWZH:
+                  type: string
+                  description: 转入单位账号
+                ZRDWMC:
+                  type: string
+                  description: 转入单位名称
+                BeiZhu:
+                  type: string
+                  description: 备注
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+  AddIndiAcctTransferRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态(success\fail)
+  ReIndiAcctTransferRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态(success\fail)
+  IndiAcctTransferPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          CZLX:
+            type: string
+            description: '操作类型（0:保存；1:提交;）'
+          ZCDWZH:
+            type: string
+            description: 转出单位账号
+          ZCDWMC:
+            type: string
+            description: 转出单位名称
+          ZYSXNY:
+            type: string
+            description: 转移生效年月
+          list:
+            type: array
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZRDWZH:
+                  type: string
+                  description: 转入单位账号
+                ZRDWMC:
+                  type: string
+                  description: 转入单位名称
+                BeiZhu:
+                  type: string
+                  description: 备注
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  GetIndiAcctTransferRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          ZCDWZH:
+            type: string
+            description: 转出单位账号
+          ZCDWMC:
+            type: string
+            description: 转出单位名称
+          ZYSXNY:
+            type: string
+            description: 转移生效年月
+          list:
+            type: array
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZRDWZH:
+                  type: string
+                  description: 转入单位账号
+                ZRDWMC:
+                  type: string
+                  description: 转入单位名称
+                BeiZhu:
+                  type: string
+                  description: 备注
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  HeadIndiAcctTransfer:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          RiQi:
+            type: string
+            description: 日期
+          ZCDWZH:
+            type: string
+            description: 转出单位账号
+          ZCDWMC:
+            type: string
+            description: 转出单位名称
+          ZYSXNY:
+            type: string
+            description: 转移生效年月
+          list:
+            type: array
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZRDWZH:
+                  type: string
+                  description: 转入单位账号
+                ZRDWMC:
+                  type: string
+                  description: 转入单位名称
+                BeiZhu:
+                  type: string
+                  description: 备注
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          CZY:
+            type: string
+            description: 操作员
+
+
+  HeadIndiAcctSetRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          RiQi:
+            type: string
+            description: 日期
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          GRZH:
+            type: string
+            description: 个人账号
+          XingMing:
+            type: string
+            description: 姓名
+          XMQP:
+            type: string
+            description: 姓名全拼
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          XingBie:
+            type: string
+            description: 性别
+          CSNY:
+            type: string
+            description: 出生年月
+          HYZK:
+            type: string
+            description: 婚姻状况
+          XueLi:
+            type: string
+            description: 学历
+          ZhiYe:
+            type: string
+            description: 职业
+          ZhiCheng:
+            type: string
+            description: 职称
+          ZhiWu:
+            type: string
+            description: 职务
+          SJHM:
+            type: string
+            description: 手机号码
+          GDDHHM:
+            type: string
+            description: 固定电话号码
+          JTYSR:
+            type: string
+            description: 家庭月收入
+          JTZZ:
+            type: string
+            description: 家庭住址
+          YouXiang:
+            type: string
+            description: 邮箱
+          YZBM:
+            type: string
+            description: 邮政编码
+          GRZHZT:
+            type: string
+            description: 个人账户状态
+          GRJCJS:
+            type: number
+            format: float
+            description: 个人缴存基数（元）
+          DWJCBL:
+            type: number
+            format: float
+            description: 单位缴存比例（%）
+          GRJCBL:
+            type: number
+            format: float
+            description: 个人缴存比例（%）
+          DWYJCE:
+            type: number
+            format: float
+            description: 单位月缴存额（元）
+          GRYJCE:
+            type: number
+            format: float
+            description: 个人月缴存额（元）
+          YJCE:
+            type: number
+            format: float
+            description: 月缴存额（元）
+          KHRQ:
+            type: string
+            description: 开户日期
+          GGJSCHJNY:
+            type: string
+            description: 公积金首次汇缴年月
+          GRCKZHHM:
+            type: string
+            description: 个人存款账户号码
+          GRCKZHKHYHMC:
+            type: string
+            description: 个人存款账户开户银行名称
+          GRCKZHKHYHDM:
+            type: string
+            description: 个人存款账户开户银行代码
+
+  HeadAcctAlterRes:
+    type: object
+    properties:
+      res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          RiQi:
+            type: string
+            description: 日期
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          XingMing:
+            type: string
+            description: 姓名
+          XMQP:
+            type: string
+            description: 姓名全拼
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          XingBie:
+            type: string
+            description: 性别
+          CSNY:
+            type: string
+            description: 出生年月
+          HYZK:
+            type: string
+            description: 婚姻状况
+          XueLi:
+            type: string
+            description: 学历
+          ZhiYe:
+            type: string
+            description: 职业
+          ZhiCheng:
+            type: string
+            description: 职称
+          ZhiWu:
+            type: string
+            description: 职务
+          GRZH:
+            type: string
+            description: 个人账号
+          GRZHZT:
+            type: string
+            description: 个人账户状态
+          SJHM:
+            type: string
+            description: 手机号码
+          GDDHHM:
+            type: string
+            description: 固定电话号码
+          YZBM:
+            type: string
+            description: 邮政编码
+          JTZZ:
+            type: string
+            description: 家庭住址
+          YouXiang:
+            type: string
+            description: 邮箱
+          GRJCJS:
+            type: number
+            format: float
+            description: 个人缴存基数
+          DWJCBL:
+            type: number
+            format: float
+            description: 单位缴存比例
+          GRJCBL:
+            type: number
+            format: float
+            description: 个人缴存比例
+          DWYJCE:
+            type: number
+            format: float
+            description: 单位月缴存额
+          GRYJCE:
+            type: number
+            format: float
+            description: 个人月缴存额
+          YJCE:
+            type: number
+            format: float
+            description: 月缴存额
+          GGJSCHJNY:
+            type: string
+            description: 公积金首次汇缴年月
+          GRCKZHHM:
+            type: string
+            description: 个人存款账户号码
+          GRCKZHKHYHMC:
+            type: string
+            description: 个人存款账户开户银行名称
+          GRCKZHKHYHDM:
+            type: string
+            description: 个人存款账户开户银行代码
+          KHRQ:
+            type: string
+            description: 开户日期
+
+#  putOperationRevoke:
+#    type: object
+#    properties:
+#      Req:
+#        type: object
+#        properties:
+#          YWLSH:
+#            type: string
+#            description: 业务流水号
+#          YWMC:
+#            type: string
+#            description: '业务名称（01:合并;02:设立;03:转移;04:封存;05:启封;06:冻结;07:解冻）'
+
+  AutoIndiAcctMergeRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 账号信息列表
+          properties:
+            DWMC:
+              type: string
+              description: 单位名称
+            DWZH:
+              type: string
+              description: 单位账号
+            GRZH:
+              type: string
+              description: 个人账号
+            YHZH:
+              type: string
+              description: 银行账号
+            HuMing:
+              type: string
+              description: 户名
+            ZHBJ:
+              type: number
+              format: float
+              description: 账号本金
+            ZHJX:
+              type: number
+              format: float
+              description: 账号结息
+            ZHYE:
+              type: number
+              format: float
+              description: 账号余额
+            JZNY:
+              type: string
+              description: 缴至年月
+            ZHZT:
+              type: string
+              description: 账户状态
+
+  HeadIndiAcctActionRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          RiQi:
+            type: string
+            description: 日期
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          GRZH:
+            type: string
+            description: 个人账号
+          XingMing:
+            type: string
+            description: 姓名
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          GRZJNY:
+            type: string
+            description: 个人缴至年月
+          GRZHZT:
+            type: string
+            description: 个人账户状态
+          GRJCJS:
+            type: number
+            format: float
+            description: 个人缴存基数
+          DWJCBL:
+            type: number
+            format: float
+            description: 单位缴存比例
+          GRJCBL:
+            type: number
+            format: float
+            description: 个人缴存比例
+          DWYJCE:
+            type: number
+            format: float
+            description: 单位月缴存额
+          GRYJCE:
+            type: number
+            format: float
+            description: 个人月缴存额
+          YJCE:
+            type: number
+            format: float
+            description: 月缴存额
+          GRZHYE:
+            type: number
+            format: float
+            description: 个人账户余额（元）
+          GRZHSNJZYE:
+            type: number
+            format: float
+            description: 个人账户上年结转余额（元）
+          GRZHDNGJYE:
+            type: number
+            format: float
+            description: 个人账户当年归集余额（元)
+          CZMC:
+            type: string
+            description: 操作名称(05:封存;04:启封;14:冻结;15:解冻;)
+          CZYY:
+            type: string
+            description: 操作（封存、启封、冻结、解冻、托管）原因
+          SXNY:
+            type: string
+            description: 生效年月
+          BeiZhu:
+            type: string
+            description: 备注（封存、启封、冻结、解冻）
+          DJJE:
+            type: number
+            format: float
+            description: 冻结金额（冻结/解冻）
+  DeleteOperationRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态(success\fail)
+  RevokeOperationRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态(success\fail)
+  ReIndiAcctSetRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态(success\fail)
+  AddIndiAcctAlterRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态(success\fail)
+
+
+  IndiAcctSetSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+
+  SubmitIndiAcctSetRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态(success\fail)
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  AddIndiAcctMergeRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+
+          status:
+            type: string
+            description: 状态(success\fail)
+  IndiAccttMergeSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+  SubmitIndiAccttMergeRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态(success\fail)
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  AlterIndiAcctSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+
+  IndiAcctFreezeSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+  SubmitIndiAcctFreezeRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态(success\fail)
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  SubmitAlterIndiAcctRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+          status:
+            type: string
+            description: 状态(success\fail)
+  IndiAcctUnsealedSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+
+  SubmitIndiAcctUnsealedRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态(success)
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  IndiAcctSealedSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+
+  SubmitIndiAcctSealedSubmitRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态(success\fail)
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  # SubmitIndiAcctSealedRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         status:
+  #           type: string
+  #           description: 状态
+  # SubmitIndiAcctFreezeRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         status:
+  #           type: string
+  #           description: 状态(success\fail)
+  IndiAcctUnfreezeSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+
+  SubmitIndiAcctUnfreezeRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态(success\fail)
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  IndiAcctTransferSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+
+  SubmitIndiAcctTransferRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态(success\fail)
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+
+  IndiAcctBulkReviewPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          reviewInfo:
+              type: object
+              properties:
+                SHJG:
+                  type: string
+                  description: 审核结果（01通过/02不通过）
+                YYYJ:
+                  type: string
+                  description: 原因/意见
+                CZY:
+                  type: string
+                  description: 操作员
+                YWWD:
+                  type: string
+                  description: 业务网点
+                ZhiWu:
+                  type: string
+                  description: 职务(操作员角色)
+                CZQD:
+                  type: string
+                  description: 操作渠道
+                BeiZhu:
+                  type: string
+                  description: 备注
+          ids:
+            type: array
+            items:
+              type: string
+              description: 业务流水号
+
+  ReviewBulkIndiAcctRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: array
+            description: 业务流水号集
+            items:
+              type: string
+              description: 业务流水号
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+
+  CollectionOperationDelete:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHs:
+            type: array
+            items:
+              type: string
+              description: 业务流水号
+  GetAcctsInfoDetailsRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          JBXX:
+            type: object
+            description: 基本信息
+            properties:
+              GRZH:
+                type: string
+                description: 个人账号
+              CSNY:
+                type: string
+                description: 个人账号
+              ZJLX:
+                type: string
+                description: 证件类型
+              SJHM:
+                type: string
+                description: 手机号码
+              ZJHM:
+                type: string
+                description: 证件号码
+              XMQP:
+                type: string
+                description: 姓名全拼
+              XingMing:
+                type: string
+                description: 姓名
+              YouXiang:
+                type: string
+                description: 邮箱
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              GRCKZHKHYHMC:
+                type: string
+                description: 个人存款账户开户银行名称
+          JCXX:
+            type: array
+            description: 缴存信息
+            items:
+              type: object
+              properties:
+                DWMC:
+                  type: string
+                  description: 单位名称
+                DWZH:
+                  type: string
+                  description: 单位账号
+                GRJCJS:
+                  type: string
+                  description: 个人缴存基数
+                GRJCBL:
+                  type: string
+                  description: 个人缴存比例
+                DWJCBL:
+                  type: string
+                  description: 单位缴存比例
+                GRYJCE:
+                  type: string
+                  description: 个人月缴存额
+                DWYJCE:
+                  type: string
+                  description: 单位月缴存额
+                YJCE:
+                  type: string
+                  description: 月缴存额
+                JZNY:
+                  type: string
+                  description: 缴至年月
+          TQXX:
+            type: array
+            description: 提取信息
+            items:
+              type: object
+              properties:
+                TQSJ:
+                  type: string
+                  description: 提取时间
+                BCTQJE:
+                  type: string
+                  description: 本次提取金额
+                LJTQJE:
+                  type: string
+                  description: 累计提取金额
+                BLR:
+                  type: string
+                  description: 办理人
+                CZY:
+                  type: string
+                  description: 操作员
+                YWWD:
+                  type: string
+                  description: 业务网点
+          DKXX:
+            type: array
+            description: 贷款信息
+            items:
+              type: object
+              properties:
+                JKHTBH:
+                  type: string
+                  description: 借款合同编号
+                DKZH:
+                  type: string
+                  description: 贷款账号
+                HTDKJ:
+                  type: string
+                  description: 合同贷款金
+                DKYE:
+                  type: string
+                  description: 贷款余额
+                DKQS:
+                  type: string
+                  description: 贷款期数
+                SYQS:
+                  type: string
+                  description: 剩余期数
+                HSLXZE:
+                  type: string
+                  description: 回收利息总额
+                YQBJ:
+                  type: string
+                  description: 逾期本金
+                YQLX:
+                  type: string
+                  description: 逾期利息
+                YQFX:
+                  type: string
+                  description: 逾期罚息
+                GRZHZT:
+                  type: string
+                  description: 个人账户状态
+                HKRQ:
+                  type: string
+                  description: 还款日期
+  Error:
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          code:
+            type: string
+            description: 状态码
+          msg:
+            type: string
+            description: 信息
+  PersonBaseMessage:
+    type: object
+    description: 个人基础
+    properties:
+      GRZH:
+        type: string
+        description: 个人账号
+      XingMing:
+        type: string
+        description: 姓名
+      XMQP:
+        type: string
+        description: 姓名全拼
+      ZJLX:
+        type: string
+        description: 证件类型
+      ZJHM:
+        type: string
+        description: 证件号码
+      XingBie:
+        type: string
+        description: 性别
+      CSNY:
+        type: string
+        description: 出生年月
+      HYZK:
+        type: string
+        description: 婚姻状况
+      XueLi:
+        type: string
+        description: 学历
+      ZhiYe:
+        type: string
+        description: 职业
+      ZhiCheng:
+        type: string
+        description: 职称
+      ZhiWu:
+        type: string
+        description: 职务
+      JTYSR:
+        type: number
+        format: float
+        description: 家庭月收入
+      SJHM:
+        type: string
+        description: 手机号码
+      GDDHHM:
+        type: string
+        description: 固定电话号码
+      YouXiang:
+        type: string
+        description: 邮箱
+      YZBM:
+        type: string
+        description: 邮政编码
+      JTZZ:
+        type: string
+        description: 家庭住址

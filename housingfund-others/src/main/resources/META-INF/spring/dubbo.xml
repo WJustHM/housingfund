@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="Others"/>
+
+    <!-- don`t change registry when you submit to master.  see  housingfund.conf  which in housingfund project root dir  -->
+    <dubbo:registry protocol="zookeeper"
+                    address="172.20.31.4:2181,172.20.31.5:2181,172.20.31.6:2181" group="gxy"/>
+
+    <dubbo:provider delay="-1" timeout="12000" retries="0"/>
+    <dubbo:consumer timeout="60000" retries="0" check="false"/>
+
+    <dubbo:protocol name="dubbo" port="-1" server="netty4" threads="100"
+                    client="netty4" register="true" threadpool="fixed" accepts="1000" payload="52428800"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IDictionaryService"
+            ref="dictionary_service" token="true"/>
+    <bean id="dictionary_service" class="com.handge.housingfund.others.service.DictionaryImpl"/>
+
+    <dubbo:service interface="com.handge.housingfund.common.service.ca.CaService"
+                   ref="caService" token="true"/>
+    <bean id="caService" class="com.handge.housingfund.others.service.CaServiceImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IActionService"
+            ref="action_service" token="true"/>
+    <bean id="action_service" class="com.handge.housingfund.others.service.ActionServiceImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IPdfService"
+            ref="pdfservice" token="true" retries="0" timeout="10000"/>
+    <bean id="pdfservice" class="com.handge.housingfund.others.service.PdfServiceImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IStateMachineService"
+            ref="stateMachine_service" token="true"/>
+    <bean id="stateMachine_service" class="com.handge.housingfund.others.service.StateMachineServiceImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IFileService"
+            ref="fileService" token="true"/>
+    <bean id="fileService" class="com.handge.housingfund.others.service.FileServiceImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.ISaveAuditHistory"
+            ref="saveAuditHistory" token="true"/>
+    <bean id="saveAuditHistory" class="com.handge.housingfund.others.service.SaveAuditHistoryImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IUploadImagesService"
+            ref="uploadImagesService" token="true"/>
+    <bean id="uploadImagesService" class="com.handge.housingfund.others.service.UploadImagesServiceImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IDistrictService"
+            ref="districtService" token="true"/>
+    <bean id="districtService" class="com.handge.housingfund.others.service.DistrictImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IReadExcelUtilsService"
+            ref="readExcelUtilsService" token="true"/>
+    <bean id="readExcelUtilsService" class="com.handge.housingfund.others.service.ReadExcelUtilsServiceImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IExportExcelService"
+            ref="exportExcelService" token="true"/>
+    <bean id="exportExcelService" class="com.handge.housingfund.others.service.ExportExcelImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.IPdfServiceCa"
+            ref="pdfServiceCa" token="true"/>
+    <bean id="pdfServiceCa" class="com.handge.housingfund.others.webservice.PdfServiceCa"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.others.ISMSCommon"
+            ref="iSMSCommon" token="true"/>
+    <bean id="iSMSCommon" class="com.handge.housingfund.others.service.FlagInfoSMS"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctSet"
+            id="unitAcctSet" check="false" timeout="120000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctSet"
+            id="indiAcctSet" check="false" timeout="120000">
+    </dubbo:reference>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.PersonRadix"
+            id="personRadix" check="false" timeout="120000">
+    </dubbo:reference>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitDepositInventory"
+            id="unitDepositInventory" check="false" timeout="120000">
+    </dubbo:reference>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.schedule.ITimeTask"
+            ref="iTimeTask" />
+    <bean id="iTimeTask"
+          class="com.handge.housingfund.others.service.TimeTaskService"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctInfo"
+            id="unitAcctInfo" check="false" timeout="150000">
+    </dubbo:reference>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.ILoanAccountService"
+            id="loanAccountService" check="false" timeout="150000">
+    </dubbo:reference>
+</beans>

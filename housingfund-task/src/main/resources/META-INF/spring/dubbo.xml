@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="Task"/>
+
+    <!-- don`t change registry when you submit to master.  see  housingfund.conf  which in housingfund project root dir  -->
+    <dubbo:registry protocol="zookeeper"
+                    address="172.20.31.115:2181,172.20.31.128:2181,172.20.31.131:2181" group="V1320108"/>
+
+    <dubbo:provider delay="-1" timeout="12000" retries="0"/>
+    <dubbo:protocol name="dubbo" port="-1" server="netty4" threads="100"
+                    client="netty4" register="true" threadpool="fixed" accepts="1000" payload="52428800"/>
+
+    <dubbo:reference id="iloanTaskService" interface="com.handge.housingfund.common.service.loan.ILoanTaskService"
+                     check="false" timeout="12000000"/>
+
+    <dubbo:reference id="iBankTask" interface="com.handge.housingfund.common.service.bank.ibank.IBankTask"
+                     check="false" async="true"/>
+
+    <dubbo:reference id="iTimedFinanceTask" interface="com.handge.housingfund.common.service.finance.ITimedFinanceTask"
+                     check="false">
+        <dubbo:method name="fixedIntIncome" async="true" return="false"/>
+    </dubbo:reference>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IDictionaryService"
+            id="dictionaryService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IActionService"
+            id="action_service" check="false" timeout="12000"/>
+    <dubbo:reference interface="com.handge.housingfund.common.service.account.IPolicyTaskService"
+                     id="ipolicyTaskService" check="false" timeout="12000"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.collection.service.common.CollectionTask"
+                     id="collectionTask" check="false" timeout="12000">
+        <dubbo:method name="balanceInterestFinal" async="true" return="true"/>
+        <dubbo:method name="doPayCallTask" async="true" return="false"/>
+    </dubbo:reference>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IStateMachineService"
+            id="stateMachine_service" check="false" timeout="12000"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.withdrawl.WithdrawlTasks"
+            id="withdrawlTasks" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.schedule.ITimeTask"
+            id="iTimeTask" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IFinanceReportService"
+            id="iFinanceReportService" check="false" timeout="12000"/>
+
+
+</beans>

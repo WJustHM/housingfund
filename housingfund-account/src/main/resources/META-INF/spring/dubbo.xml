@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="Account"/>
+
+    <!-- don`t change registry when you submit to master.  see  housingfund.conf  which in housingfund project root dir  -->
+    <dubbo:registry protocol="zookeeper"
+                    address="${dubbo.registry.address}" group="${dubbo.registry.group}"/>
+
+
+    <dubbo:provider delay="-1" timeout="12000" retries="0"/>
+
+    <dubbo:protocol name="dubbo" port="-1" server="netty4" threads="100"
+                    client="netty4" register="true" threadpool="fixed" accepts="1000" payload="52428800"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.ca.CaService"
+                     id="caService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.bank.ibank.IBank" id="iBank"
+            check="false" retries="0" timeout="70000"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.IPolicyTaskService"
+            ref="policyTaskService" token="true"/>
+    <bean id="policyTaskService"
+          class="com.handge.housingfund.account.service.policy.PolicyTask"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IUploadImagesService"
+            id="uploadImagesService" check="false"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.IPolicyService"
+            ref="policyService" token="true"/>
+    <bean id="policyService"
+          class="com.handge.housingfund.account.service.policy.PolicyServiceImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.AccountRpcService"
+            ref="accountRpcService" token="true"/>
+    <bean id="accountRpcService"
+          class="com.handge.housingfund.account.service.account.AccountRpcServiceImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.INetworkManagementService"
+            ref="networkManagementService" token="true"/>
+    <bean id="networkManagementService"
+          class="com.handge.housingfund.account.service.network.NetWorkManagementServiceImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.IPermissionService"
+            ref="permissionService" token="true"/>
+    <bean id="permissionService"
+          class="com.handge.housingfund.account.service.permission.PermissionServiceImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.IAccountService"
+            ref="accountService" token="true"/>
+    <bean id="accountService" class="com.handge.housingfund.account.service.account.AccountServiceImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.ISettlementSpecialBankAccountManageService"
+            ref="settlementSpecialBankAccountManageService" token="true"/>
+    <bean id="settlementSpecialBankAccountManageService"
+          class="com.handge.housingfund.account.service.bank.SettlementSpecialBankAccountManageServiceImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.IUserService"
+            ref="userService" token="true"/>
+    <bean id="userService" class="com.handge.housingfund.account.service.permission.UserServiceImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.IBankInfoService"
+            ref="bankInfoService" token="true"/>
+    <bean id="bankInfoService" class="com.handge.housingfund.account.service.bank.BankInfoServiceImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.account.ICenterInfoService"
+            ref="iCenterInfoService" token="true"/>
+    <bean id="iCenterInfoService" class="com.handge.housingfund.account.service.bank.CenterInfoService"/>
+</beans>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://code.alibabatech.com/schema/dubbo
+                           http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <dubbo:application name="BankConsumer"/>
+    <dubbo:registry protocol="zookeeper" address="172.20.31.4:2181,172.20.31.5:2181,172.20.31.6:2181" group="gxy"/>
+    <dubbo:reference id="iBank" interface="com.handge.housingfund.common.service.bank.ibank.IBank"/>
+    <dubbo:reference id="iTransfer" interface="com.handge.housingfund.common.service.bank.ibank.ITransfer"/>
+    <dubbo:reference id="iReSendNotice" interface="com.handge.housingfund.common.service.bank.ibank.IReSendNotice"/>
+    <dubbo:reference id="iTimedFinanceTask" interface="com.handge.housingfund.common.service.finance.ITimedFinanceTask"
+                     check="false">
+        <dubbo:method name="checkoutMonthInterest" async="true"/>
+    </dubbo:reference>
+    <dubbo:reference interface="com.handge.housingfund.common.service.collection.service.common.CollectionTask"
+                     id="collectionTask" check="false" timeout="12000">
+        <dubbo:method name="balanceInterestFinal" async="true"/>
+    </dubbo:reference>
+
+    <dubbo:reference id="iSMSCommon" interface="com.handge.housingfund.common.service.others.ISMSCommon" check="false"/>
+</beans>

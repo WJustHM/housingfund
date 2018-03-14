@@ -1,0 +1,666 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:task="http://www.springframework.org/schema/task"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans-4.2.xsd 
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/task  
+		http://www.springframework.org/schema/task/spring-task-3.1.xsd"
+       default-autowire="byName">
+    <task:annotation-driven/>
+    <context:annotation-config/>
+    <context:component-scan base-package="com.handge.housingfund.task.jobs"/>
+
+    <!-- 加载配置文件 -->
+    <context:property-placeholder
+            location="classpath:META-INF/spring/config.properties" file-encoding="utf-8"
+            ignore-unresolvable="true"/>
+
+    <!-- 配置数据源 -->
+    <bean name="dataSource" class="com.alibaba.druid.pool.DruidDataSource"
+          init-method="init" destroy-method="close">
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+
+        <!-- 初始化连接大小 -->
+        <property name="initialSize" value="0"/>
+        <!-- 连接池最大使用连接数量 -->
+        <property name="maxActive" value="20"/>
+        <!-- 连接池最大空闲 -->
+        <property name="maxIdle" value="20"/>
+        <!-- 连接池最小空闲 -->
+        <property name="minIdle" value="0"/>
+        <!-- 获取连接最大等待时间 -->
+        <property name="maxWait" value="60000"/>
+
+        <property name="validationQuery" value="${validationQuery}"/>
+        <property name="testOnBorrow" value="false"/>
+        <property name="testOnReturn" value="false"/>
+        <property name="testWhileIdle" value="true"/>
+
+        <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+        <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+        <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+        <property name="minEvictableIdleTimeMillis" value="25200000"/>
+
+        <!-- 打开removeAbandoned功能 -->
+        <property name="removeAbandoned" value="true"/>
+        <!-- 1800秒，也就是30分钟 -->
+        <property name="removeAbandonedTimeout" value="180000"/>
+        <!-- 关闭abanded连接时输出错误日志 -->
+        <property name="logAbandoned" value="true"/>
+
+        <!-- 监控数据库 -->
+        <!-- <property name="filters" value="stat" /> -->
+        <property name="filters" value="mergeStat"/>
+    </bean>
+    <bean name="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+    <bean id="jobFactory" class="com.handge.housingfund.task.utils.CustomsJobFactory"></bean>
+
+
+    <!-- 配置调度任务 -->
+    <bean name="quartzScheduler" autowire="no"
+          class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="configLocation" value="classpath:META-INF/spring/quartz.properties"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="transactionManager" ref="transactionManager"/>
+        <property name="jobFactory" ref="jobFactory"/>
+
+        <!-- 任务唯一的名称，将会持久化到数据库 -->
+        <property name="schedulerName" value="HandgeScheduler"/>
+
+        <!-- 每台集群机器部署应用的时候会更新触发器 -->
+        <property name="overwriteExistingJobs" value="true"/>
+        <property name="triggers">
+            <list>
+                <!--<ref bean="DailyTrigger" />-->
+                <!--<ref bean="MonthlyTrigger" />-->
+                <!--<ref bean="QuarterlyTrigger" />-->
+                <ref bean="AddCRFCenterCodeTrigger" />
+                <ref bean="AddChgNoTrigger" />
+                <ref bean="DoCollectionTaskTrigger"/>
+                <!--<ref bean="BalanceInterestFinalTrigger" />-->
+                <ref bean="ClearFailWithdrawlTrigger"/>
+                <!--<ref bean="CheckVoucherTrigger" />-->
+                <ref bean="CreateMonthInterestVouncherTrigger"/>
+                <!--<ref bean="SettlementInterestVouncherTrigger" />-->
+                <ref bean="AddAccountPeriodTrigger"/>
+                <!--<ref bean="SetIncomexpenseYearTrigger" />-->
+                <!--<ref bean="SetBusinessEndIncomeAndExpenditureTrigger" />-->
+                <ref bean="AddHousingfundBankBalanceTrigger"/>
+                <!--<ref bean="CkzhFixedIntIncomeTrigger" />-->
+                <ref bean="UpdateDQZTrigger"/>
+
+                <!--<ref bean="RepaymentjihuaTrigger" />-->
+                <ref bean="RepaymentTrigger" />
+                <ref bean="OverdueRepaymentChangeTrigger" />
+                <ref bean="DebitSendTrigger" />
+                <ref bean="RemainingPeriodTrigger" />
+                <ref bean="OverdueRepaymenTimingTrigger" />
+                <ref bean="OverdueAutomaticTrigger" />
+                <!--<ref bean="TestTrigger" />-->
+                <ref bean="SaveZSWFTTimeTaskTrigger"/>
+                <!--<ref bean="DoSMSPayCallTrigger"/>-->
+            </list>
+        </property>
+    </bean>
+
+    <bean id="DailyJobs"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.DailyJobs</value>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+
+    <bean id="MonthlyJobs"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.MonthlyJobs</value>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+
+    <bean id="QuarterlyJobs"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.QuarterlyJobs</value>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+
+    <bean id="DailyTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="DailyJobs"/>
+        <property name="cronExpression" value="0 0 1 * * ?"/>
+    </bean>
+
+    <bean id="MonthlyTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="MonthlyJobs"/>
+        <property name="cronExpression" value="0 0 2 1 * ?"/>
+    </bean>
+
+    <bean id="QuarterlyTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="QuarterlyJobs"/>
+        <property name="cronExpression" value="0 0 3 1 1,4,7,10 ?"/>
+    </bean>
+
+    <bean id="Test"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.Test</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="tasks" value="Test,Action"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="TestTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="Test"/>
+        <property name="cronExpression" value="0/59 * * * * ?"/>
+    </bean>
+    <!--/**
+    * 获取全国所有已上线的中心
+    * 每月月初晚上11点
+    */-->
+    <bean id="AddCRFCenterCode"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.AddCRFCenterCodeJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="AddCRFCenterCode" value="AddCRFCenterCode"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="AddCRFCenterCodeTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="AddCRFCenterCode"/>
+        <property name="cronExpression" value="0 0 23 1 * ?"/>
+    </bean>
+    <!--/**
+    * 获取全国所有银行网点的联行号
+    * 每月月末晚上11点
+    */-->
+    <bean id="AddChgNo"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.AddChgNoJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="AddChgNo" value="AddChgNo"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="AddChgNoTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="AddChgNo"/>
+        <property name="cronExpression" value="0 0 23 L * ?"/>
+    </bean>
+    <!--/**
+    * 启封、封存、调基、调比
+    * 每天3点触发
+    */-->
+    <bean id="DoCollectionTask"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.DoCollectionTaskJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="DoCollection" value="DoCollection"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="DoCollectionTaskTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="DoCollectionTask"/>
+        <property name="cronExpression" value="0 5 0 1 * ?"/>
+    </bean>
+
+    <!--/**
+    * 结息 2018/12/31 23:59:59
+    */-->
+    <bean id="BalanceInterestFinal"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.BalanceInterestFinalJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="BalanceInterestFinal" value="BalanceInterestFinal"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="BalanceInterestFinalTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="BalanceInterestFinal"/>
+        <property name="cronExpression" value="59 59 23 31 12 ?"/>
+    </bean>
+    <!--提取入账失败定时任务（每天执行一次）每天1点半-->
+    <bean id="ClearFailWithdrawlRecord"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.ClearFailWithdrawlRecordJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="ClearFailWithdrawlRecord" value="ClearFailWithdrawlRecord"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="ClearFailWithdrawlTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="ClearFailWithdrawlRecord"/>
+        <property name="cronExpression" value="0 30 1 * * ?"/>
+    </bean>
+
+    <!--每月月初03：00触发，结账操作，生成科目余额表-->
+    <bean id="CheckVoucher"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.CheckVoucherJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="CheckVoucher" value="CheckVoucher"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="CheckVoucherTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="CheckVoucher"/>
+        <property name="cronExpression" value="0 0 5 1 * ?"/>
+    </bean>
+
+    <!--计算职工公积金利息，并生成结算凭证-->
+    <bean id="CreateMonthInterestVouncher"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.CreateMonthInterestVouncherJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="CreateMonthInterestVouncher" value="CreateMonthInterestVouncher"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="CreateMonthInterestVouncherTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="CreateMonthInterestVouncher"/>
+        <property name="cronExpression" value="0 30 0 1 * ?"/>
+    </bean>
+
+    <!--每年6月1日03：00执行，结算公积金利息，并生成结算凭证-->
+    <bean id="SettlementInterestVouncher"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.SettlementInterestVouncherJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="SettlementInterestVouncher" value="SettlementInterestVouncher"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="SettlementInterestVouncherTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SettlementInterestVouncher"/>
+        <property name="cronExpression" value="0 0 1 1 6 ?"/>
+    </bean>
+
+    <!--新增会计期间-->
+    <!--每年1月1日,00：30点触发-->
+    <bean id="AddAccountPeriod"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.AddAccountPeriodJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="AddAccountPeriod" value="AddAccountPeriod"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="AddAccountPeriodTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="AddAccountPeriod"/>
+        <property name="cronExpression" value="0 30 0 1 1 ?"/>
+    </bean>
+
+    <!--SetIncomexpenseYear，年度结转增值收益，并生成凭证-->
+    <bean id="SetIncomexpenseYear"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.SetIncomexpenseYearJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="SetIncomexpenseYear" value="SetIncomexpenseYear"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="SetIncomexpenseYearTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SetIncomexpenseYear"/>
+        <property name="cronExpression" value="0 0 2 1 1 ?"/>
+    </bean>
+
+    <!--每月月初04：00触发，在结账之后触发，期末业务收入结转/期末业务支出结转-->
+    <bean id="SetBusinessEndIncomeAndExpenditure"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.SetBusinessEndIncomeAndExpenditureJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="SetBusinessEndIncomeAndExpenditure" value="SetBusinessEndIncomeAndExpenditure"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="SetBusinessEndIncomeAndExpenditureTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SetBusinessEndIncomeAndExpenditure"/>
+        <property name="cronExpression" value="0 30 1 1 * ?"/>
+    </bean>
+
+    <!--新增住房公积金银行存款-->
+    <bean id="AddHousingfundBankBalance"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.AddHousingfundBankBalanceJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="AddHousingfundBankBalance" value="AddHousingfundBankBalance"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="AddHousingfundBankBalanceTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="AddHousingfundBankBalance"/>
+        <property name="cronExpression" value="0 40 5 1 * ?"/>
+    </bean>
+
+    <!--更新定期余额-->
+    <bean id="UpdateFixedBalance"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.UpdateFixedBalanceJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="UpdateFixedBalance" value="UpdateFixedBalance"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="UpdateFixedBalanceTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="UpdateFixedBalance"/>
+        <property name="cronExpression" value="0 0 1 * * ?"/>
+    </bean>
+
+    <!--计提定期利息收入-->
+    <bean id="CkzhFixedIntIncome"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.CkzhFixedIntIncomeJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="CkzhFixedIntIncome" value="CkzhFixedIntIncome"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="CkzhFixedIntIncomeTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="CkzhFixedIntIncome"/>
+        <property name="cronExpression" value="0 59 23 L * ?"/>
+    </bean>
+
+    <!--定时修改政策信息-->
+    <bean id="UpdateDQZ"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.UpdateDQZJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="UpdateDQZ" value="UpdateDQZ"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="UpdateDQZTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="UpdateDQZ"/>
+        <property name="cronExpression" value="0 10 0 1 * ?"/>
+    </bean>
+
+    <!--还款计划-->
+    <bean id="Repaymentjihua"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.RepaymentjihuaJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="Repaymentjihua" value="Repaymentjihua"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="RepaymentjihuaTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="Repaymentjihua"/>
+        <property name="cronExpression" value="0 0 21 * * ?"/>
+    </bean>
+
+    <!--正常还款 每天19：00-->
+    <bean id="Repayment"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.RepaymentJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="Repayment" value="Repayment"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="RepaymentTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="Repayment"/>
+        <property name="cronExpression" value="0 0 19 * * ?"/>
+    </bean>
+
+    <!--正常还款转逾期定时监控 每天11:00-->
+    <bean id="OverdueRepaymentChange"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.OverdueRepaymentChangeJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="OverdueRepaymentChange" value="OverdueRepaymentChange"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="OverdueRepaymentChangeTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="OverdueRepaymentChange"/>
+        <property name="cronExpression" value="0 0 11 * * ?"/>
+    </bean>
+
+    <!--扣款已发送到账通知查询 每天11:20-->
+    <bean id="DebitSend"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.DebitSendJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="DebitSend" value="DebitSend"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="DebitSendTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="DebitSend"/>
+        <property name="cronExpression" value="0 20 11 * * ?"/>
+    </bean>
+
+    <!--剩余期数 每天18:50-->
+    <bean id="RemainingPeriod"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.RemainingPeriodJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="RemainingPeriod" value="RemainingPeriod"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="RemainingPeriodTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="RemainingPeriod"/>
+        <property name="cronExpression" value="0 50 18 * * ?"/>
+    </bean>
+
+    <!--还款申请定时发送 11:40-->
+    <bean id="OverdueRepaymenTiming"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.OverdueRepaymenTimingJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="OverdueRepaymenTiming" value="OverdueRepaymenTiming"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="OverdueRepaymenTimingTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="OverdueRepaymenTiming"/>
+        <property name="cronExpression" value="0 40 11 * * ?"/>
+    </bean>
+
+    <!--自动逾期记录扣划 每天17：30-->
+    <bean id="OverdueAutomatic"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.OverdueAutomaticJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="OverdueAutomatic" value="OverdueAutomatic"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="OverdueAutomaticTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="OverdueAutomatic"/>
+        <property name="cronExpression" value="0 30 17 * * ?"/>
+    </bean>
+
+    <!--获取全市各区暂收未分摊总额定时任务-->
+    <bean id="SaveZSWFTTimeTask"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.SaveZSWFTTimeTaskJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="SaveZSWFTTimeTask" value="SaveZSWFTTime"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="SaveZSWFTTimeTaskTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="SaveZSWFTTimeTask"/>
+        <property name="cronExpression" value="0 55 23 L * ?"/>
+    </bean>
+
+    <!--单位短信催缴-->
+    <bean id="DoSMSPayCall"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass">
+            <value>com.handge.housingfund.task.jobs.DoSMSPayCallJobs</value>
+        </property>
+        <property name="jobDataMap">
+            <map>
+                <entry key="DoSMSPayCall" value="DoSMSPayCall"/>
+            </map>
+        </property>
+        <property name="durability" value="true"/>
+        <property name="requestsRecovery" value="true"/>
+    </bean>
+    <bean id="DoSMSPayCallTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="DoSMSPayCall"/>
+        <property name="cronExpression" value="0 0 12 1 * ?"/>
+    </bean>
+</beans>

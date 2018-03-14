@@ -1,0 +1,1807 @@
+swagger: '2.0'
+info:
+  title: Handge housingfund Platform API
+  description: 提供公积金的数据支持
+  termsOfService: Handge.
+  contact:
+    name: API Documentation Support.
+    url: 'http://handge.cn'
+    email: front_end@handge.cn
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.1
+host: '172.18.20.158:8001'
+schemes:
+  - http
+basePath: /housingfund
+security:
+  - addToken: []
+  - addCache: []
+tags:
+  - name: auth
+    description: 登录
+  - name: config
+    description: 配置文件
+  - name: outlets
+    description: 网点管理
+  - name: organization
+    description: 组织管理，提供员工账号管理、权限管理功能及解决。
+  - name: bankaccount
+    description: 银行管理，提供获取专户列表、添加银行专户、修改银行专户、删除银行专户、批量删除银行专户、银行专户销户、通过银行名称或代码获取银行列表
+produces:
+  - application/json
+paths:
+  /account/login:
+    post:
+      description: 用户密码登录
+      operationId: login
+      tags:
+        - auth
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/loginPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/loginResponses'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/loginByCa:
+    post:
+      description: 用户ca登录
+      operationId: loginCABody
+      tags:
+        - auth
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/loginCaPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/loginResponses'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/resetPwd:
+    post:
+      description: 用户重置密码
+      operationId: resetPwdBody
+      tags:
+        - auth
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/resetPwdPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Success'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/resetPwdSendEmail:
+    post:
+      description: 用户忘记密码
+      operationId: resetPwdEmailBody
+      tags:
+        - auth
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/resetPwdSendEmailPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Success'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/checkToken:
+    post:
+      description: 检查token
+      operationId: checkToken
+      tags:
+        - auth
+      parameters:
+        - name: token
+          required: true
+          in: query
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Success'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /dictionary:
+    get:
+      description: 配置文件
+      operationId: getConfig
+      tags:
+        - config
+      responses:
+        '200':
+          description: OK
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/outlets/network:
+    get:
+      description: 网点列表
+      operationId: getOutletLsit
+      tags:
+        - outlets
+      parameters:
+        - name: MingCheng
+          in: query
+          type: string
+          description: 网点名称
+        - name: pageNo
+          in: query
+          type: integer
+          description: 页码
+        - name: pageSize
+          in: query
+          type: integer
+          description: 数据条数
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OutletIdGet'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: 新增网点
+      operationId: postAddOutlets
+      tags:
+        - outlets
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/OutletPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: 删除网点
+      operationId: deleteNetwork
+      tags:
+        - outlets
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/delList'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  '/account/outlets/network/{id}':
+    get:
+      description: 网点详情
+      operationId: getNetworkDetail
+      tags:
+        - outlets
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+          description: 网点编号
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OutletIdGet'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      description: 修改网点
+      operationId: putModifyNetwork
+      tags:
+        - outlets
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+          description: 网点编号
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/OutletPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/outlets/department:
+    get:
+      description: 部门列表
+      operationId: getDepartmentList
+      tags:
+        - outlets
+      parameters:
+        - name: id
+          in: query
+          type: string
+          description: 网点id
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Departmentlist'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: 新增、修改部门
+      operationId: putDepartment
+      tags:
+        - outlets
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Department'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: 删除部门
+      operationId: deleteDepartment
+      tags:
+        - outlets
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/delList'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/outlets/department/member:
+    get:
+      description: 获取未分配部门成员列表
+      operationId: getDepartmentMemberList
+      tags:
+        - outlets
+      parameters:
+        - name: id
+          in: query
+          type: string
+          required: true
+          description: 网点id
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/OutletMemberIdGet'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/organization/employee:
+    get:
+      summary: Staff Search
+      description: 组织管理获取员工列表
+      operationId: getEmployeeList
+      parameters:
+        - name: WangDian
+          in: query
+          type: string
+          description: 网点
+        - name: XingMing
+          in: query
+          type: string
+          description: 姓名
+        - name: ZhangHao
+          in: query
+          type: string
+          description: 账号
+        - name: BuMen
+          in: query
+          type: string
+          description: 部门
+        - name: pageNo
+          in: query
+          type: integer
+          description: 页码
+        - name: pageSize
+          in: query
+          type: integer
+          description: 数据条数
+      tags:
+        - organization
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/staffSearch'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      summary: Staff Add
+      description: 组织管理员工添加账号
+      operationId: addEmployee
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/staffAdd'
+      tags:
+        - organization
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: 删除员工
+      operationId: delEmployee
+      tags:
+        - organization
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/delList'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  '/account/organization/employee/{id}':
+    get:
+      description: 组织管理获取员工详情
+      operationId: getEmployeeDetail
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+          description: 用户id
+      tags:
+        - organization
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/staffdetail'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      description: 修改员工信息
+      operationId: modifyEmployee
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+          description: 用户id
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/staffAdd'
+      tags:
+        - organization
+      responses:
+        '200':
+          description: 修改成功
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/organization/role:
+    get:
+      description: 获取角色列表
+      operationId: getRoleList
+      parameters:
+        - name: roleName
+          in: query
+          type: string
+          description: 角色
+        - name: pageNo
+          in: query
+          type: integer
+          description: 页码
+        - name: pageSize
+          in: query
+          type: integer
+          description: 数据条数
+      tags:
+        - organization
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/roleGet'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: 添加角色
+      operationId: addRole
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/rolePost'
+      tags:
+        - organization
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  '/account/organization/role/{id}':
+    get:
+      description: 获取角色详情
+      operationId: getRoleDetail
+      tags:
+        - organization
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: 角色id
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      description: 修改角色
+      operationId: putRole
+      tags:
+        - organization
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: 角色id
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/rolePut'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: 删除角色
+      operationId: deleteRole
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: 角色id
+      tags:
+        - organization
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/organization/permission:
+    post:
+      description: 给角色添加权限
+      operationId: addPermission
+      parameters:
+        - name: id
+          in: query
+          required: true
+          type: string
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/permissionList'
+      tags:
+        - organization
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/organization/classify:
+    get:
+      description: 获取编辑权限列表
+      operationId: getClassifyList
+      tags:
+        - organization
+      parameters:
+        - name: id
+          in: query
+          type: string
+          description: 角色ID
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/permissionsGet'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/organization/roleEmployee:
+    get:
+      description: 未分配角色的员工列表
+      operationId: getRoleEmployeeList
+      tags:
+        - organization
+      parameters:
+        - name: id
+          in: query
+          required: false
+          type: string
+          description: 角色id
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/OutletMemberIdGet'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: 修改角色下的成员
+      operationId: putRoleEmployee
+      tags:
+        - organization
+      parameters:
+        - name: id
+          in: query
+          required: false
+          type: string
+          description: 角色id
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/putPermissionList'
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/OutletMemberIdGet'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/organization/policy:
+    get:
+      description: 获取对应的政策
+      tags:
+        - organization
+      operationId: getPolicy
+      parameters:
+        - name: LeiXing
+          in: query
+          type: string
+          description: 类型
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/policyGet'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  '/account/organization/policy/{id}':
+    put:
+      description: 修改政策
+      tags:
+        - organization
+      operationId: modifyPolicy
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          description: 政策id
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/policyPut'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /getUploadImages:
+    get:
+      description: 获取资料设置
+      operationId: getFileSet
+      tags:
+        - organization
+      parameters:
+        - name: modle
+          required: false
+          in: query
+          type: string
+          description: 模块名称（不传则所有）
+        - name: business
+          required: false
+          in: query
+          type: string
+          description: 业务名称（不传则所有）
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/uploadFileRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: 添加资料设置
+      operationId: addFileSet
+      tags:
+        - organization
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/uploadFile'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Success'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /getUploadImages/{id}:
+    put:
+      description: 修改资料设置
+      operationId: putFileSet
+      tags:
+        - organization
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+          description: id
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/uploadFile'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Success'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: 删除资料设置
+      operationId: delFileSet
+      tags:
+        - organization
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+          description: id
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Success'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/special:
+    get:
+      description: 获取专户列表
+      operationId: getSpecialAccountList
+      tags:
+        - bankaccount
+      parameters:
+        - name: YHMC
+          required: false
+          in: query
+          type: string
+          description: 银行名称
+        - name: YHZHMC
+          required: false
+          in: query
+          type: string
+          description: 银行专户名称
+        - name: status
+          required: false
+          in: query
+          type: string
+          description: 专户状态
+        - name: pageNo
+          required: false
+          in: query
+          type: integer
+          description: 页码
+        - name: pageSize
+          required: false
+          in: query
+          type: integer
+          description: 数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/getSpecialAccountListRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: 新增银行专户
+      operationId: addSpecialAccount
+      tags:
+        - bankaccount
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/postSpecialAccount'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/postSpecialAccountRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: 批量删除银行专户
+      operationId: delSpecialAccounts
+      tags:
+        - bankaccount
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/delSpecialAccountsReq'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /account/special/{id}:
+    put:
+      description: 修改银行专户
+      operationId: updateSpecialAccount
+      tags:
+        - bankaccount
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+          description: id
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/putSpecialAccount'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      description: 删除银行专户
+      operationId: delSpecialAccount
+      tags:
+        - bankaccount
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+          description: 专户id
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/special/cancel/{id}:
+    put:
+      description: 银行专户销户
+      operationId: cancelSpecialAccount
+      tags:
+        - bankaccount
+      parameters:
+        - name: id
+          required: true
+          in: path
+          type: string
+          description: id
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /account/bankinfo:
+    get:
+      description: 通过银行名称或代码获取银行列表
+      operationId: getBankInfoList
+      tags:
+        - bankaccount
+      parameters:
+        - name: YHMC
+          required: false
+          in: query
+          type: string
+          description: 银行名称
+        - name: CODE
+          required: false
+          in: query
+          type: string
+          description: 银行代码 
+        - name: pageNo
+          required: false
+          in: query
+          type: integer
+          description: 页码
+        - name: pageSize
+          required: false
+          in: query
+          type: integer
+          description: 数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/getBankInfoList'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+securityDefinitions:
+  addToken:
+    type: apiKey
+    in: header
+    name: Token
+  addCache:
+    type: apiKey
+    in: header
+    name: Cache
+definitions:
+  loginPost:
+    properties:
+      req:
+        type: object
+        properties:
+          username:
+            type: string
+            description: 用户名
+          pwd:
+            type: string
+            description: 密码
+  loginCaPost:
+    properties:
+      req:
+        type: object
+        properties:
+          user_id:
+            type: string
+            description: 用户ID
+          cert:
+            type: string
+            description: 证书
+          signinfo:
+            type: string
+            description: 密文
+          info:
+            type: string
+            description: 明文
+  resetPwdPost:
+    properties:
+      req:
+        type: object
+        properties:
+          token:
+            type: string
+            description: token
+          pwd:
+            type: string
+            description: 旧密码
+          repwd:
+            type: string
+            description: 新密码
+  resetPwdSendEmailPost:
+    properties:
+      req:
+        type: object
+        properties:
+          email:
+            type: string
+            description: 邮箱
+  loginResponses:
+    properties:
+      res:
+        type: object
+        properties:
+          id:
+            type: string
+            description: 用户id
+          token:
+            type: string
+            description: 令牌
+  OutletPost:
+    properties:
+      req:
+        type: object
+        required:
+          - MingCheng
+          - DiQu
+          - XXDZ
+          - FZR
+          - LXDH
+          - BLSJ
+        properties:
+          MingCheng:
+            type: string
+            description: 网点名称
+          DiQu:
+            type: string
+            description: 网点地区
+          XXDZ:
+            type: string
+            description: 网点详细地址，用地址寻找坐标
+          SJWD:
+            type: string
+            description: 上级网点
+          FZR:
+            type: string
+            description: 网点负责人
+          LXDH:
+            type: string
+            description: 联系电话
+          BLSJ:
+            type: string
+            description: 办理时间
+          JingDu:
+            type: string
+            description: 经度
+          WeiDu:
+            type: string
+            description: 维度
+  delList:
+    properties:
+      req:
+        description: 删除列表
+        type: array
+        items:
+          type: string
+          description: 删除ID
+  permissionList:
+    properties:
+      req:
+        description: 权限ID列表
+        type: array
+        items:
+          type: string
+          description: 权限ID
+  Department:
+    properties:
+      req:
+        type: object
+        required:
+          - MingCheng
+          - FZR
+          - LXDH
+          - BMCY
+        properties:
+          id:
+            type: string
+            description: 部门id（有id为修改操作，没有为新增操作）
+          MingCheng:
+            type: string
+            description: 部门名称
+          FZR:
+            type: string
+            description: 部门负责人
+          LXDH:
+            type: string
+            description: 部门联系电话
+          WangDian_id:
+            type: string
+            description: 所属网点ID
+          BMCY:
+            description: 部门成员
+            type: array
+            items:
+              type: object
+              required:
+                - id
+              properties:
+                id:
+                  type: string
+                  description: 个人账号
+  Departmentlist:
+    properties:
+      res:
+        type: array
+        description: 部门列表
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              description: 部门编号
+            MingCheng:
+              type: string
+              description: 部门名称
+            FZR:
+              type: string
+              description: 部门负责人
+            LXDH:
+              type: string
+              description: 部门联系电话
+            BMCY:
+              description: 部门成员
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    description: 个人账号
+                  XingMing:
+                    type: string
+                    description: 姓名
+  OutletIdGet:
+    properties:
+      res:
+        type: object
+        properties:
+          id:
+            type: string
+            description: 网点id
+          MingCheng:
+            type: string
+            description: 网点名称
+          DiQu:
+            type: string
+            description: 网点地区代码
+          XXDZ:
+            type: string
+            description: 网点地址，用地址寻找坐标
+          SJWD:
+            type: string
+            description: 上级网点
+          FZR:
+            type: string
+            description: 网点负责人
+          LXDH:
+            type: string
+            description: 联系电话
+          BLSJ:
+            type: string
+            description: 办理时间
+          BMLB:
+            type: array
+            description: 部门列表
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: 部门编号
+                MingCheng:
+                  type: string
+                  description: 部门名称
+                FZR:
+                  type: string
+                  description: 部门负责人
+                LXDH:
+                  type: string
+                  description: 部门联系电话
+                BMCY:
+                  description: 部门成员
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        description: 个人账号
+                      XingMing:
+                        type: string
+                        description: 姓名
+  OutletMemberIdGet:
+    properties:
+      res:
+        type: array
+        description: 成员
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              description: 个人id
+            ZhangHao:
+              type: string
+              description: 个人账号
+            XingMing:
+              type: string
+              description: 个人姓名
+  staffSearch:
+    type: object
+    properties:
+      res:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: 个人账号
+            XingMing:
+              type: string
+              description: 姓名
+            ZhangHao:
+              type: string
+              description: 账号
+            WangDian:
+              type: object
+              description: 网点
+              properties:
+                id:
+                  type: string
+                  description: 网点id
+                MingCheng:
+                  type: string
+                  description: 网点名称
+            BuMen:
+              type: object
+              description: 部门
+              properties:
+                id:
+                  type: string
+                  description: 部门id
+                MingCheng:
+                  type: string
+                  description: 部门名称
+            JueSe:
+              type: string
+              description: 角色
+            LXDH:
+              type: string
+              description: 联系电话
+            ZhuangTai:
+              type: string
+              description: 状态
+  staffdetail:
+    type: object
+    properties:
+      res:
+        type: object
+        description: 数据
+        required:
+          - XingMing
+          - XingBie
+          - state
+          - YouXiang
+          - JueSe
+          - LXDH
+        properties:
+          XingMing:
+            type: string
+            description: 姓名
+          XingBie:
+            type: string
+            description: 性别
+          YHTX:
+            type: string
+            description: 用户头像
+          JueSe:
+            type: string
+            description: 角色
+          state:
+            type: string
+            description: 状态
+          WangDian:
+            type: string
+            description: 网点ID
+          BuMen:
+            type: string
+            description: 部门ID
+          RZSJ:
+            type: integer
+            description: 入职时间
+          XueLi:
+            type: string
+            description: 学历
+          YouXiang:
+            type: string
+            description: 邮箱
+          LXDH:
+            type: string
+            description: 联系电话
+          QQH:
+            type: string
+            description: QQ号
+          WXH:
+            type: string
+            description: 微信号
+  staffAdd:
+    type: object
+    properties:
+      req:
+        type: object
+        description: 数据
+        required:
+          - XingMing
+          - XingBie
+          - state
+          - YouXiang
+          - WangDian
+        properties:
+          XingMing:
+            type: string
+            description: 姓名
+          XingBie:
+            type: string
+            description: 性别
+          YHTX:
+            type: string
+            description: 用户头像
+          JueSe:
+            type: string
+            description: 角色
+          state:
+            type: string
+            description: 状态
+          WangDian:
+            type: string
+            description: 网点
+          BuMen:
+            type: string
+            description: 部门
+          RZSJ:
+            type: string
+            description: 入职时间
+          XueLi:
+            type: string
+            description: 学历
+          YouXiang:
+            type: string
+            description: 邮箱
+          LXDH:
+            type: string
+            description: 联系电话
+          QQH:
+            type: string
+            description: QQ号
+          WXH:
+            type: string
+            description: 微信号
+  roleGet:
+    type: object
+    properties:
+      res:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: id
+            role_name:
+              type: string
+              description: 角色名称
+            role_note:
+              type: string
+              description: 角色描述
+            ChengYuan:
+              type: array
+              items:
+                properties:
+                  id:
+                    type: string
+                    description: id
+                  XingMing:
+                    type: string
+                    description: 姓名
+                  ZhangHao:
+                    type: string
+                    description: 账号
+  rolePost:
+    type: object
+    properties:
+      req:
+        type: object
+        properties:
+          role_name:
+            type: string
+            description: 角色名称
+          role_note:
+            type: string
+            description: 角色描述
+  rolePut:
+    type: object
+    properties:
+      req:
+        type: object
+        properties:
+          role_name:
+            type: string
+            description: 角色名称
+          role_note:
+            type: string
+            description: 角色描述
+  permissionsGet:
+    type: object
+    properties:
+      req:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: id
+            classify_name:
+              type: string
+              description: 分类名称
+            MKLB:
+              description: 模块列表
+              type: array
+              items:
+                properties:
+                  id:
+                    type: string
+                    description: id
+                  module_name:
+                    type: string
+                    description: 模块名称
+                  QXLB:
+                    description: 权限列表
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          description: id
+                        permission_name:
+                          type: string
+                          description: 权限名称
+                        permission_code:
+                          type: string
+                          description: 权限代码
+                        permission_note:
+                          type: string
+                          description: 权限备注
+  putPermissionList:
+    type: object
+    properties:
+      req:
+        type: array
+        items:
+          type: string
+          description: 员工id
+  policyGet:
+    type: object
+    properties:
+      req:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: id
+            LeiXing:
+              type: string
+              description: 政策类型
+            MingCheng:
+              type: string
+              description: 政策名称
+            BianMa:
+              type: string
+              description: 政策编码
+            DQZ:
+              type: string
+              description: 当前值
+            DQSJ:
+              type: string
+              description: 当前时间
+            XGZ:
+              type: string
+              description: 修改值
+            XGSJ:
+              type: string
+              description: 修改时间
+            DanWei:
+              type: string
+              description: 单位
+  policyPut:
+    type: object
+    properties:
+      req:
+        type: object
+        properties:
+          XGZ:
+            type: string
+            description: 修改值
+          XGSJ:
+            type: string
+            description: 修改时间
+  uploadFile:
+    properties:
+      req:
+        type: object
+        properties:
+          modle:
+            type: string
+            description: 模块编号01：归集 02：提取 03：贷款）
+          business:
+            type: string
+            description: 业务名称
+          certificateName:
+            type: string
+            description: 资料名称
+          required:
+            type: boolean
+            description: 是否必填
+  uploadFileRes:
+    properties:
+      req:
+        type: object
+        properties:
+          id:
+            type: string
+            description: id
+          modle:
+            type: string
+            description: 模块编号01：归集 02：提取 03：贷款）
+          business:
+            type: string
+            description: 业务名称
+          certificateName:
+            type: string
+            description: 资料名称
+          required:
+            type: boolean
+            description: 是否必填
+  getSpecialAccountListRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: uuid
+            YHZHMC:
+              type: string
+              description: 银行专户名称
+            YHZHHM:
+              type: string
+              description: 银行专户号码
+            ZHXZ:
+              type: string
+              description: 专户性质
+            YHMC:
+              type: string
+              description: 银行名称
+            YHDM:
+              type: string
+              description: 银行代码
+            KMBH:
+              type: string
+              description: 科目编号
+            status:
+              type: string
+              description: 专户状态（0：正常；1：销户  ）
+            KHRQ:
+              type: string
+              description: 开户日期
+            XHRQ:
+              type: string
+              description: 销户日期
+            SFYSY:
+              type: string
+              description: 是否已使用
+  postSpecialAccount:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - YHZHMC
+          - YHZHHM
+          - ZHXZ
+          - YHMC
+          - YHDM
+          - KMBH
+          - KHRQ
+        properties:
+          YHZHMC:
+            type: string
+            description: 银行专户名称
+          YHZHHM:
+            type: string
+            description: 银行专户号码
+          ZHXZ:
+            type: string
+            description: 专户性质（长度二位 ）
+          YHMC:
+            type: string
+            description: 银行名称
+          YHDM:
+            type: string
+            description: 银行代码（长度三位 ）
+          KMBH:
+            type: string
+            description: 科目编号
+          KHRQ:
+            type: string
+            description: 开户日期
+         
+          
+  postSpecialAccountRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          id:
+            type: string
+            description: uuid
+          YHZHMC:
+            type: string
+            description: 银行专户名称
+          YHZHHM:
+            type: string
+            description: 银行专户号码
+          ZHXZ:
+            type: string
+            description: 专户性质
+          YHMC:
+            type: string
+            description: 银行名称
+          YHDM:
+            type: string
+            description: 银行代码
+          KMBH:
+            type: string
+            description: 科目编号
+          status:
+            type: string
+            description: 专户状态
+          KHRQ:
+            type: string
+            description: 开户日期
+          XHRQ:
+            type: string
+            description: 销户日期
+          SFYSY:
+            type: string
+            description: 是否已使用   
+  putSpecialAccount:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - YHZHMC
+          - YHZHHM
+          - ZHXZ
+          - YHMC
+          - YHDM
+          - KMBH
+          - KHRQ
+        properties:
+          YHZHMC:
+            type: string
+            description: 银行专户名称
+          YHZHHM:
+            type: string
+            description: 银行专户号码
+          ZHXZ:
+            type: string
+            description: 专户性质（长度二位 ）
+          YHMC:
+            type: string
+            description: 银行名称
+          YHDM:
+            type: string
+            description: 银行代码（长度三位 ）
+          KMBH:
+            type: string
+            description: 科目编号
+          KHRQ:
+            type: string
+            description: 开户日期
+          
+  delSpecialAccountsReq:
+    type: object
+    properties:
+      Req:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: 银行专户id
+
+  getBankInfoList:
+    type: object
+    properties:
+     Res:
+        type: array
+        items:
+          properties:
+            id:
+              type: string
+              description: uuid
+            bank_name:
+              type: string
+              description: 银行专户名称
+            code:
+              type: string
+              description: 银行专户号码
+            chgno:
+              type: string
+              description: 联行号
+            node:
+              type: string
+              description: 银行节点号
+  Success:
+    properties:
+      res:
+        type: object
+        properties:
+          id:
+            description: 各模块ID
+            type: string
+          status:
+            description: 操作状态
+            type: string
+  Error:
+    properties:
+      Code:
+        type: integer
+        description: 操作码
+      Msg:
+        type: string
+        description: 操作信息

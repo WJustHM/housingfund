@@ -1,0 +1,6151 @@
+swagger: '2.0'
+info:
+  title: 公积金项目 API
+  description: 提供五舟汉云公积金--归集--单位缴存管理--接口数据
+  termsOfService: Handge
+  contact:
+    name: API Documentation Support.
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.1
+host: 127.0.0.1:8082
+schemes:
+  - http
+basePath: /
+security:
+  - addToken: []
+tags:
+  - name: UnitDepositInfo
+    description: 缴存信息、缴存列表、缴存详情
+
+  - name: common
+    description: 缴存审核
+
+  - name: Remittance
+    description: 单位汇缴模块
+
+  - name: RemittanceInventory
+    description: 汇缴清册模块、清册确认、清册详情、打印汇缴清册回执单
+
+  - name: PayBack
+    description: 补缴模块
+
+  - name: PayHold
+    description: 缓缴模块
+
+  - name: PayWrong
+    description: 错缴模块
+
+  - name: Call
+    description: 催缴模块
+
+  - name: BaseAdjustment
+    description: 缴存基数调整模块
+
+  - name: ProportionAdjustment
+    description: 缴存比例调整模块
+
+  - name: depositReview
+    description: 单位缴存管理业务审核
+  - name: BusniessDetail
+    description: 业务明细查询
+produces:
+  - application/json
+paths:
+
+# 单位缴存
+  /collection/UnitDepositList:
+    get:
+      description: 缴存列表信息
+      operationId: getUnitDepositListRes
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          format: string
+          description: 单位名称
+          required: false
+        - name: DWZH
+          in: query
+          type: string
+          format: string
+          description: 单位账号
+      tags:
+        - UnitDepositInfo
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListUnitDepositRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  # 单位缴存明细
+  /collection/UnitDepositList/{DWZH}:
+    get:
+      description: 缴存明细
+      operationId: getUnitDepositDetailList
+      parameters:
+        - name: DWZH
+          in: path
+          type: string
+          format: string
+          description: 单位账号
+          required: true
+        - name: CXNX
+          in: query
+          type: string
+          format: string
+          description: 查询年限
+      tags:
+        - UnitDepositInfo
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListUnitDepositDeatilRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/UnitDepositDetail/{DWZH}:
+    get:
+      description: 查看单位缴存信息（从列表进入）
+      operationId: getUnitDepositDetail
+      parameters:
+        - name: DWZH
+          in: path
+          type: string
+          required: true
+          description: 单位账号
+      tags:
+        - UnitDepositInfo
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/getUnitDepositDetailRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+# 单位清册
+  /collection/UnitInventory:
+    get:
+      description: 缴存清册列表
+      operationId: getInventoryList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          required: false
+          description: 单位名称
+        - name: DWZH
+          in: query
+          type: string
+          required: false
+          description: 单位账号
+        - name: CZY
+          in: query
+          type: string
+          required: false
+          description: 操作员
+        - name: KSSJ
+          in: query
+          type: string
+          required: false
+          description: 受理时间开始(开始时间）
+        - name: JSSJ
+          in: query
+          type: string
+          required: false
+          description: 受理时间结束(结束时间）
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - RemittanceInventory
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListInventoryRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      description: 清册确认
+      operationId: postInventoryConfirm
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/InventoryConfirmPost'
+      tags:
+        - RemittanceInventory
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AddInventoryConfirmRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/UnitRemittanceInventory/{DWZH}/{HBJNY}:
+    get:
+      description: 汇缴申请时，根据账号+汇补缴年月查询清册信息
+      operationId: getRemittanceInventoryPersonalList
+      parameters:
+        - name: DWZH
+          in: path
+          type: string
+          required: true
+          description: 单位账号
+        - name: HBJNY
+          in: path
+          type: string
+          required: true
+          description: 汇补缴年月
+      tags:
+        - Remittance
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListRemittanceInventoryRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitRemittanceInventoryDetail/{QCQRDH}:
+    get:
+      description: 汇缴清册详情
+      operationId: getUnitRemittanceInventoryDetail
+      parameters:
+        - name: QCQRDH
+          in: path
+          type: string
+          required: true
+          description: 清册确认单号
+      tags:
+        - RemittanceInventory
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/GetRemittanceInventoryDetailRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitRemittanceInventoryDetail/receipt/{QCQRDH}:
+    get:
+      description: 打印清册回执单
+      operationId: headRemittanceInventory
+      parameters:
+        - name: QCQRDH
+          in: path
+          type: string
+          required: true
+          description: 清册确认单号
+      tags:
+        - RemittanceInventory
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/HeadRemittanceInventoryRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/UnitRemittanceInventoryAuto/{DWZH}:
+    get:
+      description: 获取清册信息（生成清册数据）
+      operationId: getUnitInventoryList
+      parameters:
+        - name: DWZH
+          in: path
+          type: string
+          required: true
+          description: 单位账号
+      tags:
+        - RemittanceInventory
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AutoRemittanceInventoryRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+# 单位汇缴
+  /collection/UnitRemittanceList:
+    get:
+      description: 单位汇缴业务记录
+      operationId: getUnitRemittanceList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+          required: false
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: YWZT
+          in: query
+          type: string
+          description: 业务状态(00:所有；01：新建；02:待审核；03:审核不通过；04:办结)
+        - name: CZY
+          in: query
+          type: string
+          description: 操作员
+        - name: KSSJ
+          in: query
+          type: string
+          description: 受理时间开始
+        - name: JSSJ
+          in: query
+          type: string
+          description: 受理时间结束
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - Remittance
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListUnitRemittanceRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    #todo 该API理解有误
+#    delete:
+#      summary: 汇缴记录
+#      description: 删除汇缴记录
+#      operationId: deleteUnitListUnitRemittanceRes
+#      parameters:
+#        - name: uid
+#          in: query
+#          type: string
+#          format: string
+#          description: 汇缴记录ID
+#          required: true
+#      tags:
+#        - Remittance
+#      responses:
+#        '200':
+#          description: Successful response
+#          schema:
+#            $ref: '#/definitions/deleteListUnitRemittanceResRes'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+  /collection/UnitRemittance:
+    post:
+      description: 新建汇缴申请
+      operationId: postUnitRemittance
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnitRemittancePost'
+      tags:
+        - Remittance
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AddUnitRemittanceRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+#  /collection/UnitRemittanceSubmit:
+#    post:
+#      description: |
+#       单位汇缴提交
+#      operationId: postUnitRemittanceSubmit
+#      tags:
+#        - Remittance
+#      parameters:
+#        - name: body
+#          required: true
+#          in: body
+#          schema:
+#            $ref: '#/definitions/UnitRemittanceSubmitPost'
+#      responses:
+#        '200':
+#          description: OK
+#          schema:
+#            $ref: '#/definitions/SubmitUnitRemittanceRes'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+  /collection/UnitRemittanceAuto/{DWZH}:
+    get:
+      description: 根据单位账号获取汇缴申请的单位信息
+      operationId: getUnitRemittanceAuto
+      parameters:
+        - name: DWZH
+          in: path
+          type: string
+          required: true
+          description: 单位账号
+      tags:
+        - Remittance
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AutoUnitRemittanceRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitRemittance/{YWLSH}:
+    get:
+      description: 汇缴申请详情
+      operationId: getUnitRemittance
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          required: true
+          description: 业务流水号
+      tags:
+        - Remittance
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/GetUnitRemittanceRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+#    put:
+#      description: 汇缴申请修改
+#      operationId: putUnitRemittance
+#      parameters:
+#        - name: YWLSH
+#          in: path
+#          type: string
+#          required: true
+#          description: 业务流水号
+#        - name: body
+#          in: body
+#          required: true
+#          schema:
+#            $ref: '#/definitions/UnitRemittancePut'
+#      tags:
+#        - Remittance
+#      responses:
+#        '200':
+#          description: Successful response
+#          schema:
+#            $ref: '#/definitions/ReUnitRemittanceRes'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+  /collection/UnitRemittance/receipt/{YWLSH}:
+    get:
+      description: 单位汇缴-缴存回执单
+      operationId: headUnitRemittanceReceipt
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+      tags:
+        - Remittance
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/HeadUnitRemittanceReceiptRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+# 单位汇缴通知单
+  /collection/UnitRemittanceNotice/receipt/{YWLSH}:
+    get:
+      description: 公积金汇缴通知单
+      operationId: headUnitRemittanceNotice
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+      tags:
+        - Remittance
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/UnitRemittanceNotice'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+#  单位补缴
+  /collection/UnitPayBackList:
+    get:
+      description: 获取补缴记录
+      operationId: getUnitListPayBackRes
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: YWZT
+          in: query
+          type: string
+          description: 业务状态(00:所有；01：新建；02:待审核；03:审核不通过；04:办结)
+        - name: CZY
+          in: query
+          type: string
+          description: 操作员
+        - name: KSSJ
+          in: query
+          type: string
+          description: 受理时间开始
+        - name: JSSJ
+          in: query
+          type: string
+          description: 受理时间结束
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - PayBack
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListPayBackRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/UnitPayBack:
+    post:
+      description: 新建补缴申请
+      operationId: postUnitPayBack
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnitPayBackPost'
+      tags:
+        - PayBack
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AddUnitPayBackRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitPayBackSubmit:
+    post:
+      description: |
+       单位补缴提交
+      operationId: postUnitPayBackSubmit
+      tags:
+        - PayBack
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitPayBackubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitUnitPayBackRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  #todo 该API无用
+#  /collection/UnitListPayBackRes/{YWLSH}:
+#    delete:
+#      description: 删除补缴记录
+#      operationId: deleteUnitListPayBackRes
+#      parameters:
+#        - name: YWLSH
+#          in: path
+#          type: string
+#          required: true
+#          description: 业务流水号
+#      tags:
+#        - PayBack
+#      responses:
+#        '200':
+#          description: Successful response
+#          schema:
+#            $ref: '#/definitions/DeleteListPayBackResRes'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+
+  /collection/UnitPayBackAuto/{DWZH}/{HBJNY}:
+    get:
+      description: 获取单位补缴申请时的单位信息
+      operationId: getUnitPayBackAuto
+      parameters:
+        - name: DWZH
+          in: path
+          type: string
+          required: true
+          description: 单位账号
+        - name: HBJNY
+          in: path
+          type: string
+          required: true
+          description: 汇补缴年月
+      tags:
+        - PayBack
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AutoUnitPayBackRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/UnitPayBack/{YWLSH}:
+  #todo 该API暂时先用详情获取
+#    get:
+#      description: 单位补缴修改时先获取业务信息
+#      operationId: getUnitUnitPayBackPut
+#      parameters:
+#        - name: YWLSH
+#          in: path
+#          type: string
+#          description: 业务流水号
+#          required: true
+#      tags:
+#        - PayBack
+#      responses:
+#        '200':
+#          description: Successful response
+#          schema:
+#            $ref: '#/definitions/UnitPayBackPutData'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+#    put:
+#      description: 修改补缴
+#      operationId: putUnitPayBack
+#      parameters:
+#        - name: YWLSH
+#          in: path
+#          type: string
+#          description: 业务流水号
+#          required: true
+#        - name: body
+#          in: body
+#          required: true
+#          schema:
+#            $ref: '#/definitions/UnitPayBackPut'
+#      tags:
+#        - PayBack
+#      responses:
+#        '200':
+#          description: Successful response
+#          schema:
+#            $ref: '#/definitions/ReUnitPayBackRes'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+    get:
+      description: 获取单位补缴详情
+      operationId: getUnitPayBack
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+      tags:
+        - PayBack
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/GetUnitPayBackRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitPayBack/receipt/{YWLSH}:
+# 单位补缴回执单
+    get:
+      summary: 补缴回执单
+      description: 公积金补缴回执单
+      operationId: headUnitPayBackReceipt
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+      tags:
+        - PayBack
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/HeadUnitPayBackReceiptRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+# 单位补缴通知单
+  /collection/UnitPayBackNotice/receipt/{YWLSH}:
+    get:
+      description: 公积金补缴通知单
+      operationId: headUnitPayBackNotice
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+      tags:
+        - PayBack
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/HeadUnitPayBackNoticeRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+#  单位缓缴
+  /collection/UnitPayHoldList:
+    get:
+      description: 获取缓缴业务记录列表
+      operationId: getUnitPayHoldList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: YWZT
+          in: query
+          type: string
+          description: 业务状态(00:所有；01：新建；02:待审核；03:审核不通过；04:办结)
+        - name: CZY
+          in: query
+          type: string
+          description: 操作员
+        - name: KSSJ
+          in: query
+          type: string
+          description: 受理时间开始
+        - name: JSSJ
+          in: query
+          type: string
+          description: 受理时间结束
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - PayHold
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListUnitPayHoldRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/UnitPayHold:
+    post:
+      description: 提交缓缴申请
+      operationId: postUnitPayHold
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnitPayHoldPost'
+      tags:
+        - PayHold
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ReUnitDepositRatioPostRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitPayHold/submitUnitPayHold:
+    post:
+      description: |
+       单位缓缴提交
+      operationId: postUnitPayHoldSubmit
+      tags:
+        - PayHold
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitPayHoldSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitUnitPayHoldRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitPayHold/{YWLSH}:
+    put:
+      description: 单位缓缴修改
+      operationId: putUnitPayHold
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnitPayHoldPut'
+      tags:
+        - PayHold
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ReUnitDepositRatioPutRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      description: 获取缓缴申请详情
+      operationId: getUnitPayHold
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+      tags:
+        - PayHold
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/GetUnitPayHoldRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitPayHold/receipt/{YWLSH}:
+    get:
+      description: 缓缴回执单
+      operationId: headUnitPayHoldReceipt
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+      tags:
+        - PayHold
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/HeadUnitPayHoldReceiptRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  #todo 该API暂用获取详情替代
+#  /collection/UnitPayHoldPutAuto/{YWLSH}:
+#    get:
+#      description: 缓缴修改时，先获取业务信息
+#      operationId: getUniotPayHoldPutAuto
+#      parameters:
+#        - name: YWLSH
+#          in: path
+#          type: string
+#          description: 业务流水号
+#          required: true
+#      tags:
+#        - PayHold
+#      responses:
+#        '200':
+#          description: Successful response
+#          schema:
+#            $ref: '#/definitions/GetPayHoldReviseData'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+
+#    delete:
+#      description: 删除缓缴记录
+#      operationId: deletePayHoldRecord
+#      parameters:
+#        - name: YWLSH
+#          in: path
+#          type: string
+#          required: true
+#          description: 业务流水号
+#      tags:
+#        - PayHold
+#      responses:
+#        '200':
+#          description: Successful response
+#          schema:
+#            $ref: '#/definitions/ReUnitDepositRatioRes'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+
+#  单位错缴
+  /collection/UnitPayWrongList:
+    get:
+      description: 获取错缴更正业务记录列表
+      operationId: getUnitPayWrongList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: YWZT
+          in: query
+          type: string
+          description: 业务状态(00:所有；01：新建；02:待审核；03:审核不通过；04:办结)
+        - name: KSSJ
+          in: query
+          type: string
+          description: 受理时间开始
+        - name: JSSJ
+          in: query
+          type: string
+          description: 受理时间结束
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - PayWrong
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListUnitPayWrongRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/UnitPayWrong:
+    post:
+      description: 新建错缴更正申请
+      operationId: postUnitPayWrong
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnitPayWrongPost'
+      tags:
+        - PayWrong
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/AddUnitPayWrongPostRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+#  /collection/submitUnitPayHold:
+#    post:
+#      description: |
+#       单位错缴提交
+#      operationId: postUnitPayWrongSubmit
+#      tags:
+#        - PayWrong
+#      parameters:
+#        - name: body
+#          required: true
+#          in: body
+#          schema:
+#            $ref: '#/definitions/UnitPayWrongSubmitPost'
+#      responses:
+#        '200':
+#          description: OK
+#          schema:
+#            $ref: '#/definitions/SubmitUnitPayWrongRes'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+  /collection/UnitPayWrong/{DWZH}/{GRJZNY}:
+    get:
+      description: 根据单位账号和更正缴至年月,获取单位错缴信息
+      operationId: getUnitPayWrongData
+      parameters:
+        - name: DWZH
+          in: path
+          type: string
+          description: 单位账号
+          required: true
+        - name: GRJZNY
+          in: path
+          type: string
+          description: 更正缴至年月
+          required: true
+      tags:
+        - PayWrong
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/GetUnitPayWrongDataRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitPayWrong/{YWLSH}:
+#    delete:
+#      description: 删除错缴更正记录
+#      operationId: deleteUnitPayWrongRecordList
+#      parameters:
+#        - name: YWLSH
+#          in: path
+#          type: string
+#          required: true
+#          description: 业务流水号
+#      tags:
+#        - PayWrong
+#      responses:
+#        '200':
+#          description: Successful response
+#          schema:
+#            $ref: '#/definitions/Success'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+#    put:
+#      description: 修改错缴申请
+#      operationId: putUnitPayWrong
+#      parameters:
+#        - name: YWLSH
+#          in: path
+#          type: string
+#          description: 业务流水号
+#          required: true
+#        - name: body
+#          in: body
+#          required: true
+#          schema:
+#            $ref: '#/definitions/UnitPayWrongPut'
+#      tags:
+#        - PayWrong
+#      responses:
+#        '200':
+#          description: Successful response
+#          schema:
+#            $ref: '#/definitions/ReUnitPayWrongPutRes'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+    get:
+      description: 获取错缴详情
+      operationId: getUnitPayWrong
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+      tags:
+        - PayWrong
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/GetUnitPayWrongRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitPayWrong/receipt/{YWLSH}:
+    get:
+      summary: 错缴回执单
+      description: 错缴业务回执单
+      operationId: headUnitPayWrongReceipt
+      parameters:
+        - name: YWLSH
+          in: path
+          type: string
+          description: 业务流水号
+          required: true
+      tags:
+        - PayWrong
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/HeadUnitPayWrongReceiptRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+# 单位催缴列表
+  /collection/UnitPayCallList:
+    get:
+      description: 催缴记录
+      operationId: getUnitPayCallList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - Call
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ListUnitPayCallRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+#  单位催缴单个（批量）提交
+  /collection/UnitPayCallOps:
+      post:
+        description: |
+         单位催缴提交
+        operationId: postUnitPayCallOpsSubmit
+        tags:
+          - Call
+        parameters:
+          - name: body
+            required: true
+            in: body
+            schema:
+              $ref: '#/definitions/BatchSubmissionPayCall'
+        responses:
+          '200':
+            description: OK
+            schema:
+              $ref: '#/definitions/SubmitUnitPayCallRes'
+          default:
+            description: Unexpected error
+            schema:
+              $ref: '#/definitions/Error'
+# 单位催缴历史、催缴操作
+  /collection/UnitPayCallOps/{YWLSH}:
+    get:
+      description: 获取催缴历史记录
+      operationId: getUnitPayCallHistory
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - Call
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ListUnitPayCallHistoryRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+# 单位催缴详情
+  /collection/UnitPayCallDetail/{YWLSH}:
+    get:
+      description: 获取催缴详情
+      operationId: getUnitPayCallDetail
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - Call
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/GetUnitPayCallDetailRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+# 催缴回执单
+  /collection/UnitPayCallDetail/receipt/{YWLSH}:
+    get:
+      description: 催缴回执单（打印催缴记录）
+      operationId: headUnitPayCallReceipt
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - Call
+      responses:
+        '200':
+          description: 打印成功
+          schema:
+            $ref: '#/definitions/headUnitPayCallReceiptRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+# 个人缴存基数
+  /collection/PersonRadixList:
+    get:
+      description: 个人缴存基数调整列表、搜索
+      operationId: getPersonRadixList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: YWZT
+          in: query
+          type: string
+          description: 业务状态(00:所有；01：新建；02:待审核；03:审核不通过；04:办结)
+        - name: KSSJ
+          in: query
+          type: string
+          description: 受理时间开始
+        - name: JSSJ
+          in: query
+          type: string
+          description: 受理时间结束
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - BaseAdjustment
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListPersonRadixRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/PersonRadix:
+    post:
+      summary: Dwjcjstz Apply
+      description: 个人缴存基数调整申请
+      operationId: postUnitCardinalNumber
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/PersonRadixPost'
+      tags:
+        - BaseAdjustment
+      responses:
+        '200':
+          description: Success response
+          schema:
+            $ref: '#/definitions/AddPersonRadixRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      description: 根据单位账号获取个人缴存基数调整前详情
+      operationId: getPersonRadixBeforeDetail
+      parameters:
+        - name: DWZH
+          required: true
+          in: query
+          type: string
+          description: 单位账号
+      tags:
+        - BaseAdjustment
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/GetPersonRadixBeforeRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/PersonRadixSubmit:
+    post:
+      description: |
+        个人基数调整提交
+      operationId: postPersonRadixSubmit
+      tags:
+        - BaseAdjustment
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/PersonRadixSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitPersonRadixRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/PersonRadix/{YWLSH}:
+    get:
+      description: 个人缴存基数调整详情
+      operationId: getPersonRadix
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - BaseAdjustment
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/GetPersonRadixRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      description: 个人缴存基数调整修改
+      operationId: putPersonRadix
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/PersonRadixPut'
+      tags:
+        - BaseAdjustment
+      responses:
+        '200':
+          description: 修改成功
+          schema:
+            $ref: '#/definitions/RePersonRadixRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/PersonRadix/receipt/{YWLSH}:
+    get:
+      description: 个人缴存基数调整回执单
+      operationId: headPersonRadix
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - BaseAdjustment
+      responses:
+        '200':
+          description: 打印成功
+          schema:
+            $ref: '#/definitions/HeadPersonRadixRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+# 单位缴存比例
+  /collection/UnitDepositRatioList:
+    get:
+      description: 单位缴存比例调整列表、搜索
+      operationId: getUnitDepositRatioList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+        - name: YWZT
+          in: query
+          type: string
+          description: 业务状态(00:所有；01：新建；02:待审核；03:审核不通过；04:办结)
+        - name: KSSJ
+          in: query
+          type: string
+          description: 受理时间起点
+        - name: JSSJ
+          in: query
+          type: string
+          description: 受理时间终点
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - ProportionAdjustment
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListUnitDepositRatioRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /collection/UnitDepositRatio:
+    post:
+      description: 单位缴存比例调整申请
+      operationId: postUnitDepositRatio
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            $ref: '#/definitions/PostListUnitDepositRatioPost'
+      tags:
+        - ProportionAdjustment
+      responses:
+        '200':
+          description: Success response
+          schema:
+            $ref: '#/definitions/PostUnitDepositRatioRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitDepositRatioSubmit:
+    post:
+      description: |
+        单位缴存比例调整提交
+      operationId: postUnitDepositRatioSubmit
+      tags:
+        - ProportionAdjustment
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitDepositRatioSubmitPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/SubmitUnitDepositRatioRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitDepositRatioAuto/{DWZH}:
+    get:
+      description: 申请单位缴存比例调整时，先获取单位相关信息
+      operationId: getUnitDepositRatioAuto
+      parameters:
+        - name: DWZH
+          required: true
+          in: path
+          type: string
+          description: 单位账号
+      tags:
+        - ProportionAdjustment
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/AutoUnitDepositRatioRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitDepositRatio/receipt/{YWLSH}:
+     get:
+      description: 单位缴存比例调整回执单
+      operationId: headUnitDepositRatioReceipt
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - ProportionAdjustment
+      responses:
+        '200':
+          description: 打印成功
+          schema:
+            $ref: '#/definitions/HeadUnitDepositRatioReceiptRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /collection/UnitDepositRatio/{YWLSH}:
+    get:
+      description: 单位缴存比例调整详情
+      operationId: getUnitDepositRatio
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+      tags:
+        - ProportionAdjustment
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/GetUnitDepositRatioRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      description: 单位缴存比例调整修改
+      operationId: putUnitDepositRatio
+      parameters:
+        - name: YWLSH
+          required: true
+          in: path
+          type: string
+          description: 业务流水号
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/UnitDepositRatioPut'
+      tags:
+        - ProportionAdjustment
+      responses:
+        '200':
+          description: 修改成功
+          schema:
+            $ref: '#/definitions/ReUnitDepositRatioRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+#    delete:
+#      description: 单位缴存比例调整删除记录
+#      operationId: deleteUnitScaleDetail
+#      parameters:
+#        - name: YWLSH
+#          required: true
+#          in: path
+#          type: string
+#          description: 业务流水号
+#        - name: body
+#          required: true
+#          in: body
+#          schema:
+#            $ref: '#/definitions/deleteUnitScaleDetail'
+#      tags:
+#        - ProportionAdjustment
+#      responses:
+#        '200':
+#          description: 修改成功
+#          schema:
+#            $ref: '#/definitions/Success'
+#        default:
+#          description: Unexpected error
+#          schema:
+#            $ref: '#/definitions/Error'
+
+# 单位审核已处理列表
+  /collection/UnitDepositReviewedList:
+    get:
+      description: 单位审核已处理列表
+      operationId: getUnitDepositReviewedList
+      parameters:
+        - name: YWLSH
+          in: query
+          type: string
+          description: 业务流水号
+        - name: CZY
+          in: query
+          type: string
+          description: 操作员
+        - name: YWMXLX
+          in: query
+          type: string
+          description: 业务明细类型
+          allowEmptyValue: true
+        - name: KSSJ
+          in: query
+          type: string
+          description: 到达时间开始
+        - name: JSSJ
+          in: query
+          type: string
+          description: 到达时间结束
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - common
+        - depositReview
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListUnitDepositReviewedRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+# 单位审核未处理列表
+  /collection/UnitDepositReviewList:
+    get:
+      description: 单位审核未处理列表
+      operationId: getUnitDepositReviewList
+      parameters:
+
+        - name: YWLSH
+          in: query
+          type: string
+          description: 业务流水号
+        - name: CZY
+          in: query
+          type: string
+          description: 操作员
+        - name: YWMXLX
+          in: query
+          type: string
+          description: 业务明细类型
+          allowEmptyValue: true
+        - name: KSSJ
+          in: query
+          type: string
+          description: 受理时间开始
+        - name: JSSJ
+          in: query
+          type: string
+          description: 受理时间结束
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+        - common
+        - depositReview
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ListUnitDepositReviewRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+# 单位缴存审核操作
+  /collection/UnitDepositReview:
+    post:
+      description: 审核通过/不通过(新版，含批量)
+      operationId: postUnitDepositReview
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/UnitDepositPost'
+      tags:
+        - common
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/ReviewUnitDepositRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  # 单位业务明细列表查询
+  /collection/UnitBusniessDetailList:
+    get:
+      description: 单位业务明细列表
+      operationId: getUnitBusnissDetailList
+      parameters:
+        - name: DWMC
+          in: query
+          type: string
+          description: 单位名称
+          required: false
+        - name: DWZH
+          in: query
+          type: string
+          description: 单位账号
+          required: false
+        - name: ZZJGDM
+          in: query
+          type: string
+          description: 组织机构代码
+          required: false
+        - name: YWMXLX
+          in: query
+          type: string
+          description: 业务明细类型
+          required: false
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+      tags:
+       - BusniessDetail
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/getUnitBusnissDetailListRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+ # 个人业务明细列表查询
+  /collection/IndiBusniessDetailList:
+    get:
+      description: 个人业务明细列表
+      operationId: getIndiBusnissDetailList
+      parameters:
+        - name: XingMing
+          in: query
+          type: string
+          description: 姓名
+          required: false
+        - name: GRZH
+          in: query
+          type: string
+          description: 个人账号
+          required: false
+        - name: SFZH
+          in: query
+          type: string
+          description: 身份账号
+          required: false
+        - name: YWMXLX
+          in: query
+          type: string
+          description: 业务明细类型
+          required: false
+        - name: pageNo
+          in: query
+          type: string
+          description: 页码
+          required: true
+        - name: pageSize
+          in: query
+          type: string
+          description: 页数
+          required: true
+      tags:
+       - BusniessDetail
+      responses:
+        '200':
+          description: Successful response
+          schema:
+            $ref: '#/definitions/getIndiBusnissDetailListRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+securityDefinitions:
+  addToken:
+    type: apiKey
+    in: header
+    name: token
+definitions:
+#缴存明细列表
+  ListUnitDepositDeatilRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            HBJNY:
+              type: string
+              description: 汇补缴年月
+            YWLX:
+              type: string
+              description: 业务类型
+            FSE:
+              type: number
+              format: float
+              description: 发生额
+            FSRS:
+              type: integer
+              description: 发生人数
+            JBR:
+              type: string
+              description: 经办人
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+
+#缴存信息列表
+  ListUnitDepositRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            ZZJGDM:
+              type: string
+              description: 组织机构代码
+            JZNY:
+              type: string
+              description: 缴至年月
+            DWJCBL:
+              type: number
+              format: float
+
+              description: 单位缴存比例
+            GRJCBL:
+              type: string
+              description: 个人缴存比例
+            DWZHYE:
+              type: string
+              description:  单位账户余额
+#缴存详情
+  getUnitDepositDetailRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWZH:
+            type: string
+            description: 单位账号
+          DWMC:
+            type: string
+            description: 单位名称
+          ZZJGDM:
+            type: string
+            description: 组织机构代码
+          JZNY:
+            type: string
+            description: 缴至年月
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          DWJCRS:
+            type: integer
+            description: 单位缴存人数
+          DWFCRS:
+            type: integer
+            description: 单位封存人数
+          ZSYE:
+            type: number
+            format: float
+            description: 暂收余额
+          DWZHYE:
+            type: number
+            format: float
+            description:  单位账户余额
+          DWJCBL:
+            type: number
+            format: float
+            description: 单位缴存比例
+          GRJCBL:
+            type: number
+            format: float
+            description: 个人缴存比例
+#清册确认请求
+  InventoryConfirmPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          DWZH:
+            type: string
+            description: 单位账号
+          QCNY:
+            type: string
+            description: 清册年月
+          FSRS:
+            type: integer
+            description: 发生人数
+          FSE:
+            type: number
+            format: float
+            description: 发生额
+          list:
+            type: array
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                GRJCJS:
+                  type: number
+                  format: float
+                  description: 个人缴存基数
+                DWYJCE:
+                  type: number
+                  format: float
+                  description: 单位月缴存额
+                GRYJCE:
+                  type: number
+                  format: float
+                  description: 个人月缴存额
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          SLSJ:
+            type: string
+            description: 受理时间
+#清册确认响应
+  AddInventoryConfirmRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态
+#汇缴清册详情
+  GetRemittanceInventoryDetailRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          QCNY:
+            type: string
+            description: 清册年月
+          DWJCRS:
+            type: string
+            description: 单位缴存人数
+          DWFCRS:
+            type: string
+            description: 单位封存人数
+          FSRS:
+            type: string
+            description: 发生人数
+          FSE:
+            type: number
+            format: float
+            description: 发生额
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          DWHJQCXX:
+            type: array
+            description: 单位汇缴清册
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                GRJCJS:
+                  type: string
+                  description: 个人缴存基数
+                DWYJCE:
+                  type: string
+                  description: 单位月缴存额
+                GRYJCE:
+                  type: string
+                  description: 个人月缴存额
+                HeJi:
+                  type: string
+                  description: 合计
+          YJEZHJ:
+            type: object
+            description: 月缴存额合计
+            properties:
+              DWYJCEZHJ:
+                type: number
+                format: float
+                description: 单位月缴存额合计
+              GRYJCEZHJ:
+                type: number
+                format: float
+                description: 个人月缴存额合计
+              ZHJ:
+                type: number
+                format: float
+                description: 总合计
+#打印清册回执单
+  HeadRemittanceInventoryRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        description: 缴存信息
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          YZM:
+            type: string
+            description: 验证码
+          TZSJ:
+            type: string
+            description: 填制时间
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          QCNY:
+            type: string
+            description: 清册年月
+          DWJCRS:
+            type: integer
+            description: 单位缴存人数
+          DWFCRS:
+            type: integer
+            description: 单位封存人数
+          FSRS:
+            type: integer
+            description: 发生人数
+          FSE:
+            type: number
+            format: float
+            description: 发生额
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          DWHJQC:
+            type: array
+            description: 单位汇缴清册
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJLX:
+                  type: string
+                  description: 证件类型
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                GRJCJS:
+                  type: number
+                  format: float
+                  description: 个人缴存基数
+                DWYJCE:
+                  type: number
+                  format: float
+                  description: 单位月缴存额
+                GRYJCE:
+                  type: number
+                  format: float
+                  description: 个人月缴存额
+                HeJi:
+                  type: number
+                  format: float
+                  description: 合计
+          YJEZHJ:
+            type: object
+            description: 月缴存额合计
+            properties:
+              DWYJCEZHJ:
+                type: number
+                format: float
+                description: 单位月缴存额合计
+              GRYJCEZHJ:
+                type: number
+                format: float
+                description: 个人月缴存额合计
+              ZHJ:
+                type: number
+                format: float
+                description: 总合计
+
+#获取个人缴存清册信息
+  ListRemittanceInventoryRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        description: 缴存信息
+        properties:
+          DWJCXX:
+            type: object
+            description: 单位缴存信息
+            properties:
+              QCQRDH:
+                type: string
+                description: 清册确认单号
+              HBJNY:
+                type: string
+                description: 汇补缴年月
+              FSRS:
+                type: integer
+                description: 发生人数
+              FSE:
+                type: number
+                format: float
+              DWYJCEZHJ:
+                type: number
+                format: float
+                description: 单位月缴存额合计
+              GRYJCEZHJ:
+                type: number
+                format: float
+                description: 个人月缴存额合计
+              ZHJ:
+                type: number
+                format: float
+                description: 总合计
+
+          DWHJQC:
+            type: array
+            description: 单位汇缴清册
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJLX:
+                  type: string
+                  description: 证件类型
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                GRJCJS:
+                  type: string
+                  description: 个人缴存基数
+                DWYJCE:
+                  type: string
+                  description: 单位月缴存额
+                GRYJCE:
+                  type: string
+                  description: 个人月缴存额
+                HeJi:
+                  type: string
+                  description: 合计
+
+
+#单位汇缴列表
+  ListUnitRemittanceRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWMC:
+              type: string
+              description: 单位名称
+            DWZH:
+              type: string
+              description: 单位账号
+            HBJNY:
+              type: string
+              description: 汇补缴年月
+            FSE:
+              type: number
+              format: float
+              description: 发生额
+            FSRS:
+              type: integer
+              description: 发生人数
+            YWZT:
+              type: string
+              description: 业务状态
+            JZPZH:
+              type: string
+              description: 凭证号
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+
+  HeadUnitRemittanceReceiptRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          YZM:
+            type: string
+            description: 验证码
+          TZSJ:
+            type: string
+            description: 填制时间
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          HJNY:
+            type: string
+            description: 汇缴年月
+
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+
+          DWJCRS:
+            type: integer
+            description: 单位缴存人数
+          DWFCRS:
+            type: integer
+            description: 单位封存人数
+          ZSYE:
+            type: number
+            format: float
+            description: 暂收余额
+          DWZHYE:
+            type: number
+            format: float
+            description: 单位账户余额
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          JCXX:
+            type: object
+            description: 缴存信息
+            properties:
+              QCQRDH:
+                type: string
+                description: 清册确认单号
+              HBJNY:
+                type: string
+                description: 汇补缴年月
+              JZRQ:
+                type: string
+                description: 记账日期
+              JXRQ:
+                type: string
+                description: 计息日期
+              FSRS:
+                type: integer
+                description: 发生人数
+              FSE:
+                type: number
+                format: float
+                description: 发生额
+              HJFS:
+                type: string
+                description: 汇缴方式
+              STYHDM:
+                type: string
+                description: 受托银行代码
+              STYHZH:
+                type: string
+                description: 受托银行账号
+              STYHHM:
+                type: string
+                description: 受托银行户名
+              STYHMC:
+                type: string
+                description: 受托银行名称
+          DWHJQC:
+            type: array
+            description: 单位汇缴清册
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJLX:
+                  type: string
+                  description: 证件类型
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                GRJCJS:
+                  type: number
+                  format: float
+                  description: 个人缴存基数
+                DWYJCE:
+                  type: number
+                  format: float
+                  description: 单位月缴存额
+                GRYJCE:
+                  type: number
+                  format: float
+                  description: 个人月缴存额
+                HeJi:
+                  type: number
+                  format: float
+                  description: 合计
+          YJEZHJ:
+            type: object
+            description: 个人缴存基数、月缴存额合计
+            properties:
+              GRYJJSZHJ:
+                type: number
+                format: float
+                description: 个人缴存基数合计
+              DWYJCEZHJ:
+                type: number
+                format: float
+                description: 单位月缴存额合计
+              GRYJCEZHJ:
+                type: number
+                format: float
+                description: 个人月缴存额合计
+              ZHJ:
+                type: number
+                format: float
+                description: 总合计
+
+  # RemittanceData:
+  #   type: object
+  #   properties:
+  #     Req:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         YZM:
+  #           type: string
+  #           description: 验证码
+  #         TZRQ:
+  #           type: string
+  #           description: 填制日期
+  #         DWMC:
+  #           type: string
+  #           description: 单位名称
+  #         DWZH:
+  #           type: string
+  #           description: 单位账号
+  #         HBJNY:
+  #           type: string
+  #           description: 汇补缴年月
+  #         JCXX:
+  #           type: object
+  #           description: 缴存信息
+  #           properties:
+  #             HJX:
+  #               type: string
+  #               description: 汇缴项
+  #             HJFS:
+  #               type: string
+  #               description: 汇缴方式
+  #             JZRQ:
+  #               type: string
+  #               description: 记账日期
+  #             DWYJCE:
+  #               type: number
+  #               format: floatg
+  #               description: 单位月缴存额
+  #             GRYJCE:
+  #               type: number
+  #               format: float
+  #               description: 个人月缴存额
+  #             HeJi:
+  #               type: number
+  #               format: float
+  #               description: 合计
+  #             FSRS:
+  #               type: integer
+  #               description: 发生人数
+  #             FSE:
+  #               type: number
+  #               format: float
+  #               description: 发生额
+  #             STYHZH:
+  #               type: string
+  #               description: 受托银行账号
+  #             STYHHM:
+  #               type: string
+  #               description: 受托银行户名
+  #             STYHMC:
+  #               type: string
+  #               description: 受托银行名称
+  #             STYHDM:
+  #               type: string
+  #               description: 受托银行代码
+  #             JBRXM:
+  #               type: string
+  #               description: 经办人姓名
+  #             JBRZJLX:
+  #               type: string
+  #               description: 经办人证件类型
+  #             JBRZJHM:
+  #               type: string
+  #               description: 经办人证件号码
+  #         DWHJQC:
+  #           type: array
+  #           description: 单位汇缴清册
+  #           items:
+  #             type: object
+  #             properties:
+  #               GRZH:
+  #                 type: string
+  #                 description: 个人账号
+  #               XingMing:
+  #                 type: string
+  #                 description: 姓名
+  #               ZJHM:
+  #                 type: string
+  #                 description: 证件号码
+  #               GRJCJS:
+  #                 type: number
+  #                 format: float
+  #                 description: 个人缴存基数
+  #               DWYJCE:
+  #                 type: number
+  #                 format: float
+  #                 description: 单位月缴存额
+  #               GRYJCE:
+  #                 type: number
+  #                 format: float
+  #                 description: 个人月缴存额
+  #               HeJi:
+  #                 type: number
+  #                 format: float
+  #                 description: 合计
+# 单位缴存审核已处理列表
+  ListUnitDepositReviewedRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 待处理数据
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            YWMXLX:
+              type: string
+              description: 业务明细类型
+            SHZT:
+              type: string
+              description: 审核状态
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            CZY:
+              type: string
+              description: 操作员
+            BLWD:
+              type: string
+              description: 办理网点
+            DDSJ:
+              type: string
+              description: 到达时间
+# 单位缴存审核未处理列表
+  ListUnitDepositReviewRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 待处理数据
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            YWMXLX:
+              type: string
+              description: 业务明细类型
+            YWZT:
+              type: string
+              description: 状态
+            SHZT:
+              type: string
+              description: 审核状态
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            CZY:
+              type: string
+              description: 操作员
+            BLWD:
+              type: string
+              description: 办理网点
+            SLSJ:
+              type: string
+              description: 受理时间
+  # RemittanceList:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: array
+  #       items:
+  #         type: object
+  #         properties:
+  #           YWLSH:
+  #             type: string
+  #             description: 业务流水号
+  #           STYHMC:
+  #             type: string
+  #             description: 受托银行名称
+  #           STYHDM:
+  #             type: string
+  #             description: 受托银行代码
+  #           HJFS:
+  #             type: string
+  #             description: 汇缴方式
+  #           HBJNY:
+  #             type: string
+  #             description: 汇补缴年月
+  #           JBRXM:
+  #             type: string
+  #             description: 经办人姓名
+  #           FSE:
+  #             type: number
+  #             format: float
+  #             description: 发生额
+  #           FSRS:
+  #             type: integer
+  #             description: 发生人数
+  #           YWZT:
+  #             type: string
+  #             description: 状态
+  #           JZPZH:
+  #             type: string
+  #             description: 凭证号
+  #           CZY:
+  #             type: string
+  #             description: 操作员
+  #           YWWD:
+  #             type: string
+  #             description: 业务网点
+  #           JBSJ:
+  #             type: string
+  #             description: 经办时间
+
+# 根据单位名称获取汇缴申请单位信息
+  AutoUnitRemittanceRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWZH:
+            type: string
+            description: 单位账号
+          DWMC:
+            type: string
+            description: 单位名称
+          JZNY:
+            type: string
+            description: 缴至年月
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          DWJCRS:
+            type: integer
+            description: 单位缴存人数
+          DWFCRS:
+            type: integer
+            description: 单位封存人数
+          ZSYE:
+            type: number
+            format: float
+            description: 暂收余额
+          DWZHYE:
+            type: number
+            format: float
+            description: 单位账户余额
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          STYHMC:
+            type: string
+            description: 受托银行名称
+          STYHDM:
+            type: string
+            description: 受托银行代码
+          STYHZH:
+            type: string
+            description: 受托银行账户
+  GetUnitRemittanceRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          DWJCRS:
+            type: integer
+            description: 单位缴存人数
+          DWFCRS:
+            type: integer
+            description: 单位封存人数
+          ZSYE:
+            type: number
+            format: float
+            description: 暂收余额
+          DWZHYE:
+            type: number
+            format: float
+            description: 单位账户余额
+          QCQRDH:
+            type: string
+            description: 清册确认单号
+          HBJNY:
+            type: string
+            description: 汇补缴年月
+          JXRQ:
+            type: string
+            description: 计息日期
+          FSRS:
+            type: number
+            format: int32
+            description: 发生人数
+          FSE:
+            type: number
+            format: float
+            description: 发生额
+          HJFS:
+            type: string
+            description: 汇缴方式
+          STYHZH:
+            type: string
+            description: 受托银行账户
+          STYHHM:
+            type: string
+            description: 受托银行户名
+          STYHMC:
+            type: string
+            description: 受托银行名称
+          STYHDM:
+            type: string
+            description: 受托银行代码
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          BLZL:
+            type: string
+            description: 办理资料
+          QCQR:
+            type: array
+            description: 清册确认
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                GRJCJS:
+                  type: number
+                  format: float
+                  description: 个人缴存基数
+                DWYJCE:
+                  type: number
+                  format: float
+                  description: 单位月缴存额
+                GRYJCE:
+                  type: number
+                  format: float
+                  description: 个人月缴存额
+                HeJi:
+                  type: number
+                  format: float
+                  description: 合计
+# 汇缴申请
+  UnitRemittancePost:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - YWLSH
+          - CZLX
+          - DWZH
+          - HBJNY
+          - FSRS
+          - FSE
+          - HJFS
+          - STYHZH
+          - STYHMC
+          - STYHDM
+          - BLZL
+          - JBRXM
+          - JBRZJLX
+          - JBRZJHM
+          - YWWD
+          - QCXX
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          CZLX:
+            type: string
+            description: 操作类型（0:保存；1:提交）
+          DWZH:
+            type: string
+            description: 单位账号
+          HBJNY:
+            type: string
+            description: 汇补缴年月
+          QCQRDH:
+            type: string
+            description: 清册确认单号
+          FSRS:
+            type: integer
+            description: 发生人数
+          FSE:
+            type: number
+            format: float
+            description: 发生额
+          HJFS:
+            type: string
+            description: 汇缴方式
+          JXRQ:
+            type: string
+            description: 计息日期
+          STYHZH:
+            type: string
+            description: 受托银行账户
+          STYHHM:
+            type: string
+            description: 受托银行户名
+          STYHMC:
+            type: string
+            description: 受托银行名称
+          STYHDM:
+            type: string
+            description: 受托银行代码
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          QCXX:
+            type: array
+            description: 清册信息
+            items:
+              type: object
+              required:
+                - GRZH
+                - GRJCJS
+                - DWYJCE
+                - GRYJCE
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                GRJCJS:
+                  type: number
+                  format: float
+                  description: 个人缴存基数
+                DWYJCE:
+                  type: number
+                  format: float
+                  description: 单位月缴存额
+                GRYJCE:
+                  type: number
+                  format: float
+                  description: 个人月缴存额
+
+# 汇缴修改请求
+  # UnitRemittancePut:
+  #   type: object
+  #   properties:
+  #     Req:
+  #       type: object
+  #       required:
+  #         - CZLX
+  #         - DWZH
+  #         - HBJNY
+  #         - FSRS
+  #         - FSE
+  #         - HJFS
+  #         - STYHZH
+  #         - STYHMC
+  #         - STYHDM
+  #         - BLZL
+  #         - JBRXM
+  #         - JBRZJLX
+  #         - JBRZJHM
+  #         - YWWD
+  #         - QCXX
+  #       properties:
+  #         CZLX:
+  #           type: string
+  #           description: 操作类型（0:保存；1:提交）
+  #         DWZH:
+  #           type: string
+  #           description: 单位账号
+  #         HBJNY:
+  #           type: string
+  #           description: 汇补缴年月
+  #         QCQRDH:
+  #           type: string
+  #           description: 清册确认单号
+  #         JXRQ:
+  #           type: string
+  #           description: 计息日期
+  #         DWYJCE:
+  #           type: number
+  #           format: float
+  #           description: 单位月缴存额
+  #         GRYJCE:
+  #           type: number
+  #           format: float
+  #           description: 个人月缴存额
+  #         FSRS:
+  #           type: integer
+  #           description: 发生人数
+  #         FSE:
+  #           type: number
+  #           format: float
+  #           description: 发生额
+  #         HJFS:
+  #           type: string
+  #           description: 汇缴方式
+  #         STYHZH:
+  #           type: string
+  #           description: 受托银行账户
+  #         STYHHM:
+  #           type: string
+  #           description: 受托银行户名
+  #         STYHMC:
+  #           type: string
+  #           description: 受托银行名称
+  #         STYHDM:
+  #           type: string
+  #           description: 受托银行代码
+  #         BLZL:
+  #           type: string
+  #           description: 办理资料
+  #         JBRXM:
+  #           type: string
+  #           description: 经办人姓名
+  #         JBRZJLX:
+  #           type: string
+  #           description: 经办人证件类型
+  #         JBRZJHM:
+  #           type: string
+  #           description: 经办人证件号码
+  #         CZY:
+  #           type: string
+  #           description: 操作员
+  #         YWWD:
+  #           type: string
+  #           description: 业务网点
+  #         QCXX:
+  #           type: array
+  #           description: 清册信息
+  #           items:
+  #             type: object
+  #             required:
+  #               - GRZH
+  #               - GRJCJS
+  #               - DWYJCE
+  #               - GRYJCE
+  #             properties:
+  #               GRZH:
+  #                 type: string
+  #                 description: 个人账号
+  #               GRJCJS:
+  #                 type: number
+  #                 format: float
+  #                 description: 个人缴存基数
+  #               DWYJCE:
+  #                 type: number
+  #                 format: float
+  #                 description: 单位月缴存额
+  #               GRYJCE:
+  #                 type: number
+  #                 format: float
+  #               description: 个人月缴存额
+
+# 汇缴修改响应
+  # ReUnitRemittanceRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: string
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（success/fail）
+
+  ListInventoryRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            QCQRDH:
+              type: string
+              description: 清册确认单号
+            DWMC:
+              type: string
+              description: 单位名称
+            DWZH:
+              type: string
+              description: 单位账号
+            QCNY:
+              type: string
+              description: 清册年月
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+
+  AutoRemittanceInventoryRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          QCNY:
+            type: string
+            description: 清册年月
+          DWJCRS:
+            type: integer
+            description: 单位缴存人数
+          DWFCRS:
+            type: integer
+            description: 单位封存人数
+          FSRS:
+            type: integer
+            description: 发生人数
+          FSE:
+            type: string
+            description: 发生额
+          BLZL:
+            type: string
+          QCXX:
+            type: array
+            description: 清册信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                GRJCJS:
+                  type: number
+                  format: float
+                  description: 个人缴存基数
+                DWYJCE:
+                  type: number
+                  format: float
+                  description: 单位月缴存额
+                GRYJCE:
+                  type: number
+                  format: float
+                  description: 个人月缴存额
+                HeJi:
+                  type: number
+                  format: float
+                  description: 合计
+          YJEZHJ:
+            type: object
+            description: 月缴存额合计
+            properties:
+              DWYJCEZHJ:
+                type: number
+                format: float
+                description: 单位月缴存额合计
+              GRYJCEZHJ:
+                type: number
+                format: float
+                description: 个人月缴存额合计
+              ZHJ:
+                type: number
+                format: float
+                description: 总合计
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+# 单位补缴响应
+  ListPayBackRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 待处理数据
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWMC:
+              type: string
+              description: 单位名称
+            DWZH:
+              type: string
+              description: 单位账号
+            HBJNY:
+              type: string
+              description: 汇补缴年月
+            FSE:
+              type: number
+              format: float
+              description: 发生额
+            FSRS:
+              type: integer
+              description: 发生人数
+            YWZT:
+              type: string
+              description: 状态
+            JZPZH:
+              type: string
+              description: 凭证号
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+# 删除单位补缴响应
+  # DeleteListPayBackResRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（success或fail）
+# 获取单位补缴申请
+  AutoUnitPayBackRes:
+    type: object
+    properties:
+       Res:
+        type: object
+        properties:
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          ZSYE:
+            type: number
+            format: float
+            description: 暂收余额
+          DWZHYE:
+            type: number
+            format: float
+            description: 单位账户余额
+          BJXX:
+            type: array
+            description: 补缴信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                DWBJE:
+                  type: number
+                  format: float
+                  description: 单位补缴额
+                GRBJE:
+                  type: number
+                  format: float
+                  description: 个人补缴额
+                FSE:
+                  type: number
+                  format: float
+                  description: 发生额
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+# 单位补缴申请请求
+  UnitPayBackPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - YWLSH
+          - DWZH
+          - JZNY
+          - DWYHJNY
+          - DWZHYE
+          - BJFS
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          ZSYE:
+            type: number
+            format: float
+            description: 暂收余额
+          DWZHYE:
+            type: number
+            format: float
+            description: 单位账户余额
+          HBJNY:
+            type: string
+            description: 汇补缴年月
+          BJFS:
+            type: string
+            description: 补缴方式
+          BJXX:
+            type: array
+            description: 补缴信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                DWBJE:
+                  type: number
+                  format: float
+                  description: 单位补缴额
+                GRBJE:
+                  type: number
+                  format: float
+                  description: 个人补缴额
+                FSE:
+                  type: number
+                  format: float
+                  description: 发生额
+                BJYY:
+                  type: string
+                  description: 补缴原因
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+# 单位补缴申请响应
+  AddUnitPayBackRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success或fail）
+# 获取补缴修改信息
+  # UnitPayBackPutData:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         DWMC:
+  #           type: string
+  #           description: 单位名称
+  #         DWZH:
+  #           type: string
+  #           description: 单位账号
+  #         JZNY:
+  #           type: string
+  #           description: 缴至年月
+  #         DWYHJNY:
+  #           type: string
+  #           description: 单位应汇缴年月
+  #         ZSYE:
+  #           type: number
+  #           format: float
+  #           description: 暂收余额
+  #         DWZHYE:
+  #           type: number
+  #           format: float
+  #           description: 单位账户余额
+  #         HBJNY:
+  #           type: string
+  #           description: 汇补缴年月
+  #         BJNYJS:
+  #           type: string
+  #           description: 补缴年月结束
+  #         BJFS:
+  #           type: string
+  #           description: 补缴方式
+  #         BJXX:
+  #           type: array
+  #           description: 补缴信息
+  #           items:
+  #             type: object
+  #             properties:
+  #               GRZH:
+  #                 type: string
+  #                 description: 个人账号
+  #               XingMing:
+  #                 type: string
+  #                 description: 姓名
+  #               ZJHM:
+  #                 type: string
+  #                 description: 证件号码
+  #               DWBJE:
+  #                 type: number
+  #                 format: float
+  #                 description: 单位补缴额
+  #               GRBJE:
+  #                 type: number
+  #                 format: float
+  #                 description: 个人补缴额
+  #               FSE:
+  #                 type: number
+  #                 format: float
+  #                 description: 发生额
+  #               BJYY:
+  #                 type: string
+  #                 description: 补缴原因
+  #         BLZL:
+  #           type: string
+  #           description: 办理资料
+  #         JBRXM:
+  #           type: string
+  #           description: 经办人姓名
+  #         JBRZJLX:
+  #           type: string
+  #           description: 经办人证件类型
+  #         JBRZJHM:
+  #           type: string
+  #           description: 经办人证件号码
+  #         CZY:
+  #           type: string
+  #           description: 操作员
+  #         YWWD:
+  #           type: string
+  #           description: 业务网点
+
+# 修改单位补缴信息请求
+  # UnitPayBackPut:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       required:
+  #         - YWLSH
+  #         - DWZH
+  #         - HBJNY
+  #         - BJFS
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         DWZH:
+  #           type: string
+  #           description: 单位账号
+  #         HBJNY:
+  #           type: string
+  #           description: 汇补缴年月
+  #         BJFS:
+  #           type: string
+  #           description: 补缴方式
+  #         BJXX:
+  #           type: array
+  #           description: 补缴信息
+  #           items:
+  #             type: object
+  #             properties:
+  #               GRZH:
+  #                 type: string
+  #                 description: 个人账号
+  #               XingMing:
+  #                 type: string
+  #                 description: 姓名
+  #               ZJHM:
+  #                 type: string
+  #                 description: 证件号码
+  #               DWBJE:
+  #                 type: number
+  #                 format: float
+  #                 description: 单位补缴额
+  #               GRBJE:
+  #                 type: number
+  #                 format: float
+  #                 description: 个人补缴额
+  #               FSE:
+  #                 type: number
+  #                 format: float
+  #                 description: 发生额
+  #               BJYY:
+  #                 type: string
+  #                 description: 补缴原因
+  #         BLZL:
+  #           type: string
+  #           description: 办理资料
+  #         JBRXM:
+  #           type: string
+  #           description: 经办人姓名
+  #         JBRZJLX:
+  #           type: string
+  #           description: 经办人证件类型
+  #         JBRZJHM:
+  #           type: string
+  #           description: 经办人证件号码
+  #         CZY:
+  #           type: string
+  #           description: 操作员
+  #         YWWD:
+  #           type: string
+            # description: 业务网点
+# 修改单位补缴信息响应
+  # ReUnitPayBackRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（success或fail）
+# 获取补缴详情
+  GetUnitPayBackRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          ZSYE:
+            type: number
+            format: float
+            description: 暂收余额
+          DWZHYE:
+            type: number
+            format: float
+            description: 单位账户余额
+          HBJNY:
+            type: string
+            description: 汇补缴年月
+          BJFS:
+            type: string
+            description: 补缴方式
+          STYHZH:
+            type: string
+            description: 受托银行账户
+          STYHMC:
+            type: string
+            description: 受托银行名称
+          STYHDM:
+            type: string
+            description: 受托银行代码
+          BJXX:
+            type: array
+            description: 补缴信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                DWBJE:
+                  type: number
+                  format: float
+                  description: 单位补缴额
+                GRBJE:
+                  type: number
+                  format: float
+                  description: 个人补缴额
+                FSE:
+                  type: number
+                  format: float
+                  description: 发生额
+                BJYY:
+                  type: string
+                  description: 补缴原因
+          BJHJ:
+            type: object
+            description: 补缴合计
+            properties:
+              DWBJEHJ:
+                type: number
+                format: float
+                description: 单位补缴额合计
+              GRBJEHJ:
+                type: number
+                format: float
+                description: 个人补缴额合计
+              FSEHJ:
+                type: number
+                format: float
+                description: 发生额合计
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+# 打印补缴回执单
+  HeadUnitPayBackReceiptRes:
+    type: object
+    properties:
+      Res:
+         type: object
+         properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          YZM:
+            type: string
+            description: 验证码
+          TZSJ:
+            type: string
+            description: 填制时间
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          ZSYE:
+            type: number
+            format: float
+            description: 暂收余额（元）
+          DWZHYE:
+            type: number
+            format: float
+            description: 单位账户余额
+          BJNY:
+            type: string
+            description: 汇补缴年月
+          JZRQ:
+            type: string
+            description: 记账日期
+          BJFS:
+            type: string
+            description: 补缴方式
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          BJXX:
+            type: array
+            description: 补缴信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJLX:
+                  type: string
+                  description: 证件类型
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                DWBJE:
+                  type: number
+                  format: float
+                  description: 单位补缴额
+                GRBJE:
+                  type: number
+                  format: float
+                  description: 个人补缴额
+                FSE:
+                  type: number
+                  format: float
+                  description: 发生额
+                BJYY:
+                  type: string
+                  description: 补缴原因
+          BJHJ:
+            type: object
+            description: 补缴合计
+            properties:
+              FSEHJ:
+                type: number
+                format: float
+                description: 发生额合计
+# 单位补缴通知单
+  HeadUnitPayBackNoticeRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          BJNY:
+            type: string
+            description: 汇补缴年月
+          FSRS:
+            type: integer
+            description: 发生人数
+          FSE:
+            type: integer
+            description: 发生额
+          ZJE:
+            type: string
+            description: 总金额（大写）
+          BJFS:
+            type: string
+            description: 补缴方式
+          SKZHMC:
+            type: string
+            description: 收款账号名称
+          SKZH:
+            type: string
+            description: 收款账号
+          STYHMC:
+            type: string
+            description: 受托银行名称
+          STYHDM:
+            type: string
+            description: 受托银行代码
+          YWLSH:
+            type: string
+            description: 业务流水号
+          CZY:
+            type: string
+            description: 操作员
+          SLSJ:
+            type: string
+            description: 受理时间
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JZSJ:
+            type: string
+            description: 截止时间
+          YWWD:
+            type: string
+            description: 业务网点
+          TZRQ:
+            type: string
+            description: 填制日期
+# 单位缓缴列表
+  ListUnitPayHoldRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 待处理数据
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+            JZNY:
+              type: string
+              description: 缴至年月
+            SQHJNY:
+              type: string
+              description: 申请缓缴年月
+            YWZT:
+              type: string
+              description: 状态
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+# 删除单位缓缴
+  # DeletePayHoldRecordRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（success或fail）
+# 上传图片
+  # PicData:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         path:
+  #           type: string
+  #           description: 文件路径
+# 获取单位缓缴详情
+  GetUnitPayHoldRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          SQHJKSNY:
+            type: string
+            description: 申请缓缴开始年月
+          SQHJJSNY:
+            type: string
+            description: 申请缓缴结束年月
+          HJYY:
+            type: string
+            description: 缓缴原因
+          BLZL:
+            type: string
+            description: 办理资料
+          QCQR:
+            type: object
+            properties:
+              quNianKS:
+                type: number
+                format: float
+                description: 去年亏损
+              qianNianKS:
+                type: number
+                format: float
+                description: 前年亏损
+              quNianYL:
+                type: number
+                format: float
+                description: 去年盈利
+              qianNianYL:
+                type: number
+                format: float
+                description: 前年盈利
+              quNianRJGZ:
+                type: number
+                format: float
+                description: 去年人月平均工资
+              qianNianRJGZ:
+                type: number
+                format: float
+                description: 前年人月平均工资
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+# 获取单位缓缴申请数据
+  # GetPayHoldReviseData:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       required:
+  #       - DWZH
+  #       - DWYHJNY
+  #       - GRYHJNY
+  #       - FSRS
+  #       - FSE
+  #       - DWZHYE
+  #       - SQYHJSJKS
+  #       - SQYHJSJJS
+  #       - HJYY
+  #       type: object
+  #       properties:
+  #         DWZH:
+  #           type: string
+  #           description: 单位账号
+  #         DWYHJNY:
+  #           type: string
+  #           description: 单位应汇缴年月
+  #         GRYHJNY:
+  #           type: string
+  #           description: 个人应汇缴年月
+  #         FSRS:
+  #           type: integer
+  #           description: 发生人数
+  #         FSE:
+  #           type: integer
+  #           description: 发生额
+  #         DWZHYE:
+  #           type: number
+  #           format: float
+  #           description: 单位账户余额
+  #         SQYHJSJKS:
+  #           type: string
+  #           description: 申请延缓缴时间开始
+  #         SQYHJSJJS:
+  #           type: string
+  #           description: 申请延缓缴时间结束
+  #         HJYY:
+  #           type: string
+  #           description: 缓缴原因
+  #         BLZL:
+  #           type: string
+  #           description: 办理资料
+  #         JBRXM:
+  #           type: string
+  #           description: 经办人姓名
+  #         JBRZJLX:
+  #           type: string
+  #           description: 经办人证件类型
+  #         JBRZJHM:
+  #           type: string
+  #           description: 经办人证件号码
+  #         CZY:
+  #           type: string
+  #           description: 操作员
+  #         YWWD:
+  #           type: string
+  #           description: 业务网点
+
+# 单位缓缴申请请求数据
+  UnitPayHoldPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - CZLX
+          - DWZH
+          - SQHJKSNY
+          - SQHJJSNY
+          - HJYY
+          - BLZL
+          - QCQR
+          - JBRXM
+          - JBRZJLX
+          - JBRZJHM
+          - CZY
+          - YWWD
+        properties:
+          CZLX:
+            type: string
+            description: 操作类型（0:保存；1:提交;）
+          DWZH:
+            type: string
+            description: 单位账号
+          SQHJKSNY:
+            type: string
+            description: 申请缓缴开始年月
+          SQHJJSNY:
+            type: string
+            description: 申请缓缴结束年月
+          HJYY:
+            type: string
+            description: 缓缴原因
+          BLZL:
+            type: string
+            description: 办理资料
+          QCQR:
+              type: object
+              required:
+                - QuNianKS
+                - QianNianKS
+                - QuNianYL
+                - QuNianRYPJGZ
+                - QianNianRYPJGZ
+              properties:
+                QuNianKS:
+                  type: number
+                  format: float
+                  description: 去年亏损
+                QianNianKS:
+                  type: number
+                  format: float
+                  description: 前年亏损
+                QuNianYL:
+                  type: number
+                  format: float
+                  description: 去年盈利
+                QianNianYL:
+                  type: number
+                  format: float
+                  description: 前年盈利
+                QuNianRYPJGZ:
+                  type: number
+                  format: float
+                  description: 去年人月平均工资
+                QianNianRYPJGZ:
+                  type: number
+                  format: float
+                  description: 前年人月平均工资
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+# 单位缓缴申请响应数据
+  ReUnitDepositRatioPostRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success或fail）
+# 单位缓缴申请响应数据
+  ReUnitDepositRatioPutRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success或fail）
+# 单位缓缴申请修改请求数据
+  UnitPayHoldPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - CZLX
+          - DWZH
+          - DWYHJNY
+          - SQYHJSJKS
+          - SQYHJSJJS
+          - HJYY
+          - QCQR
+        properties:
+          CZLX:
+            type: string
+            description: 操作类型（0:保存；1:提交;）
+          DWZH:
+            type: string
+            description: 单位账号
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          SQYHJSJKS:
+            type: string
+            description: 申请延缓缴时间开始
+          SQYHJSJJS:
+            type: string
+            description: 申请延缓缴时间结束
+          HJYY:
+            type: string
+            description: 缓缴原因
+          QCQR:
+            type: object
+            description: 单位前两年经营情况
+            required:
+              - QuNianKS
+              - QianNianKS
+              - QuNianYL
+              - QuNianRYPJGZ
+              - QianNianRYPJGZ
+            properties:
+              QuNianKS:
+                type: number
+                format: float
+                description: 去年亏损
+              QianNianKS:
+                type: number
+                format: float
+                description: 前年亏损
+              QuNianYL:
+                type: number
+                format: float
+                description: 去年盈利
+              QianNianYL:
+                type: number
+                format: float
+                description: 前年盈利
+              QuNianRYPJGZ:
+                type: number
+                format: float
+                description: 去年人月平均工资
+              QianNianRYPJGZ:
+                type: number
+                format: float
+                description: 前年人月平均工资
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+# # 单位缓缴申请修改响应数据
+#   UnitPayHoldPutRes:
+#     type: object
+#     properties:
+#       Res:
+#         type: object
+#         properties:
+#           YWLSH:
+#             type: string
+#             description: 业务流水号
+#           status:
+#             type: string
+#             description: 状态（success或fail）
+# 单位缓缴回执单
+  HeadUnitPayHoldReceiptRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          YZM:
+            type: string
+            description: 验证码
+          TZSJ:
+            type: string
+            description: 填制时间
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JZNY:
+            type: string
+            description: 缴至年月
+          DWYHJNY:
+            type: string
+            description: 单位应汇缴年月
+          SQHJKSNY:
+            type: string
+            description: 申请缓缴开始年月
+          SQHJJSNY:
+            type: string
+            description: 申请缓缴结束年月
+          HJYY:
+            type: string
+            description: 缓缴原因
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+# 单位错缴列表
+  ListUnitPayWrongRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          description: 待处理数据
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWMC:
+              type: string
+              description: 单位名称
+            DWZH:
+              type: string
+              description: 单位账号
+            JCGZNY:
+              type: string
+              description: 缴存更正年月
+            FSE:
+              type: number
+              format: float
+              description: 发生额
+            YWZT:
+              type: string
+              description: 状态
+            JZPZH:
+              type: string
+              description: 凭证号
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+# 获取单位错缴详情
+  GetUnitPayWrongRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JCGZNY:
+            type: string
+            description: 缴存更正年月
+          SKYHZH:
+            type: string
+            description: 收款银行账号
+          SKYHHM:
+            type: string
+            description: 收款银行户名
+          SKYHMC:
+            type: string
+            description: 收款银行名称
+          SKYHDM:
+            type: string
+            description: 收款银行代码
+          GZXX:
+            type: array
+            description: 更正信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                DWCJJE:
+                  type: number
+                  format: float
+                  description: 单位错缴金额
+                GRCJJE:
+                  type: number
+                  format: float
+                  description: 个人错缴金额
+                FSE:
+                  type: number
+                  format: float
+                  description: 发生额
+                CJYY:
+                  type: string
+                  description: 错缴原因
+          CJEHJ:
+            type: object
+            description: 错缴额合计信息
+            properties:
+              DWCJEHJ:
+                type: number
+                format: float
+                description: 单位错缴金额合计
+              GRCJEHJ:
+                type: number
+                format: float
+                description: 个人错缴金额合计
+              FSEHJ:
+                type: number
+                format: float
+                description: 发生额合计
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+# 根据单位账号+更正缴至年月，获取单位错缴信息
+  GetUnitPayWrongDataRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JCGZNY:
+            type: string
+            description: 缴存更正年月
+          SKYHZH:
+            type: string
+            description: 收款银行账号
+          SKYHHM:
+            type: string
+            description: 收款银行户名
+          SKYHMC:
+            type: string
+            description: 收款银行名称
+          GZXX:
+            type: array
+            description: 更正信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                DWCJJE:
+                  type: number
+                  format: float
+                  description: 单位错缴金额
+                GRCJJE:
+                  type: number
+                  format: float
+                  description: 个人错缴金额
+                FSE:
+                  type: number
+                  format: float
+                  description: 发生额
+
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+
+# 提交单位错缴申请
+  UnitPayWrongPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - CZLX
+          - DWZH
+          - JCGZNY
+          - SKYHZH
+          - SKYHHM
+          - SKYHMC
+          - SKYHDM
+          - YWLSH
+        properties:
+          YWLSH:
+              type: string
+              description: 业务流水号
+          CZLX:
+              type: string
+              description: 操作类型（0:保存；1:提交）
+          DWZH:
+            type: string
+            description: 单位账号
+          JCGZNY:
+            type: string
+            description: 缴存更正年月
+          SKYHZH:
+            type: string
+            description: 收款银行账号
+          SKYHHM:
+            type: string
+            description: 收款银行户名
+          SKYHMC:
+            type: string
+            description: 收款银行名称
+          SKYHDM:
+            type: string
+            description: 收款银行代码
+          GZXX:
+            type: array
+            description: 更正信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                DWCJJE:
+                  type: number
+                  format: float
+                  description: 单位错缴金额
+                GRCJJE:
+                  type: number
+                  format: float
+                  description: 个人错缴金额
+                FSE:
+                  type: number
+                  format: float
+                  description: 发生额
+                YuanYin:
+                  type: string
+                  description: 原因
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+# 提交单位错缴申请响应
+  AddUnitPayWrongPostRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success或fail）
+
+# 修改单位错缴申请响应
+  # ReUnitPayWrongPutRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（success或fail）
+# 单位错缴回执单
+  HeadUnitPayWrongReceiptRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          YZM:
+            type: string
+            description: 验证码
+          TZSJ:
+            type: string
+            description: 填制时间
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JCGZNY:
+            type: string
+            description: 缴存更正年月
+          SKYHZH:
+            type: string
+            description: 收款银行账号
+          SKYHHM:
+            type: string
+            description: 收款银行户名
+          SKYHMC:
+            type: string
+            description: 收款银行名称
+          SKYHDM:
+            type: string
+            description: 收款银行代码
+          GZXX:
+            type: array
+            description: 更正信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                ZJHM:
+                  type: string
+                  description: 证件号码
+                DWCJJE:
+                  type: number
+                  format: float
+                  description: 单位错缴金额
+                GRCJJE:
+                  type: number
+                  format: float
+                  description: 个人错缴金额
+                FSE:
+                  type: number
+                  format: float
+                  description: 发生额
+                CJYY:
+                  type: string
+                  description: 错缴原因
+          CJEHJ:
+            type: object
+            description: 错缴额合计信息
+            properties:
+              DWCJEHJ:
+                type: number
+                format: float
+                description: 单位错缴金额合计
+              GRCJEHJ:
+                type: number
+                format: float
+                description: 个人错缴金额合计
+              FSEHJ:
+                type: number
+                format: float
+                description: 发生额合计
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+# 修改单位错缴申请
+  # UnitPayWrongPut:
+  #   type: object
+  #   properties:
+  #     Req:
+  #       type: object
+  #       required:
+  #         - CZLX
+  #         - DWZH
+  #         - JCGZNY
+  #         - SKYHZH
+  #         - SKYHHM
+  #         - SKYHMC
+  #       properties:
+  #         CZLX:
+  #             type: string
+  #             description: 操作类型（0:保存；1:提交）
+  #         DWZH:
+  #           type: string
+  #           description: 单位账号
+  #         JCGZNY:
+  #           type: string
+  #           description: 缴存更正年月
+  #         SKYHZH:
+  #           type: string
+  #           description: 收款银行账号
+  #         SKYHHM:
+  #           type: string
+  #           description: 收款银行户名
+  #         SKYHMC:
+  #           type: string
+  #           description: 收款银行名称
+  #         GZXX:
+  #           type: array
+  #           description: 更正信息
+  #           items:
+  #             type: object
+  #             properties:
+  #               GRZH:
+  #                 type: string
+  #                 description: 个人账号
+  #               DWCJJE:
+  #                 type: number
+  #                 format: float
+  #                 description: 单位错缴金额
+  #               GRCJJE:
+  #                 type: number
+  #                 format: float
+  #                 description: 个人错缴金额
+  #               FSE:
+  #                 type: number
+  #                 format: float
+  #                 description: 发生额
+  #               YuanYin:
+  #                 type: string
+  #                 description: 原因
+  #         BLZL:
+  #           type: string
+  #           description: 办理资料
+  #         JBRXM:
+  #           type: string
+  #           description: 经办人姓名
+  #         JBRZJLX:
+  #           type: string
+  #           description: 经办人证件类型
+  #         JBRZJHM:
+  #           type: string
+  #           description: 经办人证件号码
+  #         CZY:
+  #           type: string
+  #           description: 操作员
+  #         YWWD:
+  #           type: string
+  #           description: 业务网点
+
+# 个人缴存基数列表
+  ListPersonRadixRes:
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWMC:
+              type: string
+              description: 单位名称
+            DWZH:
+              type: string
+              description: 单位账号
+            JZNY:
+              type: string
+              description: 缴至年月
+            YWZT:
+              type: string
+              description: 业务状态
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+# 个人缴存基数调整申请
+  PersonRadixPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - DWZH
+          - JBRXM
+          - JBRZJLX
+          - JBRZJHM
+        properties:
+          DWZH:
+            type: string
+            description: 单位账号
+          FSRS:
+            type: string
+            description: 调整人数
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          CZLX:
+            type: string
+            description: 操作类型
+          BLZL:
+            type: string
+            description: 办理资料
+          JCJSTZXX:
+            type: array
+            description: 缴存基数调整信息
+            items:
+              type: object
+              required:
+                - GRZH
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                TZQGRJCJS:
+                  type: string
+                  description: 调整前个人缴存基数
+                TZHGRJCJS:
+                  type: string
+                  description: 调整后个人缴存基数
+# 个人基数调整前单位详情
+  GetPersonRadixBeforeRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWZH:
+            type: string
+            description: 单位账号
+          DWMC:
+            type: string
+            description: 单位名称
+          FSRS:
+            type: string
+            description: 发生人数
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          JCJSTZXX:
+            type: array
+            description: 缴存基数调整信息
+            items:
+              type: object
+              required:
+                - GRZH
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                JZNY:
+                  type: string
+                  description: 缴至年月
+                TZQGRJCJS:
+                  type: number
+                  format: float
+                  description: 调整前个人缴存基数
+
+# 个人缴存基数调整申请响应
+  AddPersonRadixRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success或fail）
+# 个人缴存基数调整修改
+  PersonRadixPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        required:
+          - DWZH
+          - JBRXM
+          - JBRZJLX
+          - JBRZJHM
+          - BLZL
+        properties:
+          DWZH:
+            type: string
+            description: 单位账号
+          FSRS:
+            type: string
+            description: 发生人数
+          BLZL:
+            type: string
+            description: 办理资料
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          JCJSTZXX:
+            type: array
+            description: 缴存基数调整信息
+            items:
+              type: object
+              required:
+                - GRZH
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                TZQGRJCJS:
+                  type: number
+                  format: float
+                  description: 调整前个人缴存基数
+                TZHGRJCJS:
+                  type: number
+                  format: float
+                  description: 调整后个人缴存基数
+# 个人缴存基数调整修改响应
+  RePersonRadixRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success或fail）
+# 个人缴存基数调整详情
+  GetPersonRadixRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            description: 单位关键信息
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              DWMC:
+                type: string
+                description: 单位名称
+              DWZH:
+                type: string
+                description: 单位账号
+              DWJBR:
+                type: string
+                description: 单位经办人
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              TZRS:
+                type: integer
+                description: 调整人数
+          JCJSTZXX:
+            type: array
+            description: 缴存基数调整信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                JZNY:
+                  type: string
+                  description: 缴至年月
+                TZQJCJS:
+                  type: number
+                  format: float
+                  description: 调整前缴存基数
+                TZHJCJS:
+                  type: number
+                  format: float
+                  description: 调整后缴存基数
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+# 个人缴存基数调整回执单
+  HeadPersonRadixRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWGJXX:
+            type: object
+            description: 单位关键信息
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              YZM:
+                type: string
+                description: 验证码
+              TZSJ:
+                type: string
+                description: 填制时间
+              DWMC:
+                type: string
+                description: 单位名称
+              DWZH:
+                type: string
+                description: 单位账号
+              DWJBR:
+                type: string
+                description: 单位经办人
+              JBRZJLX:
+                type: string
+                description: 经办人证件类型
+              JBRZJHM:
+                type: string
+                description: 经办人证件号码
+              CZY:
+                type: string
+                description: 操作员
+          JCJSTZXX:
+            type: array
+            description: 缴存基数调整信息
+            items:
+              type: object
+              properties:
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                JZNY:
+                  type: string
+                  description: 缴至年月
+                TZQJCJS:
+                  type: number
+                  format: float
+                  description: 调整前缴存基数
+                TZHJCJS:
+                  type: number
+                  format: float
+                  description: 调整后缴存基数
+# 单位缴存比例调整列表
+  ListUnitDepositRatioRes:
+    type: object
+    description: 单位缴存比例调整列表
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWMC:
+              type: string
+              description: 单位名称
+            DWZH:
+              type: string
+              description: 单位账号
+            JZNY:
+              type: string
+              description: 缴至年月
+            YWZT:
+              type: string
+              description: 业务状态
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            SLSJ:
+              type: string
+              description: 受理时间
+# 单位缴存比例申请
+  PostListUnitDepositRatioPost:
+    type: object
+    properties:
+      Req:
+          type: object
+          description: 单位缴存比例调整申请
+          required:
+            - DWZH
+            - TZHDWJCBL
+            - TZHGRJCBL
+            - SXNY
+            - CZLX
+            - YWWD
+            - CZY
+            - JBRXM
+            - JBRZJLX
+            - JBRZJHM
+            - BLZL
+          properties:
+            CZLX:
+              type: string
+              description: 操作类型（0:保存；1:提交）
+            DWZH:
+              type: string
+              description: 单位账号
+            TZHDWJCBL:
+              type: number
+              format: float
+              description: 调整后单位缴存比例
+            TZHGRJCBL:
+              type: number
+              format: float
+              description: 调整后个人缴存比例
+            SXNY:
+              type: string
+              description: 生效年月
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+            JBRXM:
+              type: string
+              description: 经办人姓名
+            JBRZJLX:
+              type: string
+              description: 经办人证件类型
+            JBRZJHM:
+              type: string
+              description: 经办人证件号码
+            BLZL:
+              type: string
+              description: 办理资料
+# 单位缴存比例调整响应
+  PostUnitDepositRatioRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success或fail）
+# 修改单位缴存比例调整响应
+  ReUnitDepositRatioRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（success或fail）
+# 修改单位缴存比例调整信息
+  UnitDepositRatioPut:
+    type: object
+    properties:
+      Req:
+        type: object
+        description: 单位缴存比例调整申请
+        required:
+          - CZLX
+          - DWZH
+          - TZHDWJCBL
+          - TZHGRJCBL
+          - SXNY
+          - YWWD
+          - CZY
+          - JBRXM
+          - JBRZJLX
+          - JBRZJHM
+          - BLZL
+        properties:
+          CZLX:
+            type: string
+            description: 操作类型（0:保存；1:提交）
+          DWZH:
+            type: string
+            description: 单位账号
+          TZHDWJCBL:
+            type: number
+            format: float
+            description: 调整后单位缴存比例
+          TZHGRJCBL:
+            type: number
+            format: float
+            description: 调整后个人缴存比例
+          SXNY:
+            type: string
+            description: 生效年月
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          BLZL:
+            type: string
+            description: 办理资料
+
+# 获取单位缴存比例申请单位信息
+  AutoUnitDepositRatioRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          TZQDWJCBL:
+            type: number
+            format: float
+            description: 调整前单位缴存比例
+          TZQGRJCBL:
+            type: number
+            format: float
+            description: 调整前个人缴存比例
+          JZNY:
+            type: string
+            description: 缴至年月
+# 单位缴存比例调整详情
+  GetUnitDepositRatioRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JZNY:
+            type: string
+            description: 缴至年月
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+             type: string
+             description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          TZQDWJCBL:
+            type: number
+            format: float
+            description: 调整前单位缴存比例
+          TZQGRJCBL:
+            type: number
+            format: float
+            description: 调整前个人缴存比例
+          TZHDWJCBL:
+            type: number
+            format: float
+            description: 调整后单位缴存比例
+          TZHGRJCBL:
+            type: number
+            format: float
+            description: 调整后个人缴存比例
+          SXNY:
+            type: string
+            description: 生效时间
+          BLZL:
+            type: string
+            description: 办理资料
+# 单位缴存比例调整回执单
+  HeadUnitDepositRatioReceiptRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          YZM:
+            type: string
+            description: 验证码
+          TZSJ:
+            type: string
+            description: 填制时间
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          TZQDWJCBL:
+            type: number
+            format: float
+            description: 调整前单位缴存比例
+          TZQGRJCBL:
+            type: number
+            format: float
+            description: 调整前个人缴存比例
+          TZHDWJCBL:
+            type: number
+            format: float
+            description: 调整后单位缴存比例
+          TZHGRJCBL:
+            type: number
+            format: float
+            description: 调整后个人缴存比例
+          SXNY:
+            type: string
+            description: 生效年月
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRZJLX:
+            type: string
+            description: 经办人证件类型
+          JBRZJHM:
+            type: string
+            description: 经办人证件号码
+          CZY:
+            type: string
+            description: 操作员
+# 删除单位缴存比例调整
+  # deleteUnitScaleDetail:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（success或fail）
+
+# 单位催缴列表
+  ListUnitPayCallRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWMC:
+              type: string
+              description: 单位名称
+            DWZH:
+              type: string
+              description: 单位账号
+            JBRXM:
+              type: string
+              description: 经办人姓名
+            JBRGDDH:
+              type: string
+              description: 经办人固定电话
+            JBRSJHM:
+              type: string
+              description: 经办人手机号码
+            YHJNY:
+              type: string
+              description: 应汇缴年月
+            FSRS:
+              type: integer
+              description: 发生人数
+            FSE:
+              type: number
+              format: float
+              description: 发生额
+            ZDCJ:
+              type: string
+              description: 自动催缴
+            SDCJ:
+              type: string
+              description: 手动催缴次数
+# 获取单位历史催缴记录
+  ListUnitPayCallHistoryRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            CJSJ:
+              type: string
+              description: 催缴时间
+            CJR:
+              type: string
+              description: 催缴人
+            CJFS:
+              type: string
+              description: 催缴方式
+            DWZH:
+              type: string
+              description: 单位账号
+            DWMC:
+              type: string
+              description: 单位名称
+# 催缴申请请求
+  BatchSubmissionPayCall:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          CJR:
+            type: string
+            description: 催缴人
+          CJFS:
+            type: string
+            description: 催缴方式
+          batchSubmission:
+            type: object
+            properties:
+              YWLSHJH:
+                type: array
+                description: 业务流水号集合
+                items:
+                  type: string
+# # 催缴回执单
+  headUnitPayCallReceiptRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          YZM:
+            type: string
+            description: 验证码
+          TZSJ:
+            type: string
+            description: 填制时间
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          JBRXM:
+            type: string
+            description: 经办人姓名
+          JBRGDDHHM:
+            type: string
+            description: 经办人固定电话号码
+          JBRSJHM:
+            type: string
+            description: 经办人手机号码
+          CZY:
+            type: string
+            description: 操作员
+          CJJL:
+            type: array
+            description: 催缴记录
+            items:
+              type: object
+              properties:
+                YHJNY:
+                  type: string
+                  description: 应汇缴年月
+                FSRS:
+                  type: integer
+                  description: 发生人数
+                FSE:
+                  type: string
+                  description: 发生额
+                ZDCJ:
+                  type: string
+                  description: 自动催缴
+                CJFS:
+                  type: string
+                  description: 催缴方式
+                CJR:
+                  type: string
+                  description: 催缴人
+                CJSJ:
+                  type: string
+                  description: 催缴时间
+# 催缴详情
+  GetUnitPayCallDetailRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          DWZH:
+            type: string
+            description: 单位账号
+          CJSJ:
+            type: string
+            description: 催缴时间
+          CJR:
+            type: string
+            description: 催缴人
+          DWMC:
+            type: string
+            description: 单位名称
+# 获取单位业务明细列表
+  getUnitBusnissDetailListRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            DWMC:
+              type: string
+              description: 单位名称
+            DWZH:
+              type: string
+              description: 单位账号
+            ZZJGDM:
+              type: string
+              description: 组织机构代码
+            YWMXLX:
+              type: string
+              description: 业务明细类型
+            CZBS:
+              type: string
+              description: 冲账标识
+            CZY:
+              type: string
+              description: 操作员
+            SLSJ:
+              type: integer
+              description: 受理时间
+
+# 获取个人业务明细列表
+  getIndiBusnissDetailListRes:
+    type: object
+    properties:
+      Res:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            XingMing:
+              type: string
+              description: 姓名
+            GRZH:
+              type: string
+              description: 个人账号
+            SFZH:
+              type: string
+              description: 身份证号
+            YWMXLX:
+              type: string
+              description: 业务明细类型
+            CZBS:
+              type: string
+              description: 冲账标识
+            CZY:
+              type: string
+              description: 操作员
+            SLSJ:
+              type: integer
+              description: 受理时间
+
+
+# 催缴申请请求响应
+  # AddUnitPayCallRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（fail失败| success 成功）
+# 修改单位缴存审核
+  UnitDepositPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          reviewInfo:
+              type: object
+              properties:
+                SHJG:
+                  type: string
+                  description: 审核结果（01通过/02不通过）
+                YYYJ:
+                  type: string
+                  description: 原因/意见
+                CZY:
+                  type: string
+                  description: 操作员
+                YWWD:
+                  type: string
+                  description: 业务网点
+                ZhiWu:
+                  type: string
+                  description: 职务(操作员角色)
+                CZQD:
+                  type: string
+                  description: 操作渠道
+                BeiZhu:
+                  type: string
+                  description: 备注
+          ids:
+            type: array
+            items:
+              type: string
+              description: 业务流水号
+  ReviewUnitDepositRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（fail失败| success 成功）
+
+  # Postpic:
+  #   type: object
+  #   properties:
+  #     Req:
+  #       type: object
+  #       properties:
+  #         path:
+  #           type: string
+  #           description: 文件路径
+
+  # deleteListUnitRemittanceResRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（fail失败| success 成功）
+
+  AddUnitRemittanceRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态（fail失败| success 成功）
+  # RemittanceApplyDetailRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         YWLSH:
+  #           type: string
+  #           description: 业务流水号
+  #         status:
+  #           type: string
+  #           description: 状态（fail失败| success 成功）
+#单位汇缴提交:
+#  UnitRemittanceSubmitPost:
+#    type: object
+#    properties:
+#      Req:
+#        type: object
+#        properties:
+#          YWLSHJH:
+#            type: array
+#            description: 业务流水号集合
+#            items:
+#              type: string
+#单位汇缴提交响应
+  # SubmitUnitRemittanceRes:
+  #   type: object
+  #   properties:
+  #     Res:
+  #       type: object
+  #       properties:
+  #         status:
+  #           type: string
+  #           description: 状态（成功：success；失败：fail）
+  #         SBYWLSH:
+  #           type: string
+  #           description: 失败时捕获的首条业务流水号（成功时不返回）
+#单位补缴提交:
+  UnitPayBackubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+#单位补缴提交响应
+  SubmitUnitPayBackRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+#单位缓缴提交:
+  UnitPayHoldSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+
+#单位缓缴提交响应
+  SubmitUnitPayHoldRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+#单位错缴提交:
+  # UnitPayWrongSubmitPost:
+  #   type: object
+  #   properties:
+  #     Req:
+  #       type: object
+  #       properties:
+  #         YWLSHJH:
+  #           type: array
+  #           description: 业务流水号集合
+  #           items:
+  #             type: string
+#单位催缴提交响应
+  SubmitUnitPayCallRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+#个人基数调整提交:
+  PersonRadixSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+#个人基数调整提交响应
+  SubmitPersonRadixRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+#单位比例调整提交:
+  UnitDepositRatioSubmitPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHJH:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+#单位比例调整提交响应
+  SubmitUnitDepositRatioRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 状态（成功：success；失败：fail）
+          SBYWLSH:
+            type: string
+            description: 失败时捕获的首条业务流水号（成功时不返回）
+  # Success:
+  #   type: object
+  #   properties:
+  #     code:
+  #       type: integer
+  #       format: int32
+  #     status:
+  #       type: string
+  #       description: 状态(success成功,fail 失败)
+
+  Error:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+      msg:
+        type: string
+        description: 信息
+#汇缴通知书
+  UnitRemittanceNotice:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          YWWD:
+            type: string
+            description: 业务网点
+          TZRQ:
+            type: string
+            description: 填制日期
+          DWMC:
+            type: string
+            description: 单位名称
+          DWZH:
+            type: string
+            description: 单位账号
+          HBJNY:
+            type: string
+            description: 汇补缴年月
+          HJFS:
+            type: string
+            description: 汇缴方式
+          FSRS:
+            type: string
+            description: 发生人数
+          FSE:
+            type: number
+            description: 发生额
+          ZJE:
+            type: string
+            description: 总金额（大写）
+          SKZHMC:
+            type: string
+            description: 收款账户名称
+          SKZH:
+            type: string
+            description: 收款账号
+          STYHMC:
+            type: string
+            description: 受托银行名称
+          STYHDM:
+            type: string
+            description: 受托银行代码
+          JZSJ:
+            type: string
+            description: 截止时间
+          DWJBR:
+            type: string
+            description: 单位经办人

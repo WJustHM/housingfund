@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd"
+       default-autowire="byName">
+
+    <dubbo:application name="Server"/>
+
+
+    <!-- 超时设置及超时调用次数为0，可以兼容后台调试 -->
+    <dubbo:consumer timeout="60000" retries="0" check="false"/>
+
+    <!-- don`t change registry when you submit to master.  see  housingfund.conf  which in housingfund project root dir  -->
+    <dubbo:registry protocol="zookeeper"
+                    address="${dubbo.registry.address}" group="${dubbo.registry.group}"/>
+
+    <dubbo:protocol name="dubbo" port="-1" server="netty4" threads="100"
+                    client="netty4" register="true" threadpool="fixed" accepts="1000" payload="52428800"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IDictionaryService"
+            id="dictionaryService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.INetworkManagementService"
+            id="networkManagementService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.IPermissionService"
+            id="permissionService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.IAccountService"
+            id="accountService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.ISettlementSpecialBankAccountManageService"
+            id="settlementSpecialBankAccountManageService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.IBankInfoService"
+            id="bankInfoService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.ICenterInfoService"
+            id="iCenterInfoService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IActionService"
+            id="action_service" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IFileService"
+            id="fileService" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IStateMachineService"
+            id="stateMachine_service" check="false" timeout="12000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IUploadImagesService"
+            id="uploadImagesService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.IPolicyService"
+            id="policyService" check="false" timeout="12000"/>
+
+    <!--贷款模块 -->
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.ISignContractService"
+            id="signContractService" check="false" timeout="10000"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.IRepaymentService"
+            id="repaymentService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.IApplyLoanService"
+            id="applyLoanService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.IBankCallService"
+            id="bankCallService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.IEstateProject"
+            id="estateProject" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.IHousingCompany"
+            id="housingCompany" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.ILoanAccountService"
+            id="loanAccountService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.ILoanContractService"
+            id="loanContractService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.ILoanRecordService"
+            id="loanRecordService" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.ILoanService"
+            id="loanService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.IEstateProjectAlter"
+            id="estateProjectAlter" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.IHousingCompanyAlter"
+            id="housingCompanyAlter" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.loan.ICommonService"
+            id="commonService" check="false"/>
+
+    <!-- 归集模块 -->
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.trader.ICollectionTrader"
+            id="collctionTrader" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.trader.ICollectionWithdrawlTrader"
+            id="collctionWithdrawlTrader" check="false" timeout="10000" retries="0"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.common.CommonOps"
+            id="commonOps" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctAlter"
+            id="indiAcctAlter" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctFreeze"
+            id="indiAcctFreeze" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctMerge"
+            id="indiAcctMerge" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctSeal"
+            id="indiAcctSeal" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctSet"
+            id="indiAcctSet" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctsInfo"
+            id="indiAcctsInfo" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctUnfreeze"
+            id="indiAcctUnFreeze" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctUnseal"
+            id="indiAcctUnseal" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiInnerTransfer"
+            id="indiInnerTransfer" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.PersonRadix"
+            id="personRadix" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitDepositInfo"
+            id="unitDepositInfo" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitDepositInventory"
+            id="unitDepositInventory" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitDepositRatio"
+            id="unitDepositRatio" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitPayback"
+            id="unitPayback" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitPayCall"
+            id="unitPayCall" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitPayhold"
+            id="unitPayhold" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitPayWrong"
+            id="unitPayWrong" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitRemittance"
+            id="unitRemittance" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctAlter"
+            id="unitAcctAlter" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctCommon"
+            id="unitAcctCommon" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctDrop"
+            id="unitAcctDrop" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctInfo"
+            id="unitAcctInfo" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctSeal"
+            id="unitAcctSeal" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctSet"
+            id="unitAcctSet" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctUnseal"
+            id="unitAcctUnseal" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.businessdetail.IndiBusiness"
+            id="indiBusiness" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.businessdetail.UnitBusiness"
+            id="unitBusiness" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.service.withdrawl.WithdrawlTasks"
+            id="withdrawlTasks" check="false" timeout="10000" retries="0"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.loan.ILoanReviewService"
+                     id="ILoanReviewService" check="false" timeout="10000"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.allochthonous.service.TransferInCancelInterface"
+            id="transferInCancel" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.allochthonous.service.TransferIntoInterface"
+            id="transferInto" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.collection.allochthonous.service.TransferOutInterface"
+            id="transferOut" check="false"/>
+    <dubbo:reference interface="com.handge.housingfund.common.service.collection.service.trader.IAllochthounousBackCall"
+                     id="allochthounousBackCall" check="false"/>
+
+
+    <!--财务模块-->
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IVoucherService"
+            id="voucherService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IVoucherManagerService"
+            id="voucherManagerService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.ISubjectService"
+            id="subjectService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IFinanceBaseService"
+            id="financeBaseService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IBusinessSetService"
+            id="businessSetService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IBusinessClassifySetService"
+            id="businessClassifySetService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IAccountBookService"
+            id="accountBookService" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IFinanceReportService"
+            id="financeReportService" timeout="60000" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IAccChangeNoticeService"
+            id="accChangeNoticeService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IFixedRecordService"
+            id="iFixedRecordService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IFixedBusinessAuditService"
+            id="iFixedBusinessAuditService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IFixedDrawService"
+            id="iFixedDrawService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IActived2FixedService"
+            id="iActived2FixedService" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IFinanceTrader"
+            id="iFinanceTrader" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IReconciliationService"
+            id="iReconciliationService" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IFinanceAsync"
+            id="iFinanceAsync" check="false">
+        <dubbo:method name="getReconciliationAsync" async="true"/>
+    </dubbo:reference>
+
+    <!--审核整合版，测试用!!!-->
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.review.IBaseReview"
+            id="review.collection" check="false" version="review.collection" timeout="60000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.review.IBaseReview"
+            id="review.loanl" check="false" version="review.loanl" timeout="60000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.review.IBaseReview"
+            id="review.finance" check="false" version="review.finance" timeout="60000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IReadExcelUtilsService"
+            id="readExcelUtilsService" check="false" timeout="1000000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IExportExcelService"
+            id="exportExcelService" check="false" timeout="1000000"/>
+    <!--- server filter  -->
+    <dubbo:reference interface="com.handge.housingfund.common.service.account.IPermissionService"
+                     id="IPermissionService" check="false"/>
+    <dubbo:reference interface="com.handge.housingfund.common.service.account.IUserService"
+                     id="IUserService" check="false"/>
+    <dubbo:reference interface="com.handge.housingfund.common.service.others.IDistrictService"
+                     id="districtService" check="false" timeout="12000"/>
+</beans>

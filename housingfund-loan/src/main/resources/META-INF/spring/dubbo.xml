@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:duboo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="Loan"/>
+
+    <!-- don`t change registry when you submit to master.  see  housingfund.conf  which in housingfund project root dir  -->
+    <dubbo:registry protocol="zookeeper"
+                    address="172.20.31.4:2181,172.20.31.5:2181,172.20.31.6:2181" group="sjw00"/>
+
+    <dubbo:provider delay="-1" timeout="12000" retries="0"/>
+    <dubbo:protocol name="dubbo" port="-1" server="netty4" threads="100"
+                    client="netty4" register="true" threadpool="fixed" accepts="1000" payload="52428800"/>
+
+    <dubbo:consumer timeout="6000" retries="0"/>
+
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.ISettlementSpecialBankAccountManageService"
+            id="settlementSpecialBankAccountManageService" check="false"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.account.AccountRpcService"
+                     id="accountRpcService" check="false"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.others.IPdfService"
+                     id="pdfservice" check="false" timeout="100000"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.ISaveAuditHistory"
+                     id="iSaveAuditHistory" check="false"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.schedule.ITimeTask"
+                     id="iTimeTask" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IUploadImagesService"
+            id="uploadImagesService" check="false"/>
+    <dubbo:reference interface="com.handge.housingfund.common.service.collection.service.withdrawl.WithdrawlTasks"
+                     id="withdrawlTasks" check="false"/>
+
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.bank.ibank.IBank"
+                     id="iBank" check="false"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.finance.IVoucherManagerService"
+                     id="voucherManagerService" check="false"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitRemittance"
+                     id="unitRemittance" check="false"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IDictionaryService"
+            id="iDictionaryService" check="false"/>
+
+    <dubbo:reference id="iSMSCommon" interface="com.handge.housingfund.common.service.others.ISMSCommon"
+                     check="false"/>
+
+    <!--<dubbo:reference-->
+            <!--interface="com.handge.housingfund.common.service.loan.IEstateProject"-->
+            <!--id="estateProject" check="false"/>-->
+    <!--<dubbo:reference-->
+            <!--interface="com.handge.housingfund.common.service.loan.IEstateProjectAlter"-->
+            <!--id="estateProjectAlter" check="false"/>-->
+    <!--<dubbo:reference-->
+            <!--interface="com.handge.housingfund.common.service.loan.IHousingCompany"-->
+            <!--id="housingCompany" check="false"/>-->
+    <!--<dubbo:reference-->
+            <!--interface="com.handge.housingfund.common.service.loan.IHousingCompanyAlter"-->
+            <!--id="housingCompanyAlter" check="false"/>-->
+
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.IApplyLoanService"
+            ref="applyLoanService" token="true"/>
+    <bean id="applyLoanService"
+          class="com.handge.housingfund.loan.service.ApplyLoanService"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.IBankCallService"
+            ref="bankCallService" token="true"/>
+    <bean id="bankCallService"
+          class="com.handge.housingfund.loan.service.BankCallService"/>
+
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.IEstateProject"
+            ref="estateProjectImpl" token="true"/>
+    <bean id="estateProjectImpl"
+          class="com.handge.housingfund.loan.service.EstateProjectImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.IHousingCompany"
+            ref="housingCompanyImpl" token="true"/>
+    <bean id="housingCompanyImpl"
+          class="com.handge.housingfund.loan.service.HousingCompanyImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.ILoanAccountService"
+            ref="loanAccountService" token="true"/>
+    <bean id="loanAccountService"
+          class="com.handge.housingfund.loan.service.LoanAccountService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.ILoanContractService"
+            ref="loanContractService" token="true"/>
+    <bean id="loanContractService"
+          class="com.handge.housingfund.loan.service.LoanContractService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.ILoanRecordService"
+            ref="loanRecordService" token="true"/>
+    <bean id="loanRecordService"
+          class="com.handge.housingfund.loan.service.LoanRecordService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.ILoanReviewService"
+            ref="loanReviewService" token="true"/>
+    <bean id="loanReviewService"
+          class="com.handge.housingfund.loan.service.LoanReviewService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.ILoanService"
+            ref="loanService" token="true"/>
+    <bean id="loanService"
+          class="com.handge.housingfund.loan.service.LoanService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.IRepaymentService"
+            ref="repaymentService" token="true"/>
+    <bean id="repaymentService"
+          class="com.handge.housingfund.loan.service.RepaymentService"/>
+
+
+    <duboo:service
+            interface="com.handge.housingfund.common.service.loan.IExceptionMethod"
+            ref="exceptionMethod" token="true"/>
+    <bean id="exceptionMethod"
+          class="com.handge.housingfund.loan.service.ExceptionMethod"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.IClearingBank"
+            ref="clearingBank" token="true"/>
+    <bean id="clearingBank"
+          class="com.handge.housingfund.loan.service.ClearingBank"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.ILoanTaskService"
+            ref="iloanTaskService" token="true"/>
+    <bean id="iloanTaskService"
+          class="com.handge.housingfund.loan.service.LoanTaskService"/>
+
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.IHousingCompanyAlter"
+            ref="housingCompanyAlter" token="true"/>
+    <bean id="housingCompanyAlter"
+          class="com.handge.housingfund.loan.service.HousingCompanyAlterImpl"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.IEstateProjectAlter"
+            ref="estateProjectAlter" token="true"/>
+    <bean id="estateProjectAlter"
+          class="com.handge.housingfund.loan.service.EstateProjectAlterImpl"/>
+
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.ISignContractService"
+            ref="signContractService" token="true"/>
+    <bean id="signContractService"
+          class="com.handge.housingfund.loan.service.SignContractService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.loan.ICommonService"
+            ref="commonService" token="true"/>
+    <bean id="commonService"
+          class="com.handge.housingfund.loan.service.CommonService"/>
+
+</beans>

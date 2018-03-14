@@ -1,0 +1,1828 @@
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: Handge housingfund Platform API
+  description: 提供公积金的数据支持
+  termsOfService: collection.allochthonous
+  contact:
+    name: API Documentation Support. QQ:17213069
+    url: http://handge.cn
+    email: front_end@handge.cn
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: "1.0.1"
+# the domain of the service
+host: 172.20.31.144
+# array of all schemes that your API supports
+schemes:
+  - http
+# will be prefixed to all paths
+basePath: /housingfund
+security:
+  - addToken: []
+tags:
+  - name: TransferInto
+    description: 转移接续转入
+  - name: TransferOut
+    description: 转移接续转出
+produces:
+  - application/json
+paths:
+
+
+# <申请受理-转移接续转入>
+  /TransferInto:
+    get:
+      description: 申请受理-转移接续转入
+      operationId: TransferIntoList
+      tags:
+        - TransferInto
+      parameters:
+        - name: LXHBH
+          in: query
+          type: string
+          description: 联系函编号
+        - name: ZGXM
+          in: query
+          type: string
+          description: 职工姓名
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+        - name: ZCGJJZXMC
+          in: query
+          type: string
+          description: 转出公积金中心名称
+        - name: KSSJ
+          in: query
+          type: string
+          description: 开始时间
+        - name: JSSJ
+          in: query
+          type: string
+          description: 结束时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 当前页数
+        - name: pageSize
+          in: query
+          type: string
+          description: 当前页数数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TransferIntoListModle'
+# <录入联系函、申请修改-转移接续转入>
+  /TransferInto/{type}:
+    post:
+      description: 录入联系函-转移接续转入
+      operationId: TransferIntoPost
+      tags:
+        - TransferInto
+      parameters:
+        - name: type
+          in: path
+          required: true
+          type: string
+          description: 类型（0：保存 1：提交）
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TransferIntoPostModle'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponses'
+    put:
+      description: 申请修改-转移接续转入
+      operationId: TransferIntoPut
+      tags:
+        - TransferInto
+      parameters:
+        - name: type
+          in: path
+          required: true
+          type: string
+          description: 类型（0：保存 1：提交）
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TransferIntoPutModle'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponses'
+# <联系函详情-转移接续转入>
+  /TransferInto/getDetails/{YWLSH}:
+    get:
+      description: 联系函详情-转移接续转入
+      operationId: TransferIntoDetails
+      tags:
+        - TransferInto
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TransferIntoDetailsModle'
+# <已审核-转移接续转入>
+  /TransferIntoReview/AuditedList:
+    get:
+      description: 已审核-转移接续转入
+      operationId: TransferIntoAuditedList
+      tags:
+        - TransferInto
+      parameters:
+        - name: ZGXM
+          in: query
+          type: string
+          description: 职工姓名
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+        - name: ZCGJJZXMC
+          in: query
+          type: string
+          description: 转出公积金中心名称
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态
+        - name: SLSJ
+          in: query
+          type: string
+          description: 受理时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 当前页数
+        - name: pageSize
+          in: query
+          type: string
+          description: 当前页数数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TransferIntoAuditedListModle'
+# <未审核-转移接续转入>
+  /TransferIntoReview/NotReviewedList:
+    get:
+      description: 未审核-转移接续转入
+      operationId: TransferIntoNotReviewedList
+      tags:
+        - TransferInto
+      parameters:
+        - name: ZGXM
+          in: query
+          type: string
+          description: 职工姓名
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+        - name: ZCGJJZXMC
+          in: query
+          type: string
+          description: 转出公积金中心名称
+        - name: DDSJ
+          in: query
+          type: string
+          description: 到达时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 当前页数
+        - name: pageSize
+          in: query
+          type: string
+          description: 当前页数数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TransferIntoNotReviewedListModle'
+# <办理转移-转移接续转入>
+  /TransferInto/HandleTransfer:
+    get:
+      description: 办理转移-转移接续转入
+      operationId: HandleTransferList
+      tags:
+        - TransferInto
+      parameters:
+        - name: LXHBH
+          in: query
+          type: string
+          description: 联系函编号
+        - name: ZGXM
+          in: query
+          type: string
+          description: 职工姓名
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态 （0：账户信息审核通过 1：账户信息审核不通过 2：协商中 3：系统处理中 4：正常办结 5：账户信息已录）
+        - name: ZCGJJZXMC
+          in: query
+          type: string
+          description: 转出公积金中心名称
+        - name: KSSJ
+          in: query
+          type: string
+          description: 开始时间
+        - name: JSSJ
+          in: query
+          type: string
+          description: 结束时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 当前页数
+        - name: pageSize
+          in: query
+          type: string
+          description: 当前页数数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/HandleTransferListModle'
+
+# <接收联系函-转移接续转出>
+  /TransferOut/ReceiveContactLetter:
+    get:
+      description: 接收联系函-转移接续转出
+      operationId: ReceiveContactLetterList
+      tags:
+        - TransferOut
+      parameters:
+        - name: LXHBH
+          in: query
+          type: string
+          description: 联系函编号
+        - name: ZGXM
+          in: query
+          type: string
+          description: 职工姓名
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+        - name: KSSJ
+          in: query
+          type: string
+          description: 开始时间
+        - name: JSSJ
+          in: query
+          type: string
+          description: 结束时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 当前页数
+        - name: pageSize
+          in: query
+          type: string
+          description: 当前页数数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ReceiveContactLetterListModle'
+# <处理联系函-转移接续转出>
+  /TransferOut/HandleContactLetter:
+    get:
+      description: 处理联系函-转移接续转出
+      operationId: HandleContactLetterList
+      tags:
+        - TransferOut
+      parameters:
+        - name: LXHBH
+          in: query
+          type: string
+          description: 联系函编号
+        - name: ZGXM
+          in: query
+          type: string
+          description: 职工姓名
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态 （0：确认接收联系函 1：账户信息已录未审 2：账户信息审核通过 3：账户信息审核失败 4：转出驳回联系函 5：转账中 6：转账失败 7：转出地已转账 8：正常办结 9：驳回办结 10：失败办结 11：协商中 12：账户信息新建）
+        - name: ZRGJJZXMC
+          in: query
+          type: string
+          description: 转入公积金中心名称
+        - name: KSSJ
+          in: query
+          type: string
+          description: 开始时间
+        - name: JSSJ
+          in: query
+          type: string
+          description: 结束时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 当前页数
+        - name: pageSize
+          in: query
+          type: string
+          description: 当前页数数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/HandleContactLetterListModle'
+# <联系函详情-转移接续转出>
+  /TransferOut/getDetails/{YWLSH}:
+    get:
+      description: 联系函详情-转移接续转出
+      operationId: TransferOutDetails
+      tags:
+        - TransferOut
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TransferOutDetailsModle'
+# <录入用户信息、修改用户信息-转移接续转出>
+  /TransferOut/{type}:
+    post:
+      description: 录入用户信息-转移接续转出
+      operationId: TransferOutPost
+      tags:
+        - TransferOut
+      parameters:
+        - name: type
+          in: path
+          required: true
+          type: string
+          description: 类型（0：保存 1：提交）
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TransferOutPostModle'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponses'
+    put:
+      description: 修改用户信息-转移接续转出
+      operationId: TransferOutPut
+      tags:
+        - TransferOut
+      parameters:
+        - name: type
+          in: path
+          required: true
+          type: string
+          description: 类型（0：保存 1：提交）
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TransferOutPutModle'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponses'
+# <用户信息详情-转移接续转出>
+  /TransferOut/getAccountDetails/{YWLSH}:
+    get:
+      description: 用户信息详情-转移接续转出
+      operationId: TransferOutAccountDetails
+      tags:
+        - TransferOut
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TransferOutAccountDetailsModle'
+# <已审核-转移接续转出>
+  /TransferOutReview/AuditedList:
+    get:
+      description: 已审核-转移接续转出
+      operationId: TransferOutAuditedList
+      tags:
+        - TransferOut
+      parameters:
+        - name: ZGXM
+          in: query
+          type: string
+          description: 职工姓名
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+        - name: ZRGJJZXMC
+          in: query
+          type: string
+          description: 转入公积金中心名称
+        - name: ZhuangTai
+          in: query
+          type: string
+          description: 状态
+        - name: KSSJ
+          in: query
+          type: string
+          description: 开始时间
+        - name: JSSJ
+          in: query
+          type: string
+          description: 结束时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 当前页数
+        - name: pageSize
+          in: query
+          type: string
+          description: 当前页数数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TransferOutAuditedListModle'
+# <未审核-转移接续转出>
+  /TransferOutReview/NotReviewedList:
+    get:
+      description: 未审核-转移接续转出
+      operationId: TransferOutNotReviewedList
+      tags:
+        - TransferOut
+      parameters:
+        - name: ZGXM
+          in: query
+          type: string
+          description: 职工姓名
+        - name: ZJHM
+          in: query
+          type: string
+          description: 证件号码
+        - name: ZRGJJZXMC
+          in: query
+          type: string
+          description: 转入公积金中心名称
+        - name: KSSJ
+          in: query
+          type: string
+          description: 开始时间
+        - name: JSSJ
+          in: query
+          type: string
+          description: 结束时间
+        - name: pageNo
+          in: query
+          type: string
+          description: 当前页数
+        - name: pageSize
+          in: query
+          type: string
+          description: 当前页数数据条数
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TransferOutNotReviewedListModle'
+
+# <转入-撤销>
+  /TransferInCancel/{YWLSH}:
+    put:
+      description: 转入-撤销（只能在“联系函复合通过-01”的状态）
+      operationId: TransferInCancel
+      tags:
+        - TransferInto
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TransferInCancelModle'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponses'
+# <确认办理-转移接续转出>
+  /TransferOut/Confirmation/{YWLSH}:
+    put:
+      description: 确认办理-转移接续转出
+      operationId: TransferOutConfirmation
+      tags:
+        - TransferOut
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TransferOutConfirmationModle'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponses'
+# <驳回-转移接续转出>
+  /TransferOut/Reject/{YWLSH}:
+    put:
+      description: 驳回-转移接续转出
+      operationId: TransferOutReject
+      tags:
+        - TransferOut
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TransferOutRejectModle'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponses'
+# <业务流程详情-转移接续转入>
+  /TransferInto/getBusinessDetails/{YWLSH}:
+    get:
+      description: 业务流程详情-转移接续转入
+      operationId: TransferIntoBusinessDetails
+      tags:
+        - TransferInto
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/TransferIntoBusinessDetailsModle'
+# <办结-转移接续转入>
+  /TransferInto/Finish/{YWLSH}:
+    put:
+      description: 办结-转移接续转入
+      operationId: TransferIntoFinish
+      tags:
+        - TransferInto
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TransferIntoFinishModle'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponses'
+# <协商-转移接续转入>
+  /TransferInto/Negotiation/{YWLSH}:
+    put:
+      description: 协商-转移接续转入
+      operationId: TransferIntoNegotiation
+      tags:
+        - TransferInto
+      parameters:
+        - name: YWLSH
+          in: path
+          required: true
+          type: string
+          description: 业务流水号
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/TransferIntoNegotiationModle'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonResponses'
+
+securityDefinitions:
+  addToken:
+    type: apiKey
+    in: header
+    name: H-TOKEN
+definitions:
+  TransferIntoListModle:
+    properties:
+      nextPageNo:
+        type: string
+        description: 下一页
+      currentPage:
+        type: string
+        description: 当前页码
+      pageSize:
+        type: string
+        description: 当前页码数据条数
+      totalCount:
+        type: string
+        description: 总条数
+      pageCount:
+        type: string
+        description: 总页数
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            LXHBH:
+              type: string
+              description: 联系函编号
+            ZGXM:
+              type: string
+              description: 职工姓名
+            ZJHM:
+              type: string
+              description: 证件号码
+            SJHM:
+              type: string
+              description: 手机号码
+            ZCGJJZXMC:
+              type: string
+              description: 转出公积金中心名称
+            YGRZFGJJZH:
+              type: string
+              description: 原个人住房公积金账号
+            YDWMC:
+              type: string
+              description: 原单位名称
+            XGRZFGJJZH:
+              type: string
+              description: 现个人住房公积金账号
+            XDWMC:
+              type: string
+              description: 现单位名称
+            LXDSCRQ:
+              type: string
+              description: 联系单生成日期
+            ZhuangTai:
+              type: string
+              description: 状态 (0：联系函新建 1：联系函已录未审 2：联系函审核失败 3：联系函审核通过 4：确认接收联系函 5：驳回联系函)
+  TransferIntoPostModle:
+    properties:
+      TurnOutMsg:
+        type: object
+        required:
+          - ZCJGBH
+          - ZCGJJZXMC
+          - YGRZFGJJZH
+          - YGZDWMC
+        properties:
+          ZCJGBH:
+            type: string
+            description: 转出机构编号
+          ZCGJJZXMC:
+            type: string
+            description: 转出公积金中心名称
+          YGRZFGJJZH:
+            type: string
+            description: 原个人住房公积金账号
+          YGZDWMC:
+            type: string
+            description: 原工作单位名称
+      WorkerMsg:
+        type: object
+        required:
+          - ZJLX
+          - ZJHM
+        properties:
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          ZGXM:
+            type: string
+            description: 职工姓名
+          SJHM:
+            type: string
+            description: 手机号码
+          XGRZFGJJZH:
+            type: string
+            description: 现个人住房公积金账号
+          XGZDWMC:
+            type: string
+            description: 现工作单位名称
+      TurnIntoMsg:
+        type: object
+        required:
+          - ZRGJJZXZJZHSSYHMC
+          - ZRGJJZXZJZH
+          - LXDHHCZ
+        properties:
+          ZRGJJZXZJZHSSYHMC:
+            type: string
+            description: 转入公积金中心资金账户所属银行名称
+          ZRGJJZXZJZH:
+            type: string
+            description: 转入公积金中心资金账号
+          ZRGJJZXZJZHHM:
+            type: string
+            description: 转入公积金中心资金账号户名
+          LXDHHCZ:
+            type: string
+            description: 联系电话或传真
+      BLZL:
+        type: string
+        description: 办理资料
+  TransferIntoPutModle:
+    properties:
+      YWLSH:
+        type: string
+        description: 业务流水号
+      LXHBH:
+        type: string
+        description: 联系函编号
+      LXDSCRQ:
+        type: string
+        description: 联系单生成日期
+      TurnOutMsg:
+        type: object
+        required:
+          - ZCJGBH
+          - ZCGJJZXMC
+          - YGRZFGJJZH
+          - YGZDWMC
+        properties:
+          ZCJGBH:
+            type: string
+            description: 转出机构编号
+          ZCGJJZXMC:
+            type: string
+            description: 转出公积金中心名称
+          YGRZFGJJZH:
+            type: string
+            description: 原个人住房公积金账号
+          YGZDWMC:
+            type: string
+            description: 原工作单位名称
+      WorkerMsg:
+        type: object
+        required:
+          - ZJLX
+          - ZJHM
+        properties:
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          ZGXM:
+            type: string
+            description: 职工姓名
+          SJHM:
+            type: string
+            description: 手机号码
+          XGRZFGJJZH:
+            type: string
+            description: 现个人住房公积金账号
+          XGZDWMC:
+            type: string
+            description: 现工作单位名称
+      TurnIntoMsg:
+        type: object
+        required:
+          - ZRGJJZXZJZHSSYHMC
+          - ZRGJJZXZJZH
+          - LXDHHCZ
+        properties:
+          ZRGJJZXZJZHSSYHMC:
+            type: string
+            description: 转入公积金中心资金账户所属银行名称
+          ZRGJJZXZJZH:
+            type: string
+            description: 转入公积金中心资金账号
+          ZRGJJZXZJZHHM:
+            type: string
+            description: 转入公积金中心资金账号户名
+          LXDHHCZ:
+            type: string
+            description: 联系电话或传真
+      BLZL:
+        type: string
+        description: 办理资料
+  TransferIntoDetailsModle:
+    properties:
+      YWLSH:
+        type: string
+        description: 业务流水号
+      LXHBH:
+        type: string
+        description: 联系函编号
+      LXDSCRQ:
+        type: string
+        description: 联系单生成日期
+      TurnOutMsg:
+        type: object
+        properties:
+          ZCJGBH:
+            type: string
+            description: 转出机构编号
+          ZCGJJZXMC:
+            type: string
+            description: 转出公积金中心名称
+          YGRZFGJJZH:
+            type: string
+            description: 原个人住房公积金账号
+          YGZDWMC:
+            type: string
+            description: 原工作单位名称
+      WorkerMsg:
+        type: object
+        properties:
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          ZGXM:
+            type: string
+            description: 职工姓名
+          SJHM:
+            type: string
+            description: 手机号码
+          XGRZFGJJZH:
+            type: string
+            description: 现个人住房公积金账号
+          XGZDWMC:
+            type: string
+            description: 现工作单位名称
+      TurnIntoMsg:
+        type: object
+        properties:
+          ZRGJJZXZJZHSSYHMC:
+            type: string
+            description: 转入公积金中心资金账户所属银行名称
+          ZRGJJZXZJZH:
+            type: string
+            description: 转入公积金中心资金账号
+          ZRGJJZXZJZHHM:
+            type: string
+            description: 转入公积金中心资金账号户名
+          LXDHHCZ:
+            type: string
+            description: 联系电话或传真
+      BLZL:
+        type: string
+        description: 办理资料
+  TransferIntoAuditedListModle:
+    properties:
+      nextPageNo:
+        type: string
+        description: 下一页
+      currentPage:
+        type: string
+        description: 当前页码
+      pageSize:
+        type: string
+        description: 当前页码数据条数
+      totalCount:
+        type: string
+        description: 总条数
+      pageCount:
+        type: string
+        description: 总页数
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            LXHBH:
+              type: string
+              description: 联系函编号
+            ZGXM:
+              type: string
+              description: 职工姓名
+            ZJHM:
+              type: string
+              description: 证件号码
+            ZCGJJZXMC:
+              type: string
+              description: 转出公积金中心名称
+            ZhuangTai:
+              type: string
+              description: 状态
+            YGZDWMC:
+              type: string
+              description: 原工作单位名称
+            XGRZFGJJZH:
+              type: string
+              description: 现个人住房公积金账号
+            XDWMC:
+              type: string
+              description: 现单位名称
+            LXDSCRQ:
+              type: string
+              description: 联系单生成日期
+            SLSJ:
+              type: string
+              description: 受理时间
+            SCSHY:
+              type: string
+              description: 上次审核员
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+  TransferIntoNotReviewedListModle:
+    properties:
+      nextPageNo:
+        type: string
+        description: 下一页
+      currentPage:
+        type: string
+        description: 当前页码
+      pageSize:
+        type: string
+        description: 当前页码数据条数
+      totalCount:
+        type: string
+        description: 总条数
+      pageCount:
+        type: string
+        description: 总页数
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            LXHBH:
+              type: string
+              description: 联系函编号
+            ZGXM:
+              type: string
+              description: 职工姓名
+            ZJHM:
+              type: string
+              description: 证件号码
+            ZCGJJZXMC:
+              type: string
+              description: 转出公积金中心名称
+            YGZDWMC:
+              type: string
+              description: 原工作单位名称
+            XGRZFGJJZH:
+              type: string
+              description: 现个人住房公积金账号
+            XDWMC:
+              type: string
+              description: 现单位名称
+            DDSJ:
+              type: string
+              description: 到达时间
+            SFTS:
+              type: string
+              description: 是否特审(1 or 0)
+            DQXM:
+              type: string
+              description: 当前姓名
+            DQSHY:
+              type: string
+              description: 当前审核员
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+
+  HandleTransferListModle:
+    properties:
+      nextPageNo:
+        type: string
+        description: 下一页
+      currentPage:
+        type: string
+        description: 当前页码
+      pageSize:
+        type: string
+        description: 当前页码数据条数
+      totalCount:
+        type: string
+        description: 总条数
+      pageCount:
+        type: string
+        description: 总页数
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            LXHBH:
+              type: string
+              description: 联系函编号
+            ZGXM:
+              type: string
+              description: 职工姓名
+            ZJHM:
+              type: string
+              description: 证件号码
+            ZhuangTai:
+              type: string
+              description: 状态
+            ZCFKXX:
+              type: string
+              description: 转出反馈信息
+            ZCGJJZXMC:
+              type: string
+              description: 转出公积金中心名称
+            ZYJE:
+              type: string
+              description: 转移金额
+            XGZDWMC:
+              type: string
+              description: 现工作单位名称
+            XGRZFGJJZH:
+              type: string
+              description: 现个人住房公积金账号
+            LXDSCRQ:
+              type: string
+              description: 联系单生成日期
+  ReceiveContactLetterListModle:
+    properties:
+      nextPageNo:
+        type: string
+        description: 下一页
+      currentPage:
+        type: string
+        description: 当前页码
+      pageSize:
+        type: string
+        description: 当前页码数据条数
+      totalCount:
+        type: string
+        description: 总条数
+      pageCount:
+        type: string
+        description: 总页数
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            LXHBH:
+              type: string
+              description: 联系函编号
+            ZRGJJZXMC:
+              type: string
+              description: 转入公积金中心名称
+            ZGXM:
+              type: string
+              description: 职工姓名
+            ZJLX:
+              type: string
+              description: 证件类型
+            ZJHM:
+              type: string
+              description: 证件号码
+            YGZDWMC:
+              type: string
+              description: 原工作单位名称
+            YGRZFGJJZH:
+              type: string
+              description: 原个人住房公积金账号
+            ZRZJZH:
+              type: string
+              description: 转入资金账号
+            ZRZJZHHM:
+              type: string
+              description: 转入资金账户户名
+            ZRZJZHYHMC:
+              type: string
+              description: 转入资金账户银行名称
+            ZRGJJZXLXFS:
+              type: string
+              description: 转入公积金中心联系方式
+            LXDSCRQ:
+              type: string
+              description: 联系单生成日期
+            ZhuangTai:
+              type: string
+              description: 状态
+  HandleContactLetterListModle:
+    properties:
+      nextPageNo:
+        type: string
+        description: 下一页
+      currentPage:
+        type: string
+        description: 当前页码
+      pageSize:
+        type: string
+        description: 当前页码数据条数
+      totalCount:
+        type: string
+        description: 总条数
+      pageCount:
+        type: string
+        description: 总页数
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            LXHBH:
+              type: string
+              description: 联系函编号
+            ZRGJJZXMC:
+              type: string
+              description: 转入公积金中心名称
+            ZGXM:
+              type: string
+              description: 职工姓名
+            ZJLX:
+              type: string
+              description: 证件类型
+            ZJHM:
+              type: string
+              description: 证件号码
+            ZhuangTai:
+              type: string
+              description: 状态
+            SLSJ:
+              type: string
+              description: 受理时间
+            ZYJE:
+              type: string
+              description: 转移金额
+            YZHBJJE:
+              type: string
+              description: 原账户本金金额
+            BNDLX:
+              type: string
+              description: 本年度利息
+            KHRQ:
+              type: string
+              description: 开户日期
+            JZNY:
+              type: string
+              description: 缴至年月
+            JZYFZQLGYSFLXJC:
+              type: string
+              description: 缴至月份之前6个月是否连续缴存
+            ZZCDSYZFGJJDKCS:
+              type: string
+              description: 在转出地使用住房公积金贷款次数
+            SFYWJQDGJJDK:
+              type: string
+              description: 是否有未结清的公积金贷款
+            SFCZPTPDXW:
+              type: string
+              description: 是否存在骗提骗贷行为
+            YWBLLXDH:
+              type: string
+              description: 业务办理联系电话
+  TransferOutDetailsModle:
+    properties:
+      YWLSH:
+        type: string
+        description: 业务流水号
+      LXHBH:
+        type: string
+        description: 联系函编号
+      ZhuangTai:
+        type: string
+        description: 状态
+      AccountMsg:
+        type: object
+        properties:
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          ZGXM:
+            type: string
+            description: 职工姓名
+          YZHBJYE:
+            type: string
+            description: 原账户本金余额
+          BNDLX:
+            type: string
+            description: 本年度利息
+          ZYJE:
+            type: string
+            description: 转移金额
+          KHRQ:
+            type: string
+            description: 开户日期
+          JZNY:
+            type: string
+            description: 缴至年月
+          LXJC:
+            type: string
+            description: 连续缴存
+          GJJDKCS:
+            type: string
+            description: 公积金贷款次数
+          JQDK:
+            type: string
+            description: 结清贷款
+          SFCZPTPD:
+            type: string
+            description: 是否存在骗提骗贷
+          YWLXDH:
+            type: string
+            description: 业务联系电话
+          LXDSCRQ:
+            type: string
+            description: 联系单生成日期
+      TurnOutMechanismMsg:
+        type: object
+        properties:
+          ZCJGBH:
+            type: string
+            description: 转出机构编号
+          ZCGJJZXMC:
+            type: string
+            description: 转出公积金中心名称
+          YGRZFGJJZH:
+            type: string
+            description: 原个人住房公积金账号
+          YDWMC:
+            type: string
+            description: 原单位名称
+          FKYHMC:
+            type: string
+            description: 付款银行名称
+          FKZH:
+            type: string
+            description: 付款账号
+          FKHM:
+            type: string
+            description: 付款户名
+      TurnIntoMechanismMsg:
+        type: object
+        properties:
+          ZRJGBH:
+            type: string
+            description: 转入机构编号
+          ZRGJJZXMC:
+            type: string
+            description: 转入公积金中心名称
+          XGRZFGJJZH:
+            type: string
+            description: 现个人住房公积金账号
+          XDWMC:
+            type: string
+            description: 现单位名称
+          ZRGJJZXZJZHSSYHMC:
+            type: string
+            description: 转入公积金中心资金账户所属银行名称
+          ZRGJJZXZJZH:
+            type: string
+            description: 转入公积金中心资金账号
+          ZRGJJZXZJZHHM:
+            type: string
+            description: 转入公积金中心资金账号户名
+          LXDHHCZ:
+            type: string
+            description: 联系电话或传真
+      BLZL:
+        type: string
+        description: 办理资料
+
+  TransferOutPostModle:
+    properties:
+      YWLSH:
+        type: string
+        description: 业务流水号
+      LXHBH:
+        type: string
+        description: 联系函编号
+      AccountMsg:
+        type: object
+        required:
+          - SFCZPTPD
+          - YWBLLXDH
+          - FKXX
+        properties:
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          ZGXM:
+            type: string
+            description: 职工姓名
+          YZHBJYE:
+            type: string
+            description: 原账户本金余额
+          BNDLX:
+            type: string
+            description: 本年度利息
+          ZYJE:
+            type: string
+            description: 转移金额
+          KHRQ:
+            type: string
+            description: 开户日期
+          JZNY:
+            type: string
+            description: 缴至年月
+          LXJC:
+            type: string
+            description: 连续缴存
+          GJJDKCS:
+            type: string
+            description: 公积金贷款次数
+          JQDK:
+            type: string
+            description: 结清贷款
+          SFCZPTPD:
+            type: string
+            description: 是否存在骗提骗贷
+          YWBLLXDH:
+            type: string
+            description: 业务办理联系电话
+          FKXX:
+            type: string
+            description: 反馈信息
+      TurnOutFundsAccountMsg:
+        type: object
+        required:
+          - FKYH
+          - FKZH
+          - YHHM
+        properties:
+          FKYH:
+            type: string
+            description: 付款银行
+          FKZH:
+            type: string
+            description: 付款账号
+          YHHM:
+            type: string
+            description: 银行户名
+  TransferOutPutModle:
+    properties:
+      YWLSH:
+        type: string
+        description: 业务流水号
+      LXHBH:
+        type: string
+        description: 联系函编号
+      AccountMsg:
+        type: object
+        required:
+          - SFCZPTPD
+          - YWBLLXDH
+          - FKXX
+        properties:
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          ZGXM:
+            type: string
+            description: 职工姓名
+          YZHBJYE:
+            type: string
+            description: 原账户本金余额
+          BNDLX:
+            type: string
+            description: 本年度利息
+          ZYJE:
+            type: string
+            description: 转移金额
+          KHRQ:
+            type: string
+            description: 开户日期
+          JZNY:
+            type: string
+            description: 缴至年月
+          LXJC:
+            type: string
+            description: 连续缴存
+          GJJDKCS:
+            type: string
+            description: 公积金贷款次数
+          JQDK:
+            type: string
+            description: 结清贷款
+          SFCZPTPD:
+            type: string
+            description: 是否存在骗提骗贷
+          YWBLLXDH:
+            type: string
+            description: 业务办理联系电话
+          FKXX:
+            type: string
+            description: 反馈信息
+      TurnOutFundsAccountMsg:
+        type: object
+        required:
+          - FKYH
+          - FKZH
+          - FKHM
+        properties:
+          FKYH:
+            type: string
+            description: 付款银行
+          FKZH:
+            type: string
+            description: 付款账号
+          FKHM:
+            type: string
+            description: 付款户名
+  TransferOutAccountDetailsModle:
+    properties:
+      YWLSH:
+        type: string
+        description: 业务流水号
+      LXHBH:
+        type: string
+        description: 联系函编号
+      AccountMsg:
+        type: object
+        properties:
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          ZGXM:
+            type: string
+            description: 职工姓名
+          YZHBJYE:
+            type: string
+            description: 原账户本金余额
+          BNDLX:
+            type: string
+            description: 本年度利息
+          ZYJE:
+            type: string
+            description: 转移金额
+          KHRQ:
+            type: string
+            description: 开户日期
+          JZNY:
+            type: string
+            description: 缴至年月
+          LXJC:
+            type: string
+            description: 连续缴存
+          GJJDKCS:
+            type: string
+            description: 公积金贷款次数
+          JQDK:
+            type: string
+            description: 结清贷款
+          SFCZPTPD:
+            type: string
+            description: 是否存在骗提骗贷
+          YWBLLXDH:
+            type: string
+            description: 业务办理联系电话
+          FKXX:
+            type: string
+            description: 反馈信息
+          SLSJ:
+            type: string
+            description: 受理时间
+      TurnOutFundsAccountMsg:
+        type: object
+        properties:
+          FKYH:
+            type: string
+            description: 付款银行
+          FKZH:
+            type: string
+            description: 付款账号
+          YHHM:
+            type: string
+            description: 银行户名
+  TransferOutAuditedListModle:
+    properties:
+      nextPageNo:
+        type: string
+        description: 下一页
+      currentPage:
+        type: string
+        description: 当前页码
+      pageSize:
+        type: string
+        description: 当前页码数据条数
+      totalCount:
+        type: string
+        description: 总条数
+      pageCount:
+        type: string
+        description: 总页数
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            LXHBH:
+              type: string
+              description: 联系函编号
+            ZGXM:
+              type: string
+              description: 职工姓名
+            ZJHM:
+              type: string
+              description: 证件号码
+            ZhuangTai:
+              type: string
+              description: 状态
+            ZRGJJZXMC:
+              type: string
+              description: 转入公积金中心名称
+            YDWMC:
+              type: string
+              description: 原单位名称
+            XGRZFGJJZH:
+              type: string
+              description: 现个人住房公积金账号
+            XDWMC:
+              type: string
+              description: 现单位名称
+            SLSJ:
+              type: string
+              description: 受理时间
+            SCSHY:
+              type: string
+              description: 上次审核员
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+  TransferOutNotReviewedListModle:
+    properties:
+      nextPageNo:
+        type: string
+        description: 下一页
+      currentPage:
+        type: string
+        description: 当前页码
+      pageSize:
+        type: string
+        description: 当前页码数据条数
+      totalCount:
+        type: string
+        description: 总条数
+      pageCount:
+        type: string
+        description: 总页数
+      results:
+        type: array
+        items:
+          type: object
+          properties:
+            YWLSH:
+              type: string
+              description: 业务流水号
+            LXHBH:
+              type: string
+              description: 联系函编号
+            ZRGJJZXMC:
+              type: string
+              description: 转入公积金中心名称
+            ZGXM:
+              type: string
+              description: 职工姓名
+            ZJLX:
+              type: string
+              description: 证件类型
+            ZJHM:
+              type: string
+              description: 证件号码
+            DDSJ:
+              type: string
+              description: 到达时间
+            ZYJE:
+              type: string
+              description: 转移金额
+            YZHBJJE:
+              type: string
+              description: 原账户本金金额
+            BNDLX:
+              type: string
+              description: 本年度利息
+            SFTS:
+              type: string
+              description: 是否特审
+            DQXM:
+              type: string
+              description: 当前姓名
+            DQSHY:
+              type: string
+              description: 当前审核员
+            CZY:
+              type: string
+              description: 操作员
+            YWWD:
+              type: string
+              description: 业务网点
+  CommonResponses:
+    type: object
+    properties:
+      Status:
+        description: 操作码
+        type: string
+      Msg:
+        description: 信息描述
+        type: string
+      YWLSH:
+        description: 业务流水号
+        type: string
+  TransferInCancelModle:
+    type: object
+    properties:
+      reviewInfo:
+        type: object
+        properties:
+          CXJG:
+            type: string
+            description: 撤销结果
+          YYYJ:
+            type: string
+            description: 原因（不通过）或意见（通过）
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          ZhiWu:
+            type: string
+            description: 职务（操作员角色）
+          CZQD:
+            type: string
+            description: 操作渠道
+          BeiZhu:
+            type: string
+            description: 备注
+      ids:
+        type: array
+        items:
+          type: string
+          description: 业务流水号数组集合
+  TransferOutConfirmationModle:
+    type: object
+    properties:
+      reviewInfo:
+        type: object
+        properties:
+          YYYJ:
+            type: string
+            description: 原因
+          BeiZhu:
+            type: string
+            description: 备注
+  TransferOutRejectModle:
+    type: object
+    properties:
+      reviewInfo:
+        type: object
+        properties:
+          YYYJ:
+            type: string
+            description: 原因
+          BeiZhu:
+            type: string
+            description: 备注
+  TransferIntoBusinessDetailsModle:
+    type: array
+    items:
+      type: object
+      properties:
+        LXHBH:
+          type: string
+          description: 联系函编号
+        CaoZuo:
+          type: string
+          description: 操作
+        CZJG:
+          type: string
+          description: 操作机构
+        CZRY:
+          type: string
+          description: 操作人员
+        CZSJ:
+          type: string
+          description: 操作时间
+        CZYJ:
+          type: string
+          description: 操作意见
+        CZHZT:
+          type: string
+          description: 操作后状态
+  TransferIntoFinishModle:
+    type: object
+    properties:
+      reviewInfo:
+        type: object
+        properties:
+          YYYJ:
+            type: string
+            description: 原因
+          BeiZhu:
+            type: string
+            description: 备注
+  TransferIntoNegotiationModle:
+    type: object
+    properties:
+      reviewInfo:
+        type: object
+        properties:
+          YYYJ:
+            type: string
+            description: 原因
+          BeiZhu:
+            type: string
+            description: 备注

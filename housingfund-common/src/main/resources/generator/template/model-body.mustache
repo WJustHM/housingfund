@@ -1,0 +1,105 @@
+package com.handge.housingfund.common.service.{{termsOfService}}.model;
+
+import com.handge.housingfund.common.service.util.*;
+
+import java.util.*;
+import java.io.*;
+import javax.xml.bind.annotation.*;
+
+
+{{#models}}
+
+{{#model}}{{#description}}
+/**
+ * {{description}}
+ **/{{/description}}
+@SuppressWarnings({"WeakerAccess", "unused", "SpellCheckingInspection","serial"})
+@XmlRootElement(name = "{{classname}}")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class {{classname}} {{#parent}}extends {{{parent}}}{{/parent}} implements Serializable{
+  {{#vars}}{{#isEnum}}
+  public enum {{datatypeWithEnum}} {
+    {{#allowableValues}}{{#values}} {{baseName}}_{{.}}, {{/values}}{{/allowableValues}}
+  };
+
+  private {{{datatypeWithEnum}}} {{baseName}};//{{description}}{{/isEnum}}{{^isEnum}}
+
+  private {{{datatype}}} {{baseName}};//{{description}}{{/isEnum}}{{/vars}}
+
+  @SuppressWarnings("unused")
+  private void defaultConstructor(){
+
+      {{#vars}}
+      this.{{setter}}({{^isPrimitiveType}}{{#isNotContainer}}new {{{datatypeWithEnum}}}(){
+        {
+
+        }
+      }{{/isNotContainer}}{{^isNotContainer}}new {{#isListContainer}}ArrayList<{{{complexType}}}>(){
+        {
+            this.add(new {{{complexType}}}(){
+              {
+
+              }
+            });
+        }
+      }{{/isListContainer}}{{#isMapContainer}}{{{datatypeWithEnum}}}(){
+        {
+
+        }
+      }{{/isMapContainer}}{{/isNotContainer}}{{/isPrimitiveType}}{{#isPrimitiveType}}null{{/isPrimitiveType}}/*{{#description}}{{{description}}}{{/description}}*/);
+      {{/vars}}
+  }
+
+  {{#vars}}
+  /**{{#description}}
+   * {{{description}}}{{/description}}{{#minimum}}
+   * minimum: {{minimum}}{{/minimum}}{{#maximum}}
+   * maximum: {{maximum}}{{/maximum}}
+   **/
+  public {{{datatypeWithEnum}}} {{getter}}() { return {{baseName}};}
+
+  public void {{setter}}({{{datatypeWithEnum}}} {{baseName}}) {this.{{baseName}} = {{baseName}};}
+
+  {{/vars}}
+
+  @Override
+  public String toString()  {
+
+      @SuppressWarnings("StringBufferReplaceableByString")
+      StringBuilder sb = new StringBuilder();
+      sb.append("class {{classname}} {\n");{{#parent}}
+      sb.append("  " + super.toString()).append("\n");{{/parent}}{{#vars}}
+      sb.append("{{baseName}}:").append({{baseName}}).append("\n");{{/vars}}
+      sb.append("}\n");
+      return sb.toString();
+
+  }
+
+  public void checkValidation(){
+      {{#vars}}{{#required}}{{^isPrimitiveType}}
+
+      if ({{baseName}}==null){
+
+         throw new ErrorException(ReturnEnumeration.Parameter_MISS,"{{description}}");
+      }{{/isPrimitiveType}}{{#isPrimitiveType}}{{#isString}}{{^isEnum}}
+
+      if (!StringUtil.notEmpty({{baseName}})){
+
+         throw new ErrorException(ReturnEnumeration.Parameter_MISS,"{{description}}");
+      }{{/isEnum}}{{/isString}}{{/isPrimitiveType}}{{/required}}{{#pattern}}
+
+      if (!StringUtil.matchRegex({{baseName}},"{{pattern}}")){
+
+         throw new ErrorException(ReturnEnumeration.Parameter_NOT_MATCH,"{{description}}");
+      }{{/pattern}}{{^isPrimitiveType}}{{#isNotContainer}}
+
+      if({{baseName}} != null){ {{baseName}}.checkValidation(); }
+      {{/isNotContainer}}{{/isPrimitiveType}}{{^isPrimitiveType}}{{^isNotContainer}}{{#isListContainer}}{{#complexType}}
+
+      for({{complexType}} element: {{baseName}} == null ? new ArrayList<{{complexType}}>():{{baseName}}){
+          element.checkValidation();
+      }{{/complexType}}{{/isListContainer}}{{/isNotContainer}}{{/isPrimitiveType}}{{/vars}}
+  }
+}
+{{/model}}
+{{/models}}

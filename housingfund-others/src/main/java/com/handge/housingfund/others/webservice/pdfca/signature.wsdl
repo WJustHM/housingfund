@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://ws.sign.szca.com.cn/"
+                  xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+                  name="ISignatureServiceService" targetNamespace="http://ws.sign.szca.com.cn/">
+  <wsdl:types>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tns="http://ws.sign.szca.com.cn/" elementFormDefault="unqualified" targetNamespace="http://ws.sign.szca.com.cn/" version="1.0">
+
+  <xs:element name="pdfSignature" type="tns:pdfSignature"/>
+
+  <xs:element name="pdfSignatureResponse" type="tns:pdfSignatureResponse"/>
+
+  <xs:element name="pdfSignatureToIndex" type="tns:pdfSignatureToIndex"/>
+
+  <xs:element name="pdfSignatureToIndexResponse" type="tns:pdfSignatureToIndexResponse"/>
+
+  <xs:complexType name="pdfSignatureToIndex">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="base64File" type="xs:string"/>
+      <xs:element form="qualified" minOccurs="0" name="fileName" type="xs:string"/>
+      <xs:element form="qualified" minOccurs="0" name="stampType" type="xs:string"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="stampPattern" type="tns:stampPattern"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="stampPattern">
+    <xs:sequence>
+      <xs:element name="addTag" type="xs:boolean"/>
+      <xs:element name="endPage" type="xs:int"/>
+      <xs:element minOccurs="0" name="indexName" type="xs:string"/>
+      <xs:element name="rightSeal" type="xs:boolean"/>
+      <xs:element minOccurs="0" name="signerId" type="xs:string"/>
+      <xs:element minOccurs="0" name="stampType" type="xs:string"/>
+      <xs:element name="startPage" type="xs:int"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="pdfSignatureToIndexResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="pdfSignature">
+    <xs:sequence>
+      <xs:element form="qualified" minOccurs="0" name="base64File" type="xs:string"/>
+      <xs:element form="qualified" minOccurs="0" name="fileName" type="xs:string"/>
+      <xs:element form="qualified" maxOccurs="unbounded" minOccurs="0" name="stamps" type="tns:stamp"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="stamp">
+    <xs:sequence>
+      <xs:element name="addTag" type="xs:boolean"/>
+      <xs:element name="bottom" type="xs:float"/>
+      <xs:element minOccurs="0" name="createDate" type="xs:string"/>
+      <xs:element name="left" type="xs:float"/>
+      <xs:element name="pageNum" type="xs:int"/>
+      <xs:element minOccurs="0" name="signerId" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="pdfSignatureResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="return" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+</xs:schema>
+  </wsdl:types>
+  <wsdl:message name="pdfSignatureToIndexResponse">
+    <wsdl:part element="tns:pdfSignatureToIndexResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="pdfSignatureToIndex">
+    <wsdl:part element="tns:pdfSignatureToIndex" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="pdfSignatureResponse">
+    <wsdl:part element="tns:pdfSignatureResponse" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="pdfSignature">
+    <wsdl:part element="tns:pdfSignature" name="parameters">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ISignatureService">
+    <wsdl:operation name="pdfSignatureToIndex">
+      <wsdl:input message="tns:pdfSignatureToIndex" name="pdfSignatureToIndex">
+    </wsdl:input>
+      <wsdl:output message="tns:pdfSignatureToIndexResponse" name="pdfSignatureToIndexResponse">
+    </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="pdfSignature">
+      <wsdl:input message="tns:pdfSignature" name="pdfSignature">
+    </wsdl:input>
+      <wsdl:output message="tns:pdfSignatureResponse" name="pdfSignatureResponse">
+    </wsdl:output>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ISignatureServiceServiceSoapBinding" type="tns:ISignatureService">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="pdfSignatureToIndex">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="pdfSignatureToIndex">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="pdfSignatureToIndexResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="pdfSignature">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="pdfSignature">
+        <soap:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="pdfSignatureResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ISignatureServiceService">
+    <wsdl:port binding="tns:ISignatureServiceServiceSoapBinding" name="ISignatureServicePort">
+      <soap:address location="http://111.85.51.218:15004/szcaCertificate/services/signature"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

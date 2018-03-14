@@ -1,0 +1,27 @@
+package com.handge.housingfund.common.service.{{termsOfService}}.service;
+
+
+import com.handge.housingfund.common.service.{{termsOfService}}.model.*;
+import com.handge.housingfund.common.service.TokenContext;
+
+import java.util.*;
+import java.io.*;
+
+{{#operations}}
+@SuppressWarnings({"JavaDoc", "SpellCheckingInspection", "UnnecessaryInterfaceModifier"})
+public interface {{classname}}Interface{
+
+  {{#operation}}
+  /**
+   * {{summary}}
+   * {{notes}}
+     {{#allParams}}
+   * @param {{paramName}} {{description}}
+     {{/allParams}}
+   */
+  public {{returnType}} {{nickname}}(TokenContext tokenContext{{#hasParams}},{{/hasParams}}{{#allParams}}final {{{dataType}}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+
+
+  {{/operation}}
+}
+{{/operations}}

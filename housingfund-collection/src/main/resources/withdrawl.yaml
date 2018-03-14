@@ -1,0 +1,1193 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based scoping.
+# Code completion support is available so start typing for available options.
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "0.0.0"
+  title: <Withdrawls>
+  description: housingfund Withdrawls module
+
+host: localhost:80
+
+basePath: /housingfund/withdrawls
+
+schemes:
+  - http
+
+paths:
+  /audit/Records:
+    get:
+      operationId:
+         getAudit
+      description: |
+         查询个人提取审批记录
+      parameters:
+        - name: status
+          in: query
+          description: 状态(0:待处理 1:已处理)
+          required: true
+          type: string
+        - name: XingMing
+          in: query
+          description: 姓名
+          type: string
+        - name: grzh
+          in: query
+          description: 个人帐号
+          type: string
+        - name: dwmc
+          in: query
+          description: 单位名称
+          type: string
+        - name: tqyy
+          in: query
+          description: 提取原因(表A.7)
+          type: string
+        - name: begain
+          in: query
+          description: 起始时间戳(eg:20170101 11:22)
+          type: string
+        - name: end
+          in: query
+          description: 结束时间戳(eg:20170101 11:22)
+          type: string
+        - name: pageNum
+          in: query
+          description: 页码
+          type: string
+        - name: pageSize
+          in: query
+          description: 页数
+          type: string
+
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/auditGET_Resp'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /audit/batch:
+    post:
+      operationId:
+        postAuditBatch
+      description: 批量审批数据
+      parameters:
+        - name: auditBatchRequestBody
+          in: body
+          description: 批量审批数据的信息
+          schema:
+            $ref: '#/definitions/BatchReviewInfo'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/auditBatchReturn'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /getFSE:
+    get:
+      operationId: getFSE
+      description: 当提取原因为06时,获取发生额
+      parameters:
+        - name: grzh
+          in: query
+          type: string
+          description: 个人账号
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/FSE'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /getFSLXE:
+    get:
+      operationId: getFSLXE
+      description: 获取发生利息额
+      parameters:
+        - name: GRZH
+          in: query
+          type: string
+          description: 个人账号
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/FSLXE'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /getNextDate:
+    get:
+      operationId: getNextDate
+      description: 获取下次提取日期
+      parameters:
+        - name: FSE
+          in: query
+          type: number
+          format: float
+          description: 发生额
+        - name: YHKE
+          in: query
+          type: number
+          format: float
+          description: 月还款额
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/NextDate'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /{taskId}:
+    get:
+      operationId:
+        getWithdrawlDetail
+      description: 获取提取业务详细信息
+      parameters:
+        - name: taskId
+          in: path
+          description: 业务流水号
+          required: true
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/WithdrawlsDetailInfo'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      operationId:
+        putWithdrawl
+      description:
+        修改提取业务信息
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: 业务流水号
+          type: string
+        - name: operation
+          required: true
+          in: query
+          type: string
+          description: 保存0 提交1
+        - name: body
+          in: body
+          required: true
+          schema:
+            $ref: '#/definitions/ReWithdrawlsInfo'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonReturn'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /printRecords/{grzh}:
+    get:
+      operationId:
+        getPrintWithdrawlRecords
+      description:
+        打印个人提取记录
+      parameters:
+        - name: grzh
+          in: path
+          required: true
+          description: 个人账号
+          type: string
+        - name: begain
+          in: query
+          description: 起始时间戳(eg:20170101 11:22)
+          type: string
+        - name: end
+          in: query
+          description: 结束时间戳(eg:20170101 11:22)
+          type: string
+        - name: pageNo
+          in: query
+          description: 页码
+          type: string
+        - name: pageSize
+          in: query
+          description: 页数
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/WithdrawlRecordsReturn'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /records:
+    get:
+      operationId:
+        getWithdrawlRecords
+      description:
+        搜索个人提取记录
+      parameters:
+        - name: grzh
+          in: query
+          required: true
+          description: 个人帐号
+          type: string
+        - name: begain
+          in: query
+          description: 起始时间戳(eg:2017-01-01 11:22)
+          type: string
+        - name: end
+          in: query
+          description: 结束时间戳(eg:2017-01-01 11:22)
+          type: string
+        - name: pageNo
+          in: query
+          description: 页码
+          type: string
+        - name: pageSize
+          in: query
+          description: 页数
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/WithdrawlRecordsListReturn'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /readOnly/{grzh}:
+    get:
+      operationId:
+        getReadOnly
+      description:
+        获取账号的只读部分信息
+      parameters:
+        - name: grzh
+          in: path
+          description: 个人帐号
+          type: string
+          required: true
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/ReadOnly'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /revoke/{taskId}:
+    put:
+      operationId:
+        putRevokeWithdrawl
+      description: 撤销一个提取业务
+      parameters:
+        - name: taskId
+          in: path
+          required: true
+          description: 业务流水号
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonReturn'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /:
+    get:
+      operationId:
+        getSearchWithdrawl
+      description:
+        搜索提取记录
+      parameters:
+        - name: XingMing
+          in: query
+          description: 姓名
+          type: string
+        - name: dwmc
+          in: query
+          description: 单位名称
+          type: string
+        - name: grzh
+          in: query
+          description: 个人帐号
+          type: string
+        - name: shzt
+          in: query
+          description: |
+            审核状态(所有 新建 待审核 待入账 已入账 审核不通过)
+          type: string
+        - name: begain
+          in: query
+          description: 起始时间戳(eg:2017-01-01 11:22)
+          type: string
+        - name: end
+          in: query
+          description: 结束时间戳(eg:2017-01-01 11:22)
+          type: string
+        - name: pageNo
+          in: query
+          description: 页码
+          type: string
+        - name: pageSize
+          in: query
+          description: 页数
+          type: string
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/WithdrawlsList'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      operationId:
+        postWithdrawl
+      description:  新建时，提交/保存 提取业务
+      parameters:
+        - name: operation
+          required: true
+          in: query
+          type: string
+          description: 保存0 提交1
+        - name: body
+          in: body
+          schema:
+            $ref: '#/definitions/WithdrawlsInfo'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/CommonReturn'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+  /batch:
+    post:
+      operationId:
+        postBatchWithdrawls
+      description: 批量操作提取记录
+      parameters:
+        - name: WithdrawlsBatchInfo
+          in: body
+          description: 批量提取记录的信息
+          schema:
+            $ref: '#/definitions/BatchWithdrawlsInfo'
+      responses:
+        200:
+          description: OK
+          schema:
+            $ref: '#/definitions/BatchWithdrawlsReturn'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+definitions:
+  FSE:
+    properties:
+      Resp:
+        type: object
+        properties:
+          FSE:
+            type: string
+            description: 发生额
+  FSLXE:
+    properties:
+      Resp:
+        type: object
+        properties:
+          FSLXE:
+            type: string
+            description: 发生利息额
+  ReadOnly:
+    properties:
+      Resp:
+        type: object
+        properties:
+          XingMing:
+            type: string
+            description: 姓名
+          ZJLX:
+            type: string
+            description: 证件类型
+          ZJHM:
+            type: string
+            description: 证件号码
+          DWMC:
+            type: string
+            description: 单位名称
+          JZNY:
+            type: string
+            description: 缴至年月
+          GRZHYE:
+            type: string
+            description: 个人账户余额
+          GRZHZT:
+            type: string
+            description: 个人账户状态
+          GRCKZHHM:
+            type: string
+            description: 个人存款账户号码
+          HuMing:
+            type: string
+            description: 户名
+
+  NextDate:
+    properties:
+      Resp:
+        type: object
+        properties:
+          XCTQRQ:
+            type: string
+            description: 下次提取日期
+
+  CommonReturn:
+    properties:
+      Resp:
+        type: object
+        properties:
+          taskId:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 操作结果（0成功 1失败）
+  WithdrawlRecordsListReturn:
+    properties:
+      Resp:
+        type: object
+        properties:
+          nextPageNo:
+              type: string
+              description: 下一页
+          currentPage:
+              type: string
+              description: 当前页
+          pageSize:
+              type: string
+              description: 每页个个数
+          totalCount:
+              type: string
+              description: 总条数
+          pageCount:
+              type: string
+              description: 总页数
+          recordsList:
+            type: array
+            items:
+              type: object
+              properties:
+                record:
+                  type: object
+                  properties:
+                    TQRQ:
+                      type: string
+                      description: 提取日期
+                    BCTQJE:
+                      type: number
+                      format: float
+                      description: 本次提取金额（元）
+                    LJTQJE:
+                      type: number
+                      format: float
+                      description: 累计提取金额（元）
+                    BLR:
+                      type: string
+                      description: 办理人
+                    CZY:
+                      type: string
+                      description: 操作员
+                    YWWD:
+                      type: string
+                      description: 业务网点
+  WithdrawlRecordsReturn:
+    properties:
+      Resp:
+        type: object
+        properties:
+          nextPageNo:
+              type: string
+              description: 下一页
+          currentPage:
+              type: string
+              description: 当前页
+          pageSize:
+              type: string
+              description: 每页个个数
+          totalCount:
+              type: string
+              description: 总条数
+          pageCount:
+              type: string
+              description: 总页数
+          TZRQ:
+            type: string
+            description: 填制日期
+          indiAcctInfo:
+            type: object
+            properties:
+              GRZH:
+                type: string
+                description: 个人账号
+              XingMing:
+                type: string
+                description: 姓名
+              DWMC:
+                type: string
+                description: 单位名称
+          recordsList:
+            type: array
+            items:
+              type: object
+              properties:
+                record:
+                  type: object
+                  properties:
+                    TQRQ:
+                      type: string
+                      description: 提取日期
+                    BCTQJE:
+                      type: number
+                      format: float
+                      description: 本次提取金额（元）
+                    LJTQJE:
+                      type: number
+                      format: float
+                      description: 累计提取金额（元）
+                    BLR:
+                      type: string
+                      description: 办理人
+                    CZY:
+                      type: string
+                      description: 操作员
+                    YWWD:
+                      type: string
+                      description: 业务网点
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  ReceiptReturn:
+    properties:
+      Resp:
+        type: object
+        properties:
+          YZM:
+            type: string
+            description: 验证码
+          YWLSH:
+            type: string
+            description: 业务流水号
+          TZRQ:
+            type: string
+            description: 填制日期
+          CZY:
+            type: string
+            description: 操作员
+          SHR:
+            type: string
+            description: 审核人
+          receiptIndiAcctInfo:
+            type: object
+            properties:
+              GRZH:
+                type: string
+                description: 个人账号
+              XingMing:
+                type: string
+                description: 姓名
+              DWMC:
+                type: string
+                description: 单位名称
+              DWZH:
+                type: string
+                description: 单位账号
+          receiptWithdrawlsInfo:
+            type: object
+            properties:
+              TQYY:
+                type: string
+                description: 提取原因
+              SFXH:
+                type: string
+                description: 是否销户
+              BLR:
+                type: string
+                description: 办理人（0本人 1代理人）
+              ZJHM:
+                type: string
+                description: 证件号码
+              TQJE:
+                type: number
+                format: float
+                description: 提取金额
+              DQYE:
+                type: number
+                format: float
+                description: 当前余额
+              SKYHKH:
+                type: string
+                description: 收款银行卡号
+              SKYH:
+                type: string
+                description: 收款银行
+              BLSJ:
+                type: string
+                description: 办理时间
+              XCTQRQ:
+                type: string
+                description: 下次提取日期
+
+
+  BatchReviewInfo:
+    properties:
+      Req:
+        type: object
+        properties:
+          reviewInfo:
+              type: object
+              required:
+                - SHJG
+                - CZY
+                - YWWD
+                - ZhiWu
+              properties:
+                SHJG:
+                  type: string
+                  description: 审核结果（01通过/02不通过）
+                YYYJ:
+                  type: string
+                  description: 原因/意见
+                CZY:
+                  type: string
+                  description: 操作员
+                YWWD:
+                  type: string
+                  description: 业务网点
+                ZhiWu:
+                  type: string
+                  description: 职务(操作员角色)
+                CZQD:
+                  type: string
+                  description: 操作渠道
+                BeiZhu:
+                  type: string
+                  description: 备注
+          ids:
+            type: array
+            items:
+              type: string
+              description: 业务流水号
+  auditBatchReturn:
+    properties:
+      auditBatchReturnInfo:
+        type: object
+        properties:
+          auditInfo:
+              type: object
+              properties:
+                status:
+                  type: string
+                  description: 审核结果
+          ids:
+            type: array
+            items:
+              type: string
+              description: 业务流水号
+
+
+  BatchWithdrawlsInfo:
+    properties:
+      Req:
+        type: object
+        properties:
+          action:
+            type: string
+            description: 操作 0提交 1删除 2 打印回执
+          ids:
+            type: array
+            items:
+              type: string
+              description: 业务流水号
+
+  BatchWithdrawlsReturn:
+    properties:
+      Resp:
+        type: object
+        properties:
+          status:
+            type: string
+            description: 操作结果
+          ids:
+            type: array
+            items:
+              type: string
+              description: 业务流水号
+          RespList:
+            type: array
+            items:
+              type: object
+              description: 回执信息列表
+
+
+
+  WithdrawlsInfo:
+    properties:
+      Req:
+        type: object
+        properties:
+          indiAcctInfo:
+            type: object
+            required:
+              - GRZH
+            properties:
+              GRZH:
+                type: string
+                description: 个人账号
+          withdrawlsInfo:
+            type: object
+            required:
+              - TQYY
+              - YWMXLX
+              - FSE
+              - TQFS
+              - BLR
+              - GRCKZHHM
+              - GRCKZHKHYHMC
+            description: 提取信息
+            properties:
+              TQYY:
+                type: string
+                description: 提取原因
+              TQFS:
+                type: string
+                description: 提取方式
+              YWMXLX:
+                type: string
+                description: 业务明细类型(11 部分提取 12销户提取)
+              XHYY:
+                type: string
+                description: 销户原因
+              BLR:
+                type: string
+                description: 办理人（0本人 1代理人）
+              FSE:
+                type: number
+                format: float
+                description: 发生额
+              FSLXE:
+                type: number
+                format: float
+                description: 发生利息额
+              DLRXM:
+                type: string
+                description: 代理人姓名
+              DLRZJLX:
+                type: string
+                description: 代理人证件类型
+              DLRZJHM:
+                type: string
+                description: 代理人证件号码
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              HuMing:
+                type: string
+                description: 户名
+              GRCKZHKHYHMC:
+                type: string
+                description: 个人存款账户开户银行名称
+              YHKE:
+                type: string
+                description: 月还款额
+              XCTQRQ:
+                type: string
+                description: 下次提取日期
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+
+  WithdrawlsList:
+    properties:
+      Res:
+        type: array
+        items:
+          properties:
+            nextPageNo:
+              type: string
+              description: 下一页
+            currentPage:
+              type: string
+              description: 当前页
+            pageSize:
+              type: string
+              description: 每页个个数
+            totalCount:
+              type: string
+              description: 总条数
+            pageCount:
+              type: string
+              description: 总页数
+            Withdrawl:
+              type: object
+              properties:
+                YWLSH:
+                  type: string
+                  description: 业务流水号
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                FSE:
+                  type: number
+                  format: float
+                  description: 发生额
+                ZhuangTai:
+                  type: string
+                  description: 状态
+                JZPZH:
+                  type: string
+                  description: 记账凭证号
+                DWMC:
+                  type: string
+                  description: 单位名称
+                CZY:
+                  type: string
+                  description: 操作员
+                YWWD:
+                  type: string
+                  description: 业务网点
+                SLSJ:
+                  type: string
+                  description: 受理时间
+
+
+  ReWithdrawlsInfo:
+    properties:
+      Req:
+        type: object
+        properties:
+          withdrawlsInfo:
+            type: object
+            required:
+              - TQYY
+              - YWMXLX
+              - FSE
+              - TQFS
+              - BLR
+              - GRCKZHHM
+              - GRCKZHKHYHMC
+            description: 提取信息
+            properties:
+              TQYY:
+                type: string
+                description: 提取原因
+              TQFS:
+                type: string
+                description: 提取方式
+              YWMXLX:
+                type: string
+                description: 业务明细类型
+              XHYY:
+                type: string
+                description: 销户原因
+              BLR:
+                type: string
+                description: 办理人（0本人 1代理人）
+              FSE:
+                type: number
+                format: float
+                description: 发生额
+              FSLXE:
+                type: number
+                format: float
+                description: 发生利息额
+              DLRXM:
+                type: string
+                description: 代理人姓名
+              DLRZJLX:
+                type: string
+                description: 代理人证件类型
+              DLRZJHM:
+                type: string
+                description: 代理人证件号码
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              HuMing:
+                type: string
+                description: 户名
+              GRCKZHKHYHMC:
+                type: string
+                description: 个人存款账户开户银行名称
+              YHKE:
+                type: string
+                description: 月还款额
+              XCTQRQ:
+                type: string
+                description: 下次提取日期
+          BLZL:
+            type: string
+            description: 办理资料
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+
+  WithdrawlsDetailInfo:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          indiAcctInfo:
+            type: object
+            properties:
+              YWLSH:
+                type: string
+                description: 业务流水号
+              GRZH:
+                type: string
+                description: 个人账号
+              XingMing:
+                type: string
+                description: 姓名
+              ZJLX:
+                type: string
+                description: 证件类型
+              ZJHM:
+                type: string
+                description: 证件号码
+              DWMC:
+                type: string
+                description: 单位名称
+              JZNY:
+                type: string
+                description: 缴至年月
+              GRZHYE:
+                type: number
+                format: float
+                description: 个人账户余额
+              GRZHZT:
+                type: string
+                description: 个人账户状态
+          withdrawlsInfo:
+            type: object
+            properties:
+              TQYY:
+                type: string
+                description: 提取原因
+              TQFS:
+                type: string
+                description: 提取方式
+              YWMXLX:
+                type: string
+                description: 业务明细类型
+              XHYY:
+                type: string
+                description: 销户原因
+              BLR:
+                type: string
+                description: 办理人（0本人 1代理人）
+              DLRXM:
+                type: string
+                description: 代理人姓名
+              DLRZJLX:
+                type: string
+                description: 代理人证件类型
+              DLRZJHM:
+                type: string
+                description: 代理人证件号码
+              FSE:
+                type: string
+                description: 发生额
+              FSLXE:
+                type: number
+                format: float
+                description: 发生利息额
+              GRCKZHHM:
+                type: string
+                description: 个人存款账户号码
+              HuMing:
+                type: string
+                description: 户名
+              GRCKZHKHYHMC:
+                type: string
+                description: 个人存款账户开户银行名称
+              JZRQ:
+                type: string
+                description: 记账日期
+              YHKE:
+                type: string
+                description: 月还款额
+              XCTQRQ:
+                type: string
+                description: 下次提取日期
+          AuditHistory:
+            type: array
+            items:
+              type: object
+              description: 审核历史记录
+              properties:
+                YWLSH:
+                  type: string
+                  description: 业务流水号
+                SHJG:
+                  type: string
+                  description: 审核结果（0通过/1不通过）
+                YYYJ:
+                  type: string
+                  description: 原因/意见
+                CZY:
+                  type: string
+                  description: 操作员
+                YWWD:
+                  type: string
+                  description: 业务网点
+                ZhiWu:
+                  type: string
+                  description: 职务(操作员角色)
+                CZQD:
+                  type: string
+                  description: 操作渠道
+                BeiZhu:
+                  type: string
+                  description: 备注
+          BLZL:
+            type: string
+            description: 办理资料
+
+
+  ReviewInfo:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          SHJG:
+            type: string
+            description: 审核结果（01通过/02不通过）
+          YYYJ:
+            type: string
+            description: 原因/意见
+          CZY:
+            type: string
+            description: 操作员
+          YWWD:
+            type: string
+            description: 业务网点
+          ZhiWu:
+            type: string
+            description: 职务(操作员角色)
+          CZQD:
+            type: string
+            description: 操作渠道
+          BeiZhu:
+            type: string
+            description: 备注
+
+
+  auditGET_Resp:
+    properties:
+      list:
+        type: array
+        items:
+          properties:
+            auditSearch:
+              type: object
+              properties:
+                ZhuangTai:
+                  type: string
+                  description: 状态
+                YWLSH:
+                  type: string
+                  description: 业务流水号
+                GRZH:
+                  type: string
+                  description: 个人账号
+                XingMing:
+                  type: string
+                  description: 姓名
+                DWMC:
+                  type: string
+                  description: 单位名称
+                TQYY:
+                  type: string
+                  description: 提取原因
+                CZY:
+                  type: string
+                  description: 操作员
+                YWWD:
+                  type: string
+                  description: 业务网点
+                DDSJ:
+                  type: string
+                  description: 到达时间
+            nextPageNo:
+              type: string
+              description: 下一页
+            currentPage:
+              type: string
+              description: 当前页
+            pageSize:
+              type: string
+              description: 每页个个数
+            totalCount:
+              type: string
+              description: 总条数
+            pageCount:
+              type: string
+              description: 总页数
+
+  Error:
+    type: object
+    properties:
+      code:
+        type: string
+        description: 状态码
+      msg:
+        type: string
+        description: 信息

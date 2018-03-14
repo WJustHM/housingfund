@@ -1,0 +1,77 @@
+package com.handge.housingfund.server.controllers.{{termsOfService}}.api.impl;
+
+import com.handge.housingfund.common.service.{{termsOfService}}.model.*;
+
+import com.handge.housingfund.common.service.{{termsOfService}}.service.{{classname}}Interface;
+import com.handge.housingfund.server.controllers.{{termsOfService}}.api.{{classname}}Api;
+
+import com.handge.housingfund.common.service.TokenContext;
+import com.handge.housingfund.common.service.util.ErrorException;
+import com.handge.housingfund.common.service.util.ReturnEnumeration;
+import com.handge.housingfund.common.service.util.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+
+import java.util.*;
+
+{{#operations}}
+@Component
+@SuppressWarnings({"SpringAutowiredFieldsWarningInspection","unused","SpellCheckingInspection", "SpringJavaAutowiredMembersInspection", "JavaDoc"})
+public class {{classname}}Service implements {{classname}}Api<Response>{
+
+  @Autowired
+  private {{classname}}Interface {{classname}}Interface;
+
+  {{#operation}}
+  /**
+   * {{summary}}
+   * {{notes}}
+     {{#allParams}}
+   * @param {{paramName}} {{description}}
+     {{/allParams}}
+   */
+  public Response {{nickname}}(TokenContext tokenContext{{#hasParams}},{{/hasParams}}{{#allParams}}final {{{dataType}}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}}){
+
+    System.out.println("{{notes}}");{{#allParams}}{{#required}}{{#isBodyParam}}
+
+    if ({{paramName}}==null){
+
+       throw new ErrorException(ReturnEnumeration.Parameter_MISS,"{{description}}");
+    }{{/isBodyParam}}{{#isPrimitiveType}}
+
+    if (!StringUtil.notEmpty({{paramName}})){
+
+       throw new ErrorException(ReturnEnumeration.Parameter_MISS,"{{description}}");
+    }
+    {{/isPrimitiveType}}{{/required}}{{#pattern}}
+
+    if (!StringUtil.matchRegex({{paramName}},"{{pattern}}"){
+
+       throw new ErrorException(ReturnEnumeration.Parameter_NOT_MATCH,"{{description}}");
+    }
+    {{/pattern}}{{#isBodyParam}}{{#isNotContainer}}
+    {{paramName}}.checkValidation();
+    {{/isNotContainer}}{{/isBodyParam}}{{#isBodyParam}}{{^isNotContainer}}{{#isListContainer}}
+
+    {{#complexType}}for({{complexType}} element: {{paramName}} == null ? new ArrayList<{{complexType}}>():{{paramName}}){
+        element.checkValidation();
+    }{{/complexType}}
+    {{/isListContainer}}{{/isNotContainer}}{{/isBodyParam}}{{/allParams}}
+
+    try {
+
+        return Response.status(200).entity(this.{{classname}}Interface.{{nickname}}(tokenContext{{#hasParams}},{{/hasParams}}{{#allParams}}{{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}})).build();
+
+    } catch (ErrorException e) {
+
+        return Response.status(200).entity(e.getError()).build();
+    }
+
+  }
+
+  {{/operation}}
+}
+{{/operations}}

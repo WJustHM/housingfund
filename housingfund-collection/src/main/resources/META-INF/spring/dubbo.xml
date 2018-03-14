@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="Collection"/>
+
+    <!-- don`t change registry when you submit to master.  see  housingfund.conf  which in housingfund project root dir  -->
+    <dubbo:registry protocol="zookeeper"
+                    address="172.20.31.115:2181,172.20.31.115:2181,172.20.31.115:2181" group="sjw000"/>
+
+    <dubbo:provider delay="-1" timeout="60000" retries="0"/>
+
+    <dubbo:consumer timeout="60000" retries="0"/>
+
+    <dubbo:protocol name="dubbo" port="-1" server="netty4" threads="100"
+                    client="netty4" register="true" threadpool="fixed" accepts="1000" payload="52428800"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.ca.CaService"
+                     id="caService"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.AccountRpcService"
+            id="accountRpcService" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.bank.ibank.IBank" id="iBank"
+            check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.finance.IVoucherAutoService" id="iVoucherAutoService"
+            check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IUploadImagesService"
+            id="uploadImagesService" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.ISaveAuditHistory"
+            id="iSaveAuditHistory" check="false"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.finance.IVoucherManagerService"
+                     id="voucherManagerService" check="false"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.loan.IRepaymentService"
+                     id="repaymentService" check="false"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.loan.ILoanTaskService"
+                     id="loanTaskService" check="false"/>
+
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.ISettlementSpecialBankAccountManageService"
+            id="settlementSpecialBankAccountManageService" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IPdfService"
+            id="pdfservice" check="false" retries="0" timeout="100000"/>
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IDictionaryService"
+            id="iDictionaryService" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.IBankInfoService"
+            id="iBankInfoService" check="false" timeout="12000"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.bank.ibank.ITransfer"
+                     id="transfer" check="false"/>
+    <dubbo:reference interface="com.handge.housingfund.common.service.loan.IApplyLoanService"
+                     id="applyLoanService" check="false"/>
+
+    <dubbo:reference id="iSMSCommon" interface="com.handge.housingfund.common.service.others.ISMSCommon"
+                     check="false"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.trader.ICollectionTrader"
+            ref="collctionTrader" token="true" timeout="6000"/>
+    <bean id="collctionTrader"
+          class="com.handge.housingfund.collection.service.common.CollctionTrader"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.trader.ICollectionWithdrawlTrader"
+            ref="iCollctionWithdrawlTrader" token="true" timeout="6000"/>
+    <bean id="iCollctionWithdrawlTrader"
+          class="com.handge.housingfund.collection.service.common.CollectionWithdrawlTrader"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.common.CommonOps"
+            ref="commonOps" token="true"/>
+    <bean id="commonOps"
+          class="com.handge.housingfund.collection.service.common.CommonOpsImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.common.ICalculateInterest"
+            ref="calculateInterest" token="true"/>
+    <bean id="calculateInterest"
+          class="com.handge.housingfund.collection.service.common.CalculateInterestImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.trader.IAllochthounousBackCall"
+            ref="allochthounousBackCall" token="true"/>
+    <bean id="allochthounousBackCall"
+          class="com.handge.housingfund.collection.service.common.AllochthounousBackCall"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctAlter"
+            ref="indiAcctAlter" token="true"/>
+    <bean id="indiAcctAlter"
+          class="com.handge.housingfund.collection.service.indiacctmanage.IndiAcctAlterImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctFreeze"
+            ref="indiAcctFreeze" token="true"/>
+    <bean id="indiAcctFreeze"
+          class="com.handge.housingfund.collection.service.indiacctmanage.IndiAcctFreezeImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctMerge"
+            ref="indiAcctMerge" token="true"/>
+    <bean id="indiAcctMerge"
+          class="com.handge.housingfund.collection.service.indiacctmanage.IndiAcctMergeImpl"/>
+
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctSeal"
+            ref="indiAcctSeal" token="true"/>
+    <bean id="indiAcctSeal"
+          class="com.handge.housingfund.collection.service.indiacctmanage.IndiAcctSealImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctSet"
+            ref="indiAcctSet" token="true"/>
+    <bean id="indiAcctSet"
+          class="com.handge.housingfund.collection.service.indiacctmanage.IndiAcctSetImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctsInfo"
+            ref="indiAcctsInfo" token="true"/>
+    <bean id="indiAcctsInfo"
+          class="com.handge.housingfund.collection.service.indiacctmanage.IndiAcctsInfoImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctUnfreeze"
+            ref="indiAcctUnFreeze" token="true"/>
+    <bean id="indiAcctUnFreeze"
+          class="com.handge.housingfund.collection.service.indiacctmanage.IndiAcctUnfreezeImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiAcctUnseal"
+            ref="indiAcctUnseal" token="true"/>
+    <bean id="indiAcctUnseal"
+          class="com.handge.housingfund.collection.service.indiacctmanage.IndiAcctUnsealImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.indiacctmanage.IndiInnerTransfer"
+            ref="indiInnerTransfer" token="true"/>
+    <bean id="indiInnerTransfer"
+          class="com.handge.housingfund.collection.service.indiacctmanage.IndiInnerTransferImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.PersonRadix"
+            ref="personRadix" token="true" timeout="120000"/>
+    <bean id="personRadix"
+          class="com.handge.housingfund.collection.service.unitdeposit.PersonRadixImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitDepositInfo"
+            ref="unitDepositInfo" token="true"/>
+    <bean id="unitDepositInfo"
+          class="com.handge.housingfund.collection.service.unitdeposit.UnitDepositInfoImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitDepositInventory"
+            ref="unitDepositInventory" token="true"/>
+    <bean id="unitDepositInventory"
+          class="com.handge.housingfund.collection.service.unitdeposit.UnitDepositInventoryImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitDepositRatio"
+            ref="unitDepositRatio" token="true" timeout="120000"/>
+    <bean id="unitDepositRatio"
+          class="com.handge.housingfund.collection.service.unitdeposit.UnitDepositRatioImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitPayback"
+            ref="unitPayback" token="true"/>
+    <bean id="unitPayback"
+          class="com.handge.housingfund.collection.service.unitdeposit.UnitPaybackImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitPayCall"
+            ref="unitPayCall" token="true"/>
+    <bean id="unitPayCall"
+          class="com.handge.housingfund.collection.service.unitdeposit.UnitPayCallImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitPayhold"
+            ref="unitPayhold" token="true"/>
+    <bean id="unitPayhold"
+          class="com.handge.housingfund.collection.service.unitdeposit.UnitPayholdImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitPayWrong"
+            ref="unitPayWrong" token="true"/>
+    <bean id="unitPayWrong"
+          class="com.handge.housingfund.collection.service.unitdeposit.UnitPayWrongImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitdeposit.UnitRemittance"
+            ref="unitRemittance" token="true" timeout="100000"/>
+    <bean id="unitRemittance"
+          class="com.handge.housingfund.collection.service.unitdeposit.UnitRemittanceImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctAlter"
+            ref="unitAcctAlter" token="true"/>
+    <bean id="unitAcctAlter"
+          class="com.handge.housingfund.collection.service.unitinfomanage.UnitAcctAlterImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctCommon"
+            ref="unitAcctCommon" token="true"/>
+    <bean id="unitAcctCommon"
+          class="com.handge.housingfund.collection.service.unitinfomanage.UnitAcctCommonImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctDrop"
+            ref="unitAcctDrop" token="true"/>
+    <bean id="unitAcctDrop"
+          class="com.handge.housingfund.collection.service.unitinfomanage.UnitAcctDropImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctInfo"
+            ref="unitAcctInfo" token="true"/>
+    <bean id="unitAcctInfo"
+          class="com.handge.housingfund.collection.service.unitinfomanage.UnitAcctInfoImpl"/>
+
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctSeal"
+            ref="unitAcctSeal" token="true"/>
+    <bean id="unitAcctSeal"
+          class="com.handge.housingfund.collection.service.unitinfomanage.UnitAcctSealImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctSet"
+            ref="unitAcctSet" token="true"/>
+    <bean id="unitAcctSet"
+          class="com.handge.housingfund.collection.service.unitinfomanage.UnitAcctSetImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.unitinfomanage.UnitAcctUnseal"
+            ref="unitAcctUnseal" token="true"/>
+    <bean id="unitAcctUnseal"
+          class="com.handge.housingfund.collection.service.unitinfomanage.UnitAcctUnsealImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.businessdetail.IndiBusiness"
+            ref="indiBusiness" token="true"/>
+    <bean id="indiBusiness"
+          class="com.handge.housingfund.collection.service.businessdetail.IndiBusinessImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.businessdetail.UnitBusiness"
+            ref="unitBusiness" token="true"/>
+    <bean id="unitBusiness"
+          class="com.handge.housingfund.collection.service.businessdetail.UnitBusinessImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.withdrawl.WithdrawlTasks"
+            ref="withdrawlTasks" token="true"/>
+    <bean id="withdrawlTasks"
+          class="com.handge.housingfund.collection.service.withdrawl.WithdrawlTasksImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.service.common.CollectionTask"
+            ref="collectionTask" token="true"/>
+    <bean id="collectionTask"
+          class="com.handge.housingfund.collection.service.common.CollectionTaskImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.allochthonous.service.TransferInCancelInterface"
+            ref="transferInCancel" token="true"/>
+    <bean id="transferInCancel"
+          class="com.handge.housingfund.collection.service.allochthonous.TransferInCancelImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.allochthonous.service.TransferIntoInterface"
+            ref="transferInto" token="true"/>
+    <bean id="transferInto"
+          class="com.handge.housingfund.collection.service.allochthonous.TransferIntoImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.allochthonous.service.TransferOutInterface"
+            ref="transferOut" token="true"/>
+    <bean id="transferOut"
+          class="com.handge.housingfund.collection.service.allochthonous.TransferOutImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.allochthonous.service.TransferFinalInterface"
+            ref="final.out" token="true" version="final.out"/>
+    <bean id="final.out"
+          class="com.handge.housingfund.collection.service.allochthonous.TransferOutImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.collection.allochthonous.service.TransferFinalInterface"
+            ref="final.final" token="true" version="final.final"/>
+    <bean id="final.final"
+          class="com.handge.housingfund.collection.service.allochthonous.TransferFinalImpl"/>
+
+</beans>

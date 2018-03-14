@@ -1,0 +1,29 @@
+package com.handge.housingfund.server.controllers.{{termsOfService}}.api;
+
+import com.handge.housingfund.common.service.TokenContext;
+
+import com.handge.housingfund.common.service.{{termsOfService}}.model.*;
+
+
+import java.util.Map;
+import java.util.HashMap;
+import java.io.File;
+
+{{#operations}}
+@SuppressWarnings({"JavaDoc", "SpellCheckingInspection", "UnnecessaryInterfaceModifier"})
+public interface {{classname}}Api<T>{
+
+
+  {{#operation}}
+  /**
+   * {{summary}}
+   * {{notes}}
+     {{#allParams}}
+   * @param {{paramName}} {{description}}
+     {{/allParams}}
+   */
+  public T {{nickname}}(TokenContext tokenContext{{#hasParams}},{{/hasParams}}{{#allParams}}final {{{dataType}}} {{paramName}}{{#hasMore}}, {{/hasMore}}{{/allParams}});
+
+  {{/operation}}
+}
+{{/operations}}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://code.alibabatech.com/schema/dubbo
+       http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="Bank"/>
+
+    <!-- don`t change registry when you submit to master.  see  housingfund.conf  which in housingfund project root dir  -->
+    <dubbo:registry protocol="zookeeper"
+                    address="${dubbo.registry.address}" group="${dubbo.registry.group}"/>
+
+    <dubbo:provider delay="-1" timeout="12000" retries="0"/>
+
+    <dubbo:protocol name="dubbo" port="-1" server="netty4" threads="100"
+                    client="netty4" register="true" threadpool="fixed" accepts="1000" payload="52428800"/>
+
+    <dubbo:service interface="com.handge.housingfund.common.service.bank.ibank.IBank"
+                   ref="iBank" token="true" timeout="70000" retries="0" delay="-1" async="false"/>
+    <bean id="iBank" class="com.handge.housingfund.bank.service.BankImpl"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.bank.ibank.ITransfer"
+            ref="iTransfer" token="true" timeout="30000" retries="0" delay="-1"/>
+    <bean id="iTransfer" class="com.handge.housingfund.bank.service.TransferImpl"/>
+
+    <dubbo:service interface="com.handge.housingfund.common.service.bank.ibank.IBankTask"
+                   ref="iBankTask" token="true" timeout="30000" retries="0" delay="-1" async="true"/>
+    <bean id="iBankTask" class="com.handge.housingfund.bank.service.BankTask"/>
+
+    <dubbo:service interface="com.handge.housingfund.common.service.bank.ibank.IReSendNotice"
+                   ref="iReSendNotice" token="true" timeout="30000" retries="0" delay="-1" async="true"/>
+    <bean id="iReSendNotice" class="com.handge.housingfund.bank.service.ReSendNotice"/>
+</beans>

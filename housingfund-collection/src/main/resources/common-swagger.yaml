@@ -1,0 +1,201 @@
+swagger: '2.0'
+info:
+  title: 公积金项目 API
+  description: 提供五舟汉云公积金--归集--公共模块--接口数据
+  termsOfService: Handge
+  contact:
+    name: API Documentation Support.
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 1.0.1
+host: 127.0.0.1:8082
+schemes:
+  - http
+basePath: /
+security:
+  - addToken: []
+tags:
+  - name: delete
+    description: 删除
+
+  - name: revoke
+    description: 撤回
+
+  - name: reviewcheck
+    description: 审核验证
+
+produces:
+  - application/json
+
+paths:
+
+# 撤回业务
+  /collection/common/revoke/{YWLSH}:
+    put:
+      description: |
+        撤回，归集业务
+      operationId: revokeOperation
+      tags:
+        - revoke
+      parameters:
+        - name: YWLSH
+          type: string
+          required: true
+          in: path
+          description: 业务流水号
+        - name: YWMK
+          type: string
+          required: true
+          in: query
+          description: 业务模块（01个人，02单位）
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/RevokeOperationRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+# 删除业务
+  /collection/common/delete:
+    delete:
+      description: |
+        删除，归集业务
+      operationId: deleteOperation
+      tags:
+        - delete
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/CollectionOperationDelete'
+        - name: YWMK
+          type: string
+          required: true
+          in: query
+          description: 业务模块（01个人，02单位）
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/DeleteOperationRes'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+#审核在途验证
+  /collection/common/checkReviewing:
+    post:
+      description: |
+        验证一个业务是否已经处于审核状态，若是，则继续验证审核人是否是当前人员，否则不允许审核；
+        若不处于审核状态，则将当前审核人与该业务绑定（并看作进入审核状态）；
+      operationId: checkIsReviewing
+      tags:
+        - reviewcheck
+      parameters:
+        - name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/BatchReviewCheckPost'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/BatchReviewCheckRes'
+
+securityDefinitions:
+
+  addToken:
+    type: apiKey
+    in: header
+    name: token
+
+definitions:
+
+  BatchReviewCheckPost:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          ywmk:
+            type: string
+            description: 业务模块
+          shybh:
+            type: string
+            description: 审核员编号
+          ids:
+            type: array
+            description: 业务流水号集合
+            items:
+              type: string
+
+  BatchReviewCheckRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          code:
+            type: string
+            description: 成功时返回success，失败时fail
+          msg:
+            type: string
+            description: 成功时为null，失败时详情
+
+  RevokeOperationRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态(success\fail)
+
+  CollectionOperationDelete:
+    type: object
+    properties:
+      Req:
+        type: object
+        properties:
+          YWLSHs:
+            type: array
+            items:
+              type: string
+              description: 业务流水号
+
+  DeleteOperationRes:
+    type: object
+    properties:
+      Res:
+        type: object
+        properties:
+          YWLSH:
+            type: string
+            description: 业务流水号
+          status:
+            type: string
+            description: 状态(success\fail)
+
+  Error:
+    type: object
+    properties:
+      error:
+        type: object
+        properties:
+          code:
+            type: string
+            description: 状态码
+          msg:
+            type: string
+            description: 信息

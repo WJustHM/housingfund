@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+    http://code.alibabatech.com/schema/dubbo
+    http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <!-- 提供方应用信息，用于计算依赖关系 -->
+    <dubbo:application name="Finance"/>
+    <!-- don`t change registry when you submit to master.  see  housingfund.conf  which in housingfund project root dir  -->
+    <dubbo:registry protocol="zookeeper"
+                    address="${dubbo.registry.address}" group="${dubbo.registry.group}"/>
+
+    <dubbo:provider delay="-1" timeout="12000" retries="0"/>
+    <dubbo:protocol name="dubbo" port="-1" server="netty4" threads="100"
+                    client="netty4" register="true" threadpool="fixed" accepts="1000" payload="52428800"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.others.IPdfService"
+                     id="pdfservice" check="false" timeout="100000"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.others.IPdfServiceCa"
+                     id="pdfServiceCa" check="false" timeout="100000"/>
+
+    <dubbo:reference interface="com.handge.housingfund.common.service.ISaveAuditHistory"
+                     id="iSaveAuditHistory" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.ISettlementSpecialBankAccountManageService"
+            id="settlementSpecialBankAccountManageService" check="false" timeout="10000"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.bank.ibank.IBank" id="iBank"
+            check="false" retries="0" timeout="70000"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IUploadImagesService"
+            id="uploadImagesService" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.account.IPolicyService"
+            id="iPolicyService" check="false"/>
+
+    <dubbo:reference
+            interface="com.handge.housingfund.common.service.others.IStateMachineService"
+            id="stateMachine_service" check="false"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IAccountBookService"
+            ref="accountBookService" token="true"/>
+    <bean id="accountBookService"
+          class="com.handge.housingfund.finance.service.AccountBookService"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IBusinessClassifySetService"
+            ref="businessClassifySetService" token="true"/>
+    <bean id="businessClassifySetService"
+          class="com.handge.housingfund.finance.service.BusinessClassifySetService"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IBusinessSetService"
+            ref="businessSetService" token="true"/>
+    <bean id="businessSetService"
+          class="com.handge.housingfund.finance.service.BusinessSetService"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IFinanceBaseService"
+            ref="financeBaseService"/>
+    <bean id="financeBaseService"
+          class="com.handge.housingfund.finance.service.FinanceBaseService"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.ISubjectService"
+            ref="subjectService" token="true"/>
+    <bean id="subjectService"
+          class="com.handge.housingfund.finance.service.SubjectService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IVoucherManagerService"
+            ref="voucherManagerService" token="true"/>
+    <bean id="voucherManagerService"
+          class="com.handge.housingfund.finance.service.VoucherManagerService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IVoucherService"
+            ref="voucherService" token="true"/>
+    <bean id="voucherService"
+          class="com.handge.housingfund.finance.service.VoucherService"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IFinanceReportService"
+            ref="financeReportService" token="true">
+    </dubbo:service>
+    <bean id="financeReportService"
+          class="com.handge.housingfund.finance.service.FinanceReportService"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IAccChangeNoticeService"
+            ref="accChangeNoticeService" token="true"/>
+    <bean id="accChangeNoticeService"
+          class="com.handge.housingfund.finance.service.AccChangeNoticeService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IActived2FixedService"
+            ref="actived2FixedService" token="true"/>
+    <bean id="actived2FixedService"
+          class="com.handge.housingfund.finance.service.Actived2FixedService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IFixedDrawService"
+            ref="iFixedDrawService" token="true"/>
+    <bean id="iFixedDrawService"
+          class="com.handge.housingfund.finance.service.FixedDrawService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IFixedBusinessAuditService"
+            ref="iFixedBusinessAuditService" token="true" retries="0" timeout="70000" delay="-1"/>
+    <bean id="iFixedBusinessAuditService"
+          class="com.handge.housingfund.finance.service.FixedBusinessAuditService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IFixedRecordService"
+            ref="iFixedRecordService" token="true" retries="0" timeout="70000" delay="-1"/>
+    <bean id="iFixedRecordService"
+          class="com.handge.housingfund.finance.service.FixedRecordService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IFinanceTrader"
+            ref="iFinanceTrader" token="true" retries="0" timeout="70000" delay="-1"/>
+    <bean id="iFinanceTrader"
+          class="com.handge.housingfund.finance.service.FinanceTrader"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IVoucherAutoService"
+            ref="iVoucherAutoService" token="true" retries="0" timeout="70000" delay="-1"/>
+    <bean id="iVoucherAutoService"
+          class="com.handge.housingfund.finance.service.VoucherAutoService"/>
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.ITimedFinanceTask"
+            ref="iTimedFinanceTask" token="true" retries="0" timeout="70000" delay="-1"/>
+    <bean id="iTimedFinanceTask"
+          class="com.handge.housingfund.finance.service.TimedFinanceTask"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IReconciliationService"
+            ref="iReconciliationService" token="true" retries="0" timeout="70000" delay="-1"/>
+    <bean id="iReconciliationService"
+          class="com.handge.housingfund.finance.service.ReconciliationService"/>
+
+    <dubbo:service
+            interface="com.handge.housingfund.common.service.finance.IFinanceAsync"
+            ref="iFinanceAsync" token="true" retries="0" timeout="70000" delay="-1"/>
+    <bean id="iFinanceAsync"
+          class="com.handge.housingfund.finance.service.FinanceAsync"/>
+
+</beans>
